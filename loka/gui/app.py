@@ -483,7 +483,7 @@ class SettingsInterface(ScrollArea):
         layout.addWidget(hint)
 
         self.update_link = BodyLabel(
-            '<a href="https://github.com/Punizione/Loka/Release">[更新链接]</a> 随缘更新',
+            '<a href="https://github.com/Punizione/Loka/releases">[更新链接]</a> 随缘更新',
             self.scrollWidget,
         )
         self.update_link.setOpenExternalLinks(True)

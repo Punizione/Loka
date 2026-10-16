@@ -315,6 +315,8 @@ def _validated_qc_references(data,qc,*,doc=None):
 def validate_compiled_model(model,qc,*,keep_ads=True,bindings=(),semantic_origins=None):
     raw=model.read_bytes();header=read_reference_data(raw)
     if header.version>49 or header.fileSize!=len(raw):raise ValueError('编译 MDL 版本/长度不正确')
+    from .core.animation_sections import validate_animation_sections
+    section_verification=validate_animation_sections(raw)
     expected=_model_name(qc).removeprefix('models/')
     if header.theModelName.replace('\\','/').lower()!=expected:raise ValueError('编译 MDL 内部名称与目标不符')
     dec=MdlDecompiler(DecompileOptions(handle_vmodel_includes=False));dec.mdl_file_data=SourceMdlFileData49();dec._read_mdl_file(str(model));data=dec.mdl_file_data
@@ -378,7 +380,8 @@ def validate_compiled_model(model,qc,*,keep_ads=True,bindings=(),semantic_origin
     if phy.is_file():
         payload=phy.read_bytes()
         if len(payload)<16 or struct.unpack_from('<i',payload,12)[0]!=data.checksum:raise ValueError('编译 PHY checksum 无效')
-    return data,{'sequences':len(actual),'animation_references':reference_count,'checksum':data.checksum,'materials':sorted(names)}
+    return data,{'sequences':len(actual),'animation_references':reference_count,'checksum':data.checksum,'materials':sorted(names),
+                 'animation_sections':section_verification}
 
 
 def compile_and_fill(pack_dir,qc_paths,compiler_path,*,game_path='',retired_models=(),archive_names=None,
@@ -413,6 +416,9 @@ def compile_and_fill(pack_dir,qc_paths,compiler_path,*,game_path='',retired_mode
         if not model.is_file():raise ValueError('编译器未生成预期 MDL: '+target)
         from .world_physics import preserve_compiled_world_physics
         preserve_compiled_world_physics(model,qc,staging_root=stage)
+        from .core.animation_sections import repair_compiled_animation_sections
+        section_repairs=repair_compiled_animation_sections(model,staging_root=stage)
+        if section_repairs and on_log:on_log('已修复编译模型的动作分段偏移: '+str(len(section_repairs))+' 项\n')
         origins=None if semantic_origins is None else semantic_origins[str(qc)]
         from .core.ik_curve_preservation import preserve_compiled_touch_curves
         restoration=preserve_compiled_touch_curves(model,origins,staging_root=stage,qc=qc)
@@ -421,6 +427,7 @@ def compile_and_fill(pack_dir,qc_paths,compiler_path,*,game_path='',retired_mode
         world_physics=validate_compiled_world_physics(model,qc)
         if world_physics:verification['world_physics']=world_physics
         if restoration:verification['touch_curve_restoration']=restoration
+        if section_repairs:verification['animation_section_repairs']=section_repairs
         for file in model.parent.iterdir():
             if file.is_file() and file.name.lower() in {model.stem.lower()+s for s in SUFFIXES}:
                 key=file.relative_to(game).as_posix().lower()
