@@ -1,0 +1,15 @@
+# Normalize text files while keeping Windows scripts compatible.
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Preserve binary artwork.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary

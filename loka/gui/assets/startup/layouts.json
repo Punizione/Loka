@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "avatars": {
+    "avatar_01.png": {
+      "x": -5.0,
+      "y": 52.0,
+      "scale": 1.4
+    },
+    "avatar_02.png": {
+      "x": 0.0,
+      "y": 24.0,
+      "scale": 1.4
+    },
+    "avatar_03.png": {
+      "x": -10.0,
+      "y": 10.0,
+      "scale": 1.3
+    },
+    "avatar_04.png": {
+      "x": -30.0,
+      "y": 10.0,
+      "scale": 1.4
+    },
+    "avatar_05.png": {
+      "x": -5.0,
+      "y": 3.0,
+      "scale": 1.3
+    },
+    "avatar_06.png": {
+      "x": -20.0,
+      "y": 20.0,
+      "scale": 1.55
+    }
+  },
+  "backgrounds": {
+    "background_01.png": {
+      "x": 200.0,
+      "y": 550.0,
+      "scale": 3.0
+    },
+    "background_02.png": {
+      "x": 60.0,
+      "y": 50.0,
+      "scale": 1.5
+    },
+    "background_03.png": {
+      "x": 100.0,
+      "y": 600.0,
+      "scale": 2.8
+    },
+    "background_04.png": {
+      "x": 200.0,
+      "y": 800.0,
+      "scale": 3.3
+    },
+    "background_05.png": {
+      "x": 300.0,
+      "y": 750.0,
+      "scale": 3.5
+    },
+    "background_06.png": {
+      "x": 200.0,
+      "y": 800.0,
+      "scale": 3.5
+    },
+    "background_night.png": {
+      "x": 0.0,
+      "y": 0.0,
+      "scale": 1.5
+    }
+  },
+  "confirmations": {
+    "1": {
+      "pair_id": 1,
+      "is_night": false,
+      "avatar_key": "avatar_01.png",
+      "background_key": "background_01.png",
+      "avatar": {
+        "x": -5.0,
+        "y": 52.0,
+        "scale": 1.4
+      },
+      "background": {
+        "x": 200.0,
+        "y": 550.0,
+        "scale": 3.0
+      },
+      "confirmed_at": "2026-10-15T02:51:50.941000+08:00"
+    },
+    "2": {
+      "pair_id": 2,
+      "is_night": false,
+      "avatar_key": "avatar_02.png",
+      "background_key": "background_02.png",
+      "avatar": {
+        "x": 0.0,
+        "y": 24.0,
+        "scale": 1.4
+      },
+      "background": {
+        "x": 60.0,
+        "y": 50.0,
+        "scale": 1.5
+      },
+      "confirmed_at": "2026-10-15T02:51:56.248024+08:00"
+    },
+    "3": {
+      "pair_id": 3,
+      "is_night": false,
+      "avatar_key": "avatar_03.png",
+      "background_key": "background_03.png",
+      "avatar": {
+        "x": -10.0,
+        "y": 10.0,
+        "scale": 1.3
+      },
+      "background": {
+        "x": 100.0,
+        "y": 600.0,
+        "scale": 2.8
+      },
+      "confirmed_at": "2026-10-15T02:51:59.074947+08:00"
+    },
+    "4": {
+      "pair_id": 4,
+      "is_night": false,
+      "avatar_key": "avatar_04.png",
+      "background_key": "background_04.png",
+      "avatar": {
+        "x": -30.0,
+        "y": 10.0,
+        "scale": 1.4
+      },
+      "background": {
+        "x": 200.0,
+        "y": 800.0,
+        "scale": 3.3
+      },
+      "confirmed_at": "2026-10-15T02:52:01.474183+08:00"
+    },
+    "5": {
+      "pair_id": 5,
+      "is_night": false,
+      "avatar_key": "avatar_05.png",
+      "background_key": "background_05.png",
+      "avatar": {
+        "x": -5.0,
+        "y": 3.0,
+        "scale": 1.3
+      },
+      "background": {
+        "x": 300.0,
+        "y": 750.0,
+        "scale": 3.5
+      },
+      "confirmed_at": "2026-10-15T02:52:04.148637+08:00"
+    },
+    "6": {
+      "pair_id": 6,
+      "is_night": false,
+      "avatar_key": "avatar_06.png",
+      "background_key": "background_06.png",
+      "avatar": {
+        "x": -20.0,
+        "y": 20.0,
+        "scale": 1.55
+      },
+      "background": {
+        "x": 200.0,
+        "y": 800.0,
+        "scale": 3.5
+      },
+      "confirmed_at": "2026-10-15T02:52:06.575081+08:00"
+    },
+    "night": {
+      "pair_id": 1,
+      "is_night": true,
+      "avatar_key": "avatar_01.png",
+      "background_key": "background_night.png",
+      "avatar": {
+        "x": -5.0,
+        "y": 52.0,
+        "scale": 1.4
+      },
+      "background": {
+        "x": 0.0,
+        "y": 0.0,
+        "scale": 1.5
+      },
+      "confirmed_at": "2026-10-15T02:52:08.802578+08:00"
+    }
+  }
+}
