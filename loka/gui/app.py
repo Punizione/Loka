@@ -171,6 +171,7 @@ class GuiConfig(QConfig):
     conversion_keep_temp = ConfigItem("WeaponConversion", "KeepTemp", False, _BoolValidator(False))
     conversion_l4n = ConfigItem("WeaponConversion", "L4n", False, _BoolValidator(False))
     conversion_melee_layer_fadein_fix = ConfigItem("WeaponConversion", "MeleeLayerFadeinFix", False, _BoolValidator(False))
+    conversion_fps_match = ConfigItem("WeaponConversion", "FpsMatch", False, _BoolValidator(False))
     conversion_audio_logic = ConfigItem("WeaponConversion", "AudioLogic", "frequency",
                                        OptionsValidator(["frequency", "balanced", "complete"]))
     conversion_ik_rule_handling = ConfigItem("WeaponConversion", "IkRuleHandling", "delete",
@@ -1631,7 +1632,8 @@ class MainWindow(FluentWindow):
                                     isolate_materials=page.material_check.isChecked(),compiler_path=(CFG.studiomdl_path.value or '').strip(),
                                     l4n_enabled=page.l4n_check.isChecked(),normalize_vmt=page.normalize_vmt_check.isChecked(),
                                     audio_logic=page.audio_logic_box.currentData(),ik_rule_handling=page.ik_box.currentData(),
-                                    melee_layer_fadein_fix=page.fadein_check.isChecked(),source_pistol_mode=page.source_pistol_mode())
+                                    melee_layer_fadein_fix=page.fadein_check.isChecked(),source_pistol_mode=page.source_pistol_mode(),
+                                    fps_match=bool(CFG.get(CFG.advanced) and page.fps_check.isChecked()))
         page.log_card.clear();page.begin_conversion()
 
         def work():

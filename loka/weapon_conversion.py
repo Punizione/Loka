@@ -106,6 +106,7 @@ class ConversionOptions:
     ik_rule_handling: str = 'delete'
     melee_layer_fadein_fix: bool = False
     source_pistol_mode: str = 'single'
+    fps_match: bool = False
 
 
 @dataclass
@@ -152,6 +153,7 @@ def _decompile_options(options):
     # requires a real base for touch-IK references in the default IK mode.
     return DecompileOptions(game_path=options.game_path,preserve_animation_semantics=True,
                             subtract_correction=True,
+                            validate_ik_errors=options.ik_rule_handling!='default',
                             ik_rule_handling=options.ik_rule_handling,resolve_world_physics_includes=True)
 
 
@@ -380,7 +382,8 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
         for kind,rel,dec in decompiled:
             check_cancel()
             data=dec.mdl_file_data
-            model_semantics[rel]=capture_animation_semantics(data,ik_rule_handling=options.ik_rule_handling)
+            model_semantics[rel]=capture_animation_semantics(data,ik_rule_handling=options.ik_rule_handling,
+                validate_ik_errors=options.ik_rule_handling!='default')
             if kind!='v':continue
             animations=data.theAnimationDescs or [];sources=[]
             dependencies=sequence_dependencies(qc_sources[rel].read_text(encoding='utf-8-sig'))
@@ -413,7 +416,7 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
         target_profiles=target_profiles_for(options.target_id)
         reports=[];plans={}
         for target_profile in target_profiles:
-            plan=plan_sequences(effective.values(),source_profile,target_profile,keep_ads=options.keep_ads)
+            plan=plan_sequences(effective.values(),source_profile,target_profile,keep_ads=options.keep_ads,fps_match=options.fps_match)
             problems=validate_sequence_layout(plan.sequences,target_profile)
             if problems:raise ValueError('sequence 计划校验失败: '+'; '.join(problems))
             plans[target_profile]=plan
@@ -429,7 +432,7 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
         result.removed_ads_sequences=list(dict.fromkeys(name for plan in plans.values() for name in plan.excluded_sequences))
         report_path=work/'v_dec/sequence_plan.json'
         report_path.write_text(json.dumps({'source_view_model':primary,'source_world_model':world,'source_pistol_mode':options.source_pistol_mode,'source_profile':source_profile,'keep_ads':options.keep_ads,
-                                         'targets':reports},ensure_ascii=False,indent=2),encoding='utf-8')
+                                         'fps_match':options.fps_match,'targets':reports},ensure_ascii=False,indent=2),encoding='utf-8')
         result.sequence_plan_files.append(str(report_path))
         detail(f'已生成 sequence 顺序和时长计划: {report_path}')
         check_cancel()
@@ -457,8 +460,15 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
             for target_profile,plan in plans.items():
                 check_cancel()
                 ads_layers=[]
+                fps_matches=[]
                 qc=rewrite_viewmodel_qc(qc_sources[primary],libraries,plan,target_profile,
-                                       work/'v_dec/_converted'/target_profile,ads_removals=ads_layers)
+                                       work/'v_dec/_converted'/target_profile,ads_removals=ads_layers,fps_matches=fps_matches)
+                for match in fps_matches:
+                    prefix=f'FPS匹配 {match["sequence"]} <- {match["source"]} / {match["reference"]}: '
+                    if match['fallback_reason']:
+                        detail(prefix+f'{match["fallback_reason"]} ({match["fps"]:g})。')
+                    else:
+                        detail(prefix+f'{match["original_fps"]:g} × {match["scale"]:g} = {match["fps"]:g} FPS，保留 {match["frames"]} 帧。')
                 ads_reports.append({'target_profile':target_profile,'qc':str(qc),
                                     'removed_sequences':list(plan.excluded_sequences),'removed_layers':ads_layers})
                 result.converted_qc_files.append(str(qc))

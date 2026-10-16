@@ -21,6 +21,14 @@ PREFIXES={
 }
 OWNERS={p.lower():key for key,aliases in PREFIXES.items() for p in aliases}
 
+# All Sounds rows 390-392 mislabel these hit variants as Shovel.Miss.
+# Verified against update/pak01_dir.vpk:scripts/game_sounds_weapons.txt:
+# ImpactFlesh owns flesh1-4; Miss owns swing_miss1-2. Preserve the workbook.
+EVENT_PATH_CORRECTIONS={
+    ('shovel.miss',f'sound/weapons/shovel/shovel_impact_flesh{i}.wav'):'Shovel.ImpactFlesh'
+    for i in (2,3,4)
+}
+
 
 def sheets(source):
     ns={'s':'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
@@ -52,12 +60,13 @@ def build(source):
     for row,values in tables['All Sounds']:
         name=values.get('A','').strip();raw=values.get('C','').strip()
         if '.' not in name or not raw.lower().endswith('.wav'):continue
+        path=raw.replace('\\','/').lower()
+        if not path.startswith('sound/'):path='sound/'+path
+        name=EVENT_PATH_CORRECTIONS.get((name.lower(),path),name)
         prefix,action=name.split('.',1)
         owner=OWNERS.get(prefix.lower())
         if name.lower()=='pistol.dualfire':owner='dual_pistol';action='fire'
         elif action.lower()=='single' and prefix.lower().startswith('weapon_'):action='fire'
-        path=raw.replace('\\','/').lower()
-        if not path.startswith('sound/'):path='sound/'+path
         key=name.lower()
         item=events.setdefault(key,{'name':name,'owner':owner,'action':action.lower(),'paths':[],'rows':[]})
         if item['owner']!=owner or item['action']!=action.lower():raise ValueError('sound row conflict: '+name)

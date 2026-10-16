@@ -110,14 +110,18 @@ class WeaponConversionInterface(ScrollArea):
         self.keep_temp_check = CheckBox('保留临时文件',option_card)
         self.l4n_check = CheckBox('过剩音频转为 L4N 音频',option_card)
         self.normalize_vmt_check = CheckBox('VMT规范化',option_card)
+        self.fps_check = CheckBox('FPS匹配',option_card)
+        self.fps_check.setToolTip('根据原 V 模 FPS 和源、目标官方动作时长换算 LAYER 播放速度，保留额外后摇。')
         self.ads_check.setChecked(True)
         self.fadein_check=CheckBox('推击淡入',option_card)
         self.fadein_check.setChecked(False)
         self.fadein_check.setToolTip('为转换后的 ACT_VM_MELEE_LAYER 设置 0.2 秒淡入。')
         grid=QGridLayout();grid.setHorizontalSpacing(12);grid.setVerticalSpacing(8)
-        for index,box in enumerate((self.material_check,self.normalize_vmt_check,self.ads_check,self.keep_temp_check,self.l4n_check,self.fadein_check)):
+        for box,row,column in ((self.material_check,0,0),(self.normalize_vmt_check,0,1),(self.ads_check,0,2),
+                               (self.l4n_check,1,0),(self.fadein_check,2,0),
+                               (self.fps_check,2,1),(self.keep_temp_check,2,2)):
             box.setMinimumWidth(box.fontMetrics().horizontalAdvance(box.text())+28)
-            grid.addWidget(box,index//2,index%2)
+            grid.addWidget(box,row,column)
         self.audio_logic_box=ComboBox(option_card)
         for label,value in (('频率优先','frequency'),('均衡匹配','balanced'),('完整优先','complete')):
             self.audio_logic_box.addItem(label,userData=value)
@@ -126,9 +130,10 @@ class WeaponConversionInterface(ScrollArea):
         self.ik_box.setCurrentIndex(1)
         self.audio_logic_box.setMinimumWidth(140)
         self.ik_box.setMinimumWidth(max(self.ik_box.fontMetrics().horizontalAdvance(label) for label in IK_HANDLING_LABELS.values())+52)
-        for column,(label,combo) in enumerate((('音频处理逻辑',self.audio_logic_box),('IK 处理',self.ik_box))):
-            row=QHBoxLayout();row.setSpacing(8);row.addWidget(BodyLabel(label,option_card));row.addWidget(combo,1)
-            grid.addLayout(row,3,column)
+        for column,(label,combo) in enumerate((('音频处理逻辑',self.audio_logic_box),('IK 处理',self.ik_box)),1):
+            row=QVBoxLayout();row.setSpacing(4);row.addWidget(BodyLabel(label,option_card));row.addWidget(combo)
+            grid.addLayout(row,1,column)
+        for column in range(3):
             grid.setColumnStretch(column,1)
         options.addLayout(grid)
         layout.addWidget(option_card)
@@ -177,6 +182,7 @@ class WeaponConversionInterface(ScrollArea):
                          (self.ads_check,config.conversion_keep_ads),
                          (self.keep_temp_check,config.conversion_keep_temp),
                          (self.l4n_check,config.conversion_l4n),
+                         (self.fps_check,config.conversion_fps_match),
                          (self.fadein_check,config.conversion_melee_layer_fadein_fix)):
             box.setChecked(config.get(item))
             box.toggled.connect(lambda checked,setting=item:config.set(setting,checked))
@@ -188,7 +194,7 @@ class WeaponConversionInterface(ScrollArea):
 
     def _fit_option_labels(self):
         changed=False
-        for box in (self.material_check,self.normalize_vmt_check,self.ads_check,self.keep_temp_check,self.l4n_check,self.fadein_check):
+        for box in (self.material_check,self.normalize_vmt_check,self.ads_check,self.keep_temp_check,self.l4n_check,self.fadein_check,self.fps_check):
             box.ensurePolished();width=box.fontMetrics().horizontalAdvance(box.text())+28
             if box.minimumWidth()!=width:box.setMinimumWidth(width);changed=True
         self.ik_box.ensurePolished()
@@ -341,14 +347,16 @@ class WeaponConversionInterface(ScrollArea):
         self.run_button.setEnabled(not self._busy and self._valid_output)
 
     def set_advanced(self,checked):
-        self.keep_temp_check.setVisible(bool(checked))
-        self.keep_temp_check.setEnabled(bool(checked) and not self._busy)
+        for box in (self.keep_temp_check,self.fps_check):
+            box.setVisible(bool(checked))
+            box.setEnabled(bool(checked) and not self._busy)
 
     def set_busy(self, busy):
         self._busy = busy
-        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check):
+        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check,self.fps_check):
             widget.setEnabled(not busy)
         self.keep_temp_check.setEnabled(not busy and bool(self._advanced()))
+        self.fps_check.setEnabled(not busy and bool(self._advanced()))
         self.cancel_button.setEnabled(busy)
         self.update_preview()
 

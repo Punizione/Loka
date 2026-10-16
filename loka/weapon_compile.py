@@ -193,11 +193,13 @@ def _ik_samples(animation,rule,source_samples=None):
     return {'phases':phases,'frames':frames,'values':values,'scales':scales}
 
 
-def capture_animation_semantics(data,*,ik_rule_handling='default',_sample_origins=None):
+def capture_animation_semantics(data,*,ik_rule_handling='default',validate_ik_errors=True,_sample_origins=None):
     """Cheap original-MDL facts; no bone-pose or all-frame evaluation."""
     origins={}
     for sequence in data.theSequenceDescs or []:
         refs=[]
+        check_errors=(_sample_origins[sequence.theName].get('ik_error_guard',True)
+                      if _sample_origins and sequence.theName in _sample_origins else validate_ik_errors)
         for ref_slot,index in enumerate(sequence.theAnimDescIndexes or []):
             animation=data.theAnimationDescs[index];rules=[]
             source_ref=None
@@ -212,17 +214,18 @@ def capture_animation_semantics(data,*,ik_rule_handling='default',_sample_origin
                           'pos':[rule.pos.x,rule.pos.y,rule.pos.z],'q':[rule.q.x,rule.q.y,rule.q.z,rule.q.w]}
                     if not all(math.isfinite(v) for k in ('range','pos','q') for v in item[k]):
                         raise ValueError('IK origin fields are not finite: '+animation.theName)
-                    if rule.type==1:
+                    if rule.type==1 and check_errors:
                         samples=None
                         if source_ref and rule_slot<len(source_ref['ik']):samples=source_ref['ik'][rule_slot].get('samples')
                         item['samples']=_ik_samples(animation,rule,samples)
                     rules.append(item)
             reference={'delta':bool(animation.flags&4),'ik':rules,'frames':animation.frameCount}
-            if ik_rule_handling=='default' and getattr(animation,'thePreserveSourceTouchCurves',False):
+            if ik_rule_handling=='default' and check_errors and getattr(animation,'thePreserveSourceTouchCurves',False):
                 from .core.ik_curve_preservation import capture_touch_curves
                 reference['touch_curves']=capture_touch_curves(data,animation)
             refs.append(reference)
-        origins[sequence.theName]={'delta_post':sequence.flags&20,'references':refs,'ik_guard':ik_rule_handling=='default'}
+        origins[sequence.theName]={'delta_post':sequence.flags&20,'references':refs,'ik_guard':ik_rule_handling=='default',
+                                  'ik_error_guard':check_errors}
     return origins
 
 
@@ -240,6 +243,7 @@ def validate_animation_semantics(data,origins):
             if len(before['ik'])!=len(after['ik']):raise ValueError(context+' IK count')
             for x,y in zip(before['ik'],after['ik']):
                 if any(x[k]!=y[k] for k in ('type','chain','bone','slot')):raise ValueError(context+' IK linkage')
+                if not origin.get('ik_error_guard',True):continue
                 # QC emits rounded authored frame indices for phase ranges.
                 phase_tolerance=.5/(before['frames']-1)+1e-6 if before['frames']>1 else 1e-6
                 if any(abs(p-q)>phase_tolerance for p,q in zip(x['range'],y['range'])):raise ValueError(context+' IK phase')

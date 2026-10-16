@@ -506,7 +506,7 @@ def _timing_reference(row,profile):
     return None
 
 
-def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_removals=None):
+def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_removals=None,fps_matches=None):
     if plan.missing_actions:raise ValueError('不能生成转换 QC，缺少必需动作: '+', '.join(plan.missing_actions))
     issues=validate_sequence_layout(plan.sequences,target_id)
     if issues:raise ValueError('sequence 计划无效: '+'; '.join(issues))
@@ -570,8 +570,16 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
                 implicit=QcCommand('animation','implicit','$animation "implicit" '+_quote(original.value)+' { }')
                 count=_effective_frames(doc.animation_frames(implicit),opts);rate=source_rate
             else:raise ValueError('QC animation 引用不存在: '+original.value)
-            if not row.source.loop and reference and count>1:
+            original_rate=rate
+            if row.fps_scale is not None and count>1:
+                rate*=row.fps_scale
+            elif not row.source.loop and reference and count>1:
                 rate=(count-1)*reference.fps/reference.end_frame
+            if fps_matches is not None and row.fps_scale is not None:
+                fps_matches.append(dict(sequence=row.name,source=row.source.name,reference=original.value,
+                                        original_fps=original_rate,scale=row.fps_scale if count>1 else 1.0,
+                                        fps=rate,frames=count,
+                                        fallback_reason='单帧动画引用，保留原 FPS' if count==1 else None))
             if not math.isfinite(rate) or rate<=0:raise ValueError('动画 FPS 无效')
             binding=dict(name=ref.value,fps=rate,frames=count,options={k:v for k,v in _read_options(named.text).items() if k!='fps'} if named else {})
             if named:

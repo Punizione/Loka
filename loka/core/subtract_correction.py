@@ -487,7 +487,7 @@ def _candidate_full_pose_evidence(mdl_file_data: Any, animation: Any,
 
 def _select_semantic_base(mdl_file_data: Any, sequence: Any, animation: Any,
                           candidates: list, selected_name: str,
-                          old_choice: Any) -> Any:
+                          old_choice: Any, *, validate_errors: bool = True) -> Any:
     context = (f'{_get(mdl_file_data,"theModelName","")}: '
                f'{_get(animation,"theName","")} / {_get(sequence,"theName","")}')
     eligible = [candidate for _source, candidate in candidates]
@@ -517,6 +517,12 @@ def _select_semantic_base(mdl_file_data: Any, sequence: Any, animation: Any,
     if not evidence:
         raise ValueError(context+': no real idle base has readable touch evidence; '+
                          (failures[0] if failures else 'no candidates'))
+    if not validate_errors:
+        # Keep the closest readable base without a fidelity threshold or a
+        # full-pose witness requirement. Equal scores retain the prior preference.
+        best=min(evidence,key=lambda item:item[1])
+        return next((candidate for candidate,score,_ in evidence
+                     if candidate is old_choice and math.isclose(score,best[1],rel_tol=1e-6,abs_tol=1e-9)),best[0])
     if not faithful:
         supported = []
         for candidate in eligible:
@@ -683,6 +689,7 @@ def apply_corrective_subtract_setup(mdl_file_data: Any, options: Any) -> list:
                 mdl_file_data, a_sequence_desc, an_animation_desc,
                 [(source, candidate) for source,candidate in semantic_candidates
                  if selected or wanted_ads in candidate_roles.get(id(candidate),{_ads_idle_role(source,candidate)})], selected, old_choice,
+                validate_errors=bool(getattr(options,'validate_ik_errors',True)),
             )
             assign_subtract(a_sequence_desc,an_animation_desc,base.theName)
             an_animation_desc.theSubtractCorrectionBaseDesc = base

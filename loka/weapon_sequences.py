@@ -78,6 +78,8 @@ class PlannedSequence:
     source_visible: bool | None = None
     source_reference_index: int | None = None
     idle_fallback: bool = False
+    # Scale each original reference's effective FPS, independent of its length.
+    fps_scale: float | None = None
 
 
 @dataclass(frozen=True)
@@ -191,7 +193,72 @@ def _timer_slot(slot,profile):
     return partner.layer and not partner.unused and partner.semantic==slot.semantic
 
 
-def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True) -> SequencePlan:
+def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True, fps_match=False) -> SequencePlan:
+    sources=tuple(sources)
+    plan=_plan_sequences(sources,source_id,target_id,keep_ads=keep_ads)
+    if not fps_match:return plan
+    source_profile=get_profile(source_id);target_profile=get_profile(target_id)
+    indexes={s.name.lower():i for i,s in enumerate(sources)}
+    rows=[];warnings=list(plan.warnings)
+    for row in plan.sequences:
+        if 'LAYER' not in row.activity.upper():
+            rows.append(row);continue
+        reason=None;source=row.source
+        if source is None:reason='占位动作'
+        elif source.loop:reason='循环动作'
+        elif source.frame_count<=1:reason='单帧动作'
+        else:
+            source_slot=_official_timing_slot(source,source_profile,indexes.get(source.name.lower(),0))
+            target_slot=(target_profile.slots[row.official_index] if row.official_index is not None else
+                         _official_timing_slot(replace(source,name='__loka_target',original_name=None,
+                                                       activity=row.activity),target_profile,0))
+            source_time=_official_timer_duration(source_slot,source_profile)
+            target_time=_official_timer_duration(target_slot,target_profile)
+            if source_time is None:reason='缺少可靠的源官方计时基准'
+            elif target_time is None:reason='缺少可靠的目标官方计时基准'
+            else:
+                scale=source_time/target_time
+                row=replace(row,fps=source.fps*scale,fps_scale=scale)
+        if reason:warnings.append(f'FPS匹配 {row.name}: {reason}，回退原换算规则。')
+        rows.append(row)
+    return replace(plan,sequences=tuple(rows),warnings=tuple(warnings))
+
+
+def _normalized_timing_activity(activity):
+    activity=activity.upper().removeprefix('MIXED_')
+    for prefix in ('ACT_PRIMARY_VM_','ACT_SECONDARY_VM_','ACT_TERTIARY_VM_','ACT_FOURTH_VM_'):
+        if activity.startswith(prefix):activity='ACT_VM_'+activity[len(prefix):];break
+    return activity.replace('_SNIPER','').replace('ACT_VM_SHOOT','ACT_VM_PRIMARYATTACK')
+
+
+def _official_timing_slot(source,profile,index):
+    labels={source.name.lower(),(source.original_name or source.name).lower()}
+    activity=_normalized_timing_activity(source.activity)
+    named=next((s for s in profile.slots if s.name.lower() in labels and
+                (not activity or _normalized_timing_activity(s.activity)==activity)),None)
+    if named:return named
+    if not activity:
+        return profile.slots[index] if index<len(profile.slots) else None
+    candidates=[s for s in profile.slots if _normalized_timing_activity(s.activity)==activity and not s.unused]
+    if not candidates:return None
+    # Repeated Activity slots are safe only when their official timers agree.
+    durations={_official_timer_duration(s,profile) for s in candidates}
+    return candidates[0] if len(durations)==1 and None not in durations else None
+
+
+def _official_timer_duration(slot,profile):
+    if slot is None:return None
+    if slot.layer:
+        # The preceding non-layer owns timing, even if a melee pair has different semantics.
+        if slot.index<1:return None
+        slot=profile.slots[slot.index-1]
+        if slot.layer:return None
+    if slot.unused or slot.loop or slot.flexible or not slot.end_frame or not slot.fps:return None
+    duration=slot.end_frame/slot.fps
+    return duration if math.isfinite(duration) and duration>0 else None
+
+
+def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True) -> SequencePlan:
     source_profile=get_profile(source_id);target=get_profile(target_id)
     from .weapon_catalog import MELEE_IDS
     if source_id in MELEE_IDS or target_id in MELEE_IDS:

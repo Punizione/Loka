@@ -293,6 +293,7 @@ def plan_l4n_conversion(pack_dir, source_qcs, target_profiles, source_profile, *
     requests = []
     source_hashes = {}
     source_wave_analysis = {}
+    variant_pairs = {}
     def remember(source):
         source_hashes.setdefault(files[source], _hash(files[source]))
     for record in audio._native_records(reference,source_profile,waves):
@@ -303,7 +304,7 @@ def plan_l4n_conversion(pack_dir, source_qcs, target_profiles, source_profile, *
             target = audio._counterpart(record, t, reference)
             if audio._conversion_reason(record, target, reference,private_wave):
                 continue
-            for source, destination in zip(record.paths, target.paths):
+            for source, destination in audio._variant_pairs(record,target,waves,rng=rng,cache=variant_pairs):
                 source, destination = source.lower(), destination.lower()
                 if source not in waves:
                     continue
@@ -315,7 +316,9 @@ def plan_l4n_conversion(pack_dir, source_qcs, target_profiles, source_profile, *
                 claimed[destination] = source
                 native_destinations.add(destination)
                 requests.append((source, destination)); remember(source)
-                decisions.append({'target_profile': t, 'source_event': record.name, 'source_path': source, 'target_path': destination, 'reason': 'native'})
+                decisions.append({'target_profile': t, 'source_event': record.name, 'source_path': source,
+                    'target_path': destination, 'reason': 'native',
+                    'random_fill':destination in tuple(p.lower() for p in target.paths[len(record.paths):])})
             for source in record.paths[len(target.paths):]:
                 source=source.lower()
                 if source in waves and private_wave(source):

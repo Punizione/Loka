@@ -4,6 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 import json
 import hashlib
+import random
 
 from .vpk import safe_archive_path
 from .weapon_qc import _tokens,_patch
@@ -147,6 +148,25 @@ def _counterpart(record,target,reference):
     return reference.events[key] if key else None
 
 
+def _variant_pairs(record,target,files,*,rng=None,cache=None):
+    """Map existing variants, then fill extra melee miss/impact tail slots once."""
+    sources=tuple(p.lower() for p in record.paths);destinations=tuple(p.lower() for p in target.paths)
+    key=(record.owner,record.action,sources,target.owner,target.action,destinations)
+    if cache is not None and key in cache:return cache[key]
+    pairs=[(source,destination) for source,destination in zip(sources,destinations) if source in files]
+    from .weapon_catalog import MELEE_IDS
+    if (record.owner in MELEE_IDS and target.owner in MELEE_IDS and record.action==target.action
+        and (record.action=='miss' or record.action.startswith('impact')) and len(destinations)>len(sources)):
+        supplied=[source for source in sources if source in files]
+        if supplied:
+            rng=rng if rng is not None else random.SystemRandom()
+            pairs.extend((rng.choice(supplied),destination) for destination in destinations[len(sources):]
+                         if destination not in files)
+    result=tuple(pairs)
+    if cache is not None:cache[key]=result
+    return result
+
+
 def _engine_trigger(record):
     """Return the verified non-animation trigger owning this sound's WAVs.
 
@@ -242,6 +262,7 @@ def plan_audio_conversion(pack_dir,qc_targets,source_profile,*,original_names=No
             record=reference.events.get(name)
             if record:allocated.update(p.lower() for p in record.paths)
     plan=AudioPlan(root,archive_names=dict(names))
+    variant_pairs={}
     private_sources={path for path in files if private_wave(path)}
     explicit_removals.update(private_sources)
     if private_sources:
@@ -278,7 +299,7 @@ def plan_audio_conversion(pack_dir,qc_targets,source_profile,*,original_names=No
             target=_counterpart(record,target_id,reference)
             reason=conversion_reason(record,target)
             if reason:preserve(record,reason);continue
-            requests.extend((source,destination) for source,destination in zip(record.paths,target.paths) if source in files)
+            requests.extend(_variant_pairs(record,target,files,cache=variant_pairs))
 
     for qc,target_id in qc_targets:
         before=qc.read_bytes();text=before.decode('utf-8');changes=[]
@@ -335,7 +356,7 @@ def plan_audio_conversion(pack_dir,qc_targets,source_profile,*,original_names=No
             changes.append((token.start,token.end,'"'+target.name+'"'))
             plan.changed_events+=1
             plan.decisions.append({'qc':str(qc),'source':token.value,'target':target.name,'reason':'converted'})
-            requests.extend((source,destination) for source,destination in zip(record.paths,target.paths) if source in files)
+            requests.extend(_variant_pairs(record,target,files,cache=variant_pairs))
         after=_patch(text,changes).encode('utf-8') if changes else before
         if after!=before:plan.qc_edits.append(QcAudioEdit(qc,before,after))
 

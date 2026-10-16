@@ -134,6 +134,8 @@ class DecompileOptions:
     #: Preserve compiled reference kinds and default touch-IK pose semantics.
     #: Opt-in for low-level callers; mandatory for weapon conversion.
     preserve_animation_semantics: bool = False
+    #: Internal precision policy; conversion default IK accepts numerical drift.
+    validate_ik_errors: bool = True
 
 
 @dataclass
