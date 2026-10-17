@@ -602,7 +602,7 @@ class OneClickInterface(ScrollArea):
         self.fadein_check.setChecked(False)
         options_layout.addWidget(self.fadein_check)
         fadein_note = CaptionLabel(
-            "勾选后，生成 qc 中所有 ACT_VM_MELEE_LAYER 序列的 fadein 强制为 0.2", options_card)
+            "勾选后，普通、15连及 ADS/MIXED 推击动画的 fadein 强制为 0.2", options_card)
         fadein_note.setWordWrap(True)
         options_layout.addWidget(fadein_note)
         layout.addWidget(options_card)

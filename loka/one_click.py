@@ -156,38 +156,38 @@ def _qc_model_subdir(qc_path: str) -> str:
 
 
 def _fix_melee_layer_fadein(qc_path: str, log: Callable[[str], None]) -> None:
-    """处理淡入: force ``fadein 0.2`` on every ACT_VM_MELEE_LAYER sequence.
-
-    The QC may contain several such sequences, and Source-style delta
-    sequence blocks can lack a fadein line entirely (the options writer
-    aborts early) - missing counts as "not 0.2" and gets the line inserted.
-    """
-    import re
-
+    """Force 0.2-second fade-in on ordinary, sniper and ADS/MIXED shove motions."""
+    from .weapon_ads import ads_activities
+    from .weapon_qc import parse_qc, _body_tokens, _tokens, _patch
+    activities={'ACT_VM_MELEE_LAYER','ACT_VM_MELEE_SNIPER_LAYER'}
+    activities.update(a for a in ads_activities() if a.endswith('_VM_MELEE'))
     with open(qc_path, encoding="utf-8") as handle:
         text = handle.read()
-    changed: list[str] = []
-
-    def fix_block(match: "re.Match[str]") -> str:
-        block = match.group(0)
-        if 'activity "ACT_VM_MELEE_LAYER"' not in block:
-            return block
-        name_match = re.search(r'\$sequence\s+"([^"]+)"', block)
-        name = name_match.group(1) if name_match else "?"
-        fade = re.search(r"(?m)^\tfadein\s+([0-9.]+)\s*$", block)
-        if fade:
-            if float(fade.group(1)) == 0.2:
-                return block
-            changed.append(f"{name}: fadein {fade.group(1)} -> 0.2")
-            return block[:fade.start()] + "\tfadein 0.200000" + block[fade.end():]
-        changed.append(f"{name}: 补充 fadein 0.2（原 QC 无 fadein 行）")
-        return block[:block.rfind("\n}")] + "\n\tfadein 0.200000\n}" + block[block.rfind("\n}") + 3:]
-
-    new_text = re.sub(r'\$sequence\s+"[^"]+"\s*\{.*?\n\}', fix_block, text, flags=re.S)
+    changed=[];patches=[];cursor=0
+    for command in parse_qc(text):
+        start=text.index(command.text,cursor);cursor=start+len(command.text)
+        if command.kind!='sequence':continue
+        tokens=_body_tokens(command.text)
+        if not any(not t.quoted and t.value.lower()=='activity' and i+1<len(tokens)
+                   and tokens[i+1].value.upper() in activities for i,t in enumerate(tokens)):continue
+        fades=[i for i,t in enumerate(tokens) if not t.quoted and t.value.lower()=='fadein']
+        if any(i+1>=len(tokens) for i in fades):raise ValueError('QC fadein 缺少参数: '+command.name)
+        if fades:
+            try:unchanged=len(fades)==1 and float(tokens[fades[0]+1].value)==0.2
+            except ValueError:unchanged=False
+            if unchanged:continue
+            first=fades[0];value=tokens[first+1]
+            patches.append((start+value.start,start+value.end,'0.200000'))
+            for index in fades[1:]:patches.append((start+tokens[index].start,start+tokens[index+1].end,''))
+            changed.append(f'{command.name}: fadein {value.value} -> 0.2')
+        else:
+            closing=next(t for t in reversed(_tokens(command.text)) if not t.quoted and t.value=='}')
+            patches.append((start+closing.start,start+closing.start,'\n\tfadein 0.200000\n'))
+            changed.append(f'{command.name}: 补充 fadein 0.2（原 QC 无 fadein 行）')
     if changed:
         with open(qc_path, "w", encoding="utf-8", newline="\n") as handle:
-            handle.write(new_text)
-        log(f"    处理淡入: {len(changed)} 处 ACT_VM_MELEE_LAYER 已改为 fadein 0.2")
+            handle.write(_patch(text,patches))
+        log(f"    处理淡入: {len(changed)} 处推击动画已改为 fadein 0.2")
         for line in changed:
             log("      " + line)
 
