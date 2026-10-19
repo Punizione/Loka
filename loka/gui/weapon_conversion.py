@@ -51,6 +51,10 @@ class WeaponConversionInterface(ScrollArea):
         super().__init__(parent)
         self.package: PackageInspection | None = None
         self._busy = False
+        self._conversion_options = None
+        self.correction_result = None
+        self.correction_options = None
+        self._conversion_identity = None
         self._advanced=advanced
         self._scan_generation=0
         self._pending_scan=None
@@ -117,6 +121,8 @@ class WeaponConversionInterface(ScrollArea):
         self.normalize_vmt_check.setToolTip('检查材质文件，修复可确定的VMT语法问题。')
         self.fps_check = CheckBox('FPS匹配',option_card)
         self.fps_check.setToolTip('优先使用MOD中的FPS进行换算')
+        self.inspect_fps_check = CheckBox('检视FPS排除',option_card)
+        self.inspect_fps_check.setToolTip('helping_hand、item 系列动作保留原模 FPS，不进行时长换算或 FPS 匹配。')
         self.ads_check.setChecked(True)
         self.fadein_check=CheckBox('推击淡入',option_card)
         self.fadein_check.setChecked(False)
@@ -124,7 +130,7 @@ class WeaponConversionInterface(ScrollArea):
         grid=QGridLayout();grid.setHorizontalSpacing(12);grid.setVerticalSpacing(8)
         for box,row,column in ((self.material_check,0,0),(self.normalize_vmt_check,0,1),(self.ads_check,0,2),
                                (self.l4n_check,1,0),(self.fadein_check,2,0),
-                               (self.fps_check,2,1),(self.keep_temp_check,2,2)):
+                               (self.fps_check,2,1),(self.inspect_fps_check,2,2),(self.keep_temp_check,3,0)):
             box.setMinimumWidth(box.fontMetrics().horizontalAdvance(box.text())+28)
             grid.addWidget(box,row,column)
         self.audio_logic_box=ComboBox(option_card)
@@ -155,6 +161,10 @@ class WeaponConversionInterface(ScrollArea):
         self.cancel_button.clicked.connect(self._cancel)
         self.cancel_button.setEnabled(False)
         actions.addWidget(self.cancel_button)
+        self.correction_button=PushButton('动作矫正',self)
+        self.correction_button.clicked.connect(lambda:self.window().open_action_correction(self))
+        self.correction_button.setEnabled(False)
+        actions.addWidget(self.correction_button)
         self.progress = IndeterminateProgressBar(self)
         self.progress.hide()
         layout.addLayout(actions)
@@ -175,8 +185,10 @@ class WeaponConversionInterface(ScrollArea):
         self.enableTransparentBackground()
         self.input_edit.textChanged.connect(self._input_changed)
         self.target_box.currentIndexChanged.connect(self.update_preview)
+        self.target_box.currentIndexChanged.connect(self.invalidate_correction)
         self.source_pistol_box.currentIndexChanged.connect(self._source_pistol_changed)
         self.output_edit.textChanged.connect(self.update_preview)
+        self.output_edit.textChanged.connect(self.invalidate_correction)
         self._fill_targets()
         if config is not None:self._bind_processing_options(config)
         self.set_advanced(bool(self._advanced()))
@@ -192,6 +204,7 @@ class WeaponConversionInterface(ScrollArea):
                          (self.keep_temp_check,config.conversion_keep_temp),
                          (self.l4n_check,config.conversion_l4n),
                          (self.fps_check,config.conversion_fps_match),
+                         (self.inspect_fps_check,config.conversion_exclude_inspect_fps),
                          (self.fadein_check,config.conversion_melee_layer_fadein_fix)):
             box.setChecked(config.get(item))
             box.toggled.connect(lambda checked,setting=item:config.set(setting,checked))
@@ -203,7 +216,7 @@ class WeaponConversionInterface(ScrollArea):
 
     def _fit_option_labels(self):
         changed=False
-        for box in (self.material_check,self.normalize_vmt_check,self.ads_check,self.keep_temp_check,self.l4n_check,self.fadein_check,self.fps_check):
+        for box in (self.material_check,self.normalize_vmt_check,self.ads_check,self.keep_temp_check,self.l4n_check,self.fadein_check,self.fps_check,self.inspect_fps_check):
             box.ensurePolished();width=box.fontMetrics().horizontalAdvance(box.text())+28
             if box.minimumWidth()!=width:box.setMinimumWidth(width);changed=True
         self.ik_box.ensurePolished()
@@ -238,6 +251,7 @@ class WeaponConversionInterface(ScrollArea):
         self.request_scan()
 
     def invalidate_package(self):
+        self.invalidate_correction()
         self.package = None
         self._fill_source_pistol_modes()
         self.source_label.setText('来源武器：未解析')
@@ -326,6 +340,7 @@ class WeaponConversionInterface(ScrollArea):
         self.resolved_source_view_model=None
 
     def _source_pistol_changed(self,*_):
+        self.invalidate_correction()
         if not self.package:return
         self._preferred_source_pistol_mode=self.source_pistol_mode()
         if hasattr(self,'_source_config'):
@@ -356,20 +371,38 @@ class WeaponConversionInterface(ScrollArea):
         self.run_button.setEnabled(not self._busy and self._valid_output)
 
     def set_advanced(self,checked):
-        for box in (self.keep_temp_check,self.fps_check):
+        for box in (self.keep_temp_check,self.fps_check,self.inspect_fps_check):
             box.setVisible(bool(checked))
             box.setEnabled(bool(checked) and not self._busy)
 
     def set_busy(self, busy):
         self._busy = busy
-        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check,self.fps_check):
+        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check,self.fps_check,self.inspect_fps_check):
             widget.setEnabled(not busy)
         self.keep_temp_check.setEnabled(not busy and bool(self._advanced()))
         self.fps_check.setEnabled(not busy and bool(self._advanced()))
+        self.inspect_fps_check.setEnabled(not busy and bool(self._advanced()))
         self.cancel_button.setEnabled(busy)
+        self._refresh_correction_button()
         self.update_preview()
 
-    def begin_conversion(self):
+    def invalidate_correction(self,*_):
+        self.correction_result=None
+        self.correction_options=None
+        self._refresh_correction_button()
+
+    def _refresh_correction_button(self):
+        result=self.correction_result
+        available=(not self._busy and result is not None and self.correction_options is not None
+                   and result.success and result.published and result.work_dir and result.output_path
+                   and Path(result.work_dir).is_dir() and Path(result.output_path).is_file()
+                   and self._conversion_identity==self._correction_identity())
+        self.correction_button.setEnabled(bool(available))
+
+    def begin_conversion(self,options=None):
+        self.invalidate_correction()
+        self._conversion_options=options
+        self._conversion_identity=self._correction_identity()
         self._fit_option_labels()
         self._conversion_active=True;self._result_seen=False;self._completed_units=0;self._unsupported_notice_seen=False
         self.stage_progress.setValue(0);self.stage_label.setText('准备转换：0/9 阶段已完成')
@@ -410,6 +443,15 @@ class WeaponConversionInterface(ScrollArea):
                       position=InfoBarPosition.TOP_RIGHT,parent=self.window())
 
     def set_result(self, result):
+        options=self._conversion_options
+        self.correction_result=None;self.correction_options=None
+        if (options is not None and options.keep_temp and result.success and result.published
+                and self._conversion_identity==self._correction_identity()
+                and result.work_dir and result.output_path and Path(result.work_dir).is_dir()
+                and Path(result.output_path).is_file() and result.converted_qc_files):
+            self.correction_result=result
+            self.correction_options=result.conversion_options or options
+        self._refresh_correction_button()
         if self._conversion_active:
             self._result_seen=True;self._conversion_active=False
             if result.success and result.published:
@@ -424,3 +466,7 @@ class WeaponConversionInterface(ScrollArea):
             else:self._show_completion_notice(result.success and result.published,result.cancelled)
         for warning in result.warnings:self.log_card.append('[详情] 警告：'+warning)
         if result.work_dir:self.log_card.append('保留的临时文件：'+str(result.work_dir))
+
+    def _correction_identity(self):
+        return (self._scan_generation,self.input_path(),self.target_box.currentData(),
+                self.output_edit.text(),self.source_pistol_mode())

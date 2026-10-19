@@ -107,6 +107,7 @@ class ConversionOptions:
     melee_layer_fadein_fix: bool = False
     source_pistol_mode: str = 'single'
     fps_match: bool = False
+    exclude_inspect_fps: bool = False
 
 
 @dataclass
@@ -145,6 +146,9 @@ class PreprocessResult:
     qc_name_report_file: str | None = None
     unsupported_view_model: bool = False
     vtx_recoveries: list[dict] = field(default_factory=list)
+    # Actual compiler/game resolution for a retained correction session.
+    # keep_temp remains the caller's original request, never preprocessing's override.
+    conversion_options: ConversionOptions | None = None
 
 
 def _decompile_options(options):
@@ -416,7 +420,8 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
         target_profiles=target_profiles_for(options.target_id)
         reports=[];plans={}
         for target_profile in target_profiles:
-            plan=plan_sequences(effective.values(),source_profile,target_profile,keep_ads=options.keep_ads,fps_match=options.fps_match)
+            plan=plan_sequences(effective.values(),source_profile,target_profile,keep_ads=options.keep_ads,
+                                fps_match=options.fps_match,exclude_inspect_fps=options.exclude_inspect_fps)
             problems=validate_sequence_layout(plan.sequences,target_profile)
             if problems:raise ValueError('sequence 计划校验失败: '+'; '.join(problems))
             plans[target_profile]=plan
@@ -432,7 +437,8 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
         result.removed_ads_sequences=list(dict.fromkeys(name for plan in plans.values() for name in plan.excluded_sequences))
         report_path=work/'v_dec/sequence_plan.json'
         report_path.write_text(json.dumps({'source_view_model':primary,'source_world_model':world,'source_pistol_mode':options.source_pistol_mode,'source_profile':source_profile,'keep_ads':options.keep_ads,
-                                         'fps_match':options.fps_match,'targets':reports},ensure_ascii=False,indent=2),encoding='utf-8')
+                                         'fps_match':options.fps_match,'exclude_inspect_fps':options.exclude_inspect_fps,
+                                         'targets':reports},ensure_ascii=False,indent=2),encoding='utf-8')
         result.sequence_plan_files.append(str(report_path))
         detail(f'已生成 sequence 顺序和时长计划: {report_path}')
         check_cancel()
@@ -653,6 +659,7 @@ def convert_weapon_package(options:ConversionOptions,*,on_stage=None,on_detail=N
         compiler=str(Path(compiler).resolve())
         result=preprocess_weapon_package(replace(options,keep_temp=True,game_path=game),on_stage=preprocessing_stage,
                                          on_detail=detail,cancelled=cancelled)
+        result.conversion_options=replace(options,compiler_path=compiler,game_path=game)
         work=result.work_dir
         if not result.success:return result
         result.success=False

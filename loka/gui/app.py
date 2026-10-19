@@ -50,6 +50,7 @@ from qfluentwidgets import (
     CheckBox,
     ComboBox,
     ConfigItem,
+    ConfigValidator,
     OptionsValidator,
     QConfig,
     DoubleSpinBox,
@@ -74,6 +75,7 @@ from qfluentwidgets import (
     qconfig,
     setTheme,
     setThemeColor,
+    isDarkTheme,
 )
 
 from .. import __version__
@@ -158,6 +160,14 @@ class _BoolValidator(OptionsValidator):
         return type(value) is bool
 
 
+class _PreviewDistanceValidator(ConfigValidator):
+    def validate(self,value):
+        return type(value) is int and 70<=value<=160
+
+    def correct(self,value):
+        return value if self.validate(value) else 90
+
+
 class GuiConfig(QConfig):
     """Persisted GUI settings (theme comes from the base Config)."""
 
@@ -172,6 +182,7 @@ class GuiConfig(QConfig):
     conversion_l4n = ConfigItem("WeaponConversion", "L4n", False, _BoolValidator(False))
     conversion_melee_layer_fadein_fix = ConfigItem("WeaponConversion", "MeleeLayerFadeinFix", False, _BoolValidator(False))
     conversion_fps_match = ConfigItem("WeaponConversion", "FpsMatch", False, _BoolValidator(False))
+    conversion_exclude_inspect_fps = ConfigItem("WeaponConversion", "ExcludeInspectFps", False, _BoolValidator(False))
     conversion_audio_logic = ConfigItem("WeaponConversion", "AudioLogic", "frequency",
                                        OptionsValidator(["frequency", "balanced", "complete"]))
     conversion_ik_rule_handling = ConfigItem("WeaponConversion", "IkRuleHandling", "delete",
@@ -179,6 +190,12 @@ class GuiConfig(QConfig):
     # Loading legacy "auto" values corrects them to the first explicit choice.
     conversion_source_pistol_mode = ConfigItem("WeaponConversion", "SourcePistolMode", "single",
                                                OptionsValidator(["single","dual"]))
+    action_camera_mode = ConfigItem("ActionCorrection", "CameraMode", "fixed", OptionsValidator(["fixed","follow"]))
+    action_preview_distance = ConfigItem("ActionCorrection", "PreviewDistance", 90, _PreviewDistanceValidator())
+    action_compare_original = ConfigItem("ActionCorrection", "CompareOriginal", False, _BoolValidator(False))
+    action_loop = ConfigItem("ActionCorrection", "LoopPlayback", False, _BoolValidator(False))
+    action_play_audio = ConfigItem("ActionCorrection", "PlayAudio", False, _BoolValidator(False))
+    action_details_open = ConfigItem("ActionCorrection", "DetailsOpen", False, _BoolValidator(False))
 
 
 CFG = GuiConfig()
@@ -217,6 +234,10 @@ class _WorkerSignals(QObject):
     weapon_inspection = Signal(object)
     weapon_scan_outcome = Signal(object)
     weapon_result = Signal(object)
+    correction_loaded = Signal(object)
+    correction_failed = Signal(str)
+    correction_save_finished = Signal(object)
+    correction_preview_cleared = Signal()
 
 
 def _vbox(parent: QWidget, margin: int = 32) -> QVBoxLayout:
@@ -1236,6 +1257,33 @@ class BodyGroupInterface(ScrollArea):
 # Main window
 # ---------------------------------------------------------------------------
 class MainWindow(FluentWindow):
+    def event(self, event):
+        result = super().event(event)
+        # Adding the first QOpenGLWidget recreates the top-level HWND. Qt's
+        # replacement loses the Win32 frame styles qframeless initialized.
+        # Defer until recreation completes, and coalesce its destroy/create pair.
+        if (sys.platform == 'win32' and event.type() == QEvent.WinIdChange
+                and hasattr(self, 'windowEffect')
+                and not getattr(self, '_frameless_refresh_pending', False)):
+            self._frameless_refresh_pending = True
+            QTimer.singleShot(0, self, self._restore_native_frame)
+        return result
+
+    def _restore_native_frame(self):
+        self._frameless_refresh_pending = False
+        # A destroyed/closed window must not be recreated just to refresh styles.
+        hwnd = int(self.internalWinId())
+        if not hwnd:
+            return
+        # The OpenGL HWND can retain Qt's default application caption even
+        # though QWidget still caches the versioned title. Synchronize Win32 too.
+        import win32gui
+        win32gui.SetWindowText(hwnd,f"Loka {__version__}")
+        self.windowEffect.addWindowAnimation(hwnd)
+        self.windowEffect.addShadowEffect(hwnd)
+        if self.isMicaEffectEnabled():
+            self.windowEffect.setMicaEffect(hwnd, isDarkTheme())
+
     def __init__(self, preview_artwork: str | None = None, *,
                  layout_store: ArtworkLayoutStore | None = None) -> None:
         super().__init__()
@@ -1273,6 +1321,7 @@ class MainWindow(FluentWindow):
         self.subtract_page = SubtractInterface(self)
         self.bodygroup_page = BodyGroupInterface(self)
         self.weapon_conversion_page = WeaponConversionInterface(lambda: CFG.get(CFG.advanced),self,config=CFG)
+        self.action_correction_page = None
 
         self._init_navigation()
         self._init_theme()
@@ -1286,10 +1335,31 @@ class MainWindow(FluentWindow):
         self._signals.weapon_inspection.connect(self.weapon_conversion_page.set_package)
         self._signals.weapon_scan_outcome.connect(self.weapon_conversion_page.on_scan_outcome)
         self._signals.weapon_result.connect(self.weapon_conversion_page.set_result)
+        self._signals.correction_loaded.connect(self._on_correction_loaded)
+        self._signals.correction_failed.connect(self._on_correction_failed)
+        self._signals.correction_save_finished.connect(self._on_correction_save_finished)
+        self._signals.correction_preview_cleared.connect(self._on_correction_preview_cleared)
         self._active_run_page = None
         self._active_scan_request = None
 
         self._init_background_image()
+        self._prepare_preview_surface()
+
+    def _prepare_preview_surface(self):
+        # Adding the first OpenGL child to an already visible window makes Qt
+        # recreate its native window. Establish that surface before first show;
+        # the action page, models, textures and game archives remain lazy.
+        from PySide6.QtOpenGLWidgets import QOpenGLWidget
+        from .action_viewport import preview_surface_format
+        self._preview_surface=QOpenGLWidget(self)
+        self._preview_surface.setObjectName('previewSurfaceAnchor')
+        self._preview_surface.setFormat(preview_surface_format())
+        self._preview_surface.setFocusPolicy(Qt.NoFocus)
+        self._preview_surface.setAttribute(Qt.WA_TransparentForMouseEvents,True)
+        self._preview_surface.resize(1,1);self._preview_surface.hide()
+        from .action_backdrop import PreviewBackdrop
+        self._preview_backdrop=PreviewBackdrop(self,self._bg_label)
+        qconfig.themeChangedFinished.connect(self._preview_backdrop.invalidate)
 
     def _apply_artwork_layout(self, layout: ArtworkLayout) -> None:
         self.artwork_layout = layout
@@ -1384,6 +1454,7 @@ class MainWindow(FluentWindow):
         label.raise_()
 
     def _update_bg_image(self) -> None:
+        if hasattr(self,'_preview_backdrop'):self._preview_backdrop.invalidate()
         self._update_background_pid()
         if self._bg_pixmap.isNull():
             return
@@ -1420,6 +1491,8 @@ class MainWindow(FluentWindow):
         self.addSubInterface(self.home_page, FluentIcon.HOME, "首页")
         self.addSubInterface(self.settings_page, FluentIcon.SETTING, "设置")
         self.addSubInterface(self.weapon_conversion_page, FluentIcon.SYNC, "武器转模")
+        self.navigationInterface.addItem(routeKey='actionCorrectionInterface',icon=FluentIcon.PLAY,
+                                         text='动作矫正',onClick=self.show_action_correction)
         self.addSubInterface(self.decompile_page, FluentIcon.DOCUMENT, "反编译")
         self._advanced_nav = (
             (self.one_click_page, FluentIcon.PLAY, "兼容ADS处理", self.weapon_conversion_page),
@@ -1485,7 +1558,9 @@ class MainWindow(FluentWindow):
         panel = self.navigationInterface.panel
         for page, icon, text, after in self._advanced_nav:
             self._purge_nav_route(page.objectName())
-            index = panel.topLayout.indexOf(panel.widget(after.objectName())) + 1
+            route=after if isinstance(after,str) else after.objectName()
+            if page is self.one_click_page:route='actionCorrectionInterface'
+            index = panel.topLayout.indexOf(panel.widget(route)) + 1
             if self.stackedWidget.indexOf(page) == -1:
                 self.stackedWidget.addWidget(page)
             self.navigationInterface.insertItem(
@@ -1611,13 +1686,14 @@ class MainWindow(FluentWindow):
             except Exception as error:
                 signals.weapon_scan_outcome.emit((request,None,exception_text(error)))
                 signals.done.emit('解析失败：'+exception_text(error))
-        self._start_worker(page,work,'解析 VPK')
+        self._start_weapon_worker(page,work,'解析 VPK',scan_request=request)
         self._active_scan_request=request
         return True
 
     def run_weapon_conversion(self, page):
         if self._worker_busy():
             return
+        if not self._leave_correction_draft():return
         try:
             target=page.target_box.currentData()
             if page.package is None or page.scan_path()!=page.package.path or not target:
@@ -1633,8 +1709,9 @@ class MainWindow(FluentWindow):
                                     l4n_enabled=page.l4n_check.isChecked(),normalize_vmt=page.normalize_vmt_check.isChecked(),
                                     audio_logic=page.audio_logic_box.currentData(),ik_rule_handling=page.ik_box.currentData(),
                                     melee_layer_fadein_fix=page.fadein_check.isChecked(),source_pistol_mode=page.source_pistol_mode(),
-                                    fps_match=bool(CFG.get(CFG.advanced) and page.fps_check.isChecked()))
-        page.log_card.clear();page.begin_conversion()
+                                    fps_match=bool(CFG.get(CFG.advanced) and page.fps_check.isChecked()),
+                                    exclude_inspect_fps=bool(CFG.get(CFG.advanced) and page.inspect_fps_check.isChecked()))
+        page.log_card.clear();page.begin_conversion(options)
 
         def work():
             try:
@@ -1661,7 +1738,247 @@ class MainWindow(FluentWindow):
                 self._signals.done.emit(summary)
             except Exception as error:
                 self._signals.done.emit('转换失败：'+exception_text(error))
-        self._start_worker(page,work,'武器转模')
+        self._start_weapon_worker(page,work,'武器转模')
+
+    def _start_weapon_worker(self,page,work,status,*,scan_request=None):
+        correction=self.action_correction_page
+        bundle=correction.suspend_preview() if correction is not None else ([],[])
+        self._preview_backdrop.invalidate()
+        def prepared_work():
+            try:
+                from ..action_resources import release_preview_resources
+                release_preview_resources(bundle)
+                if self._cancel_event.is_set():
+                    if scan_request is not None:
+                        self._signals.weapon_scan_outcome.emit((scan_request,None,'解析已取消。'))
+                    self._signals.done.emit('准备已取消。');return
+                work()
+            except Exception as error:
+                if scan_request is not None:
+                    self._signals.weapon_scan_outcome.emit((scan_request,None,exception_text(error)))
+                self._signals.done.emit('预览资源卸载失败：'+exception_text(error))
+        self._start_worker(page,prepared_work,status)
+
+    def _ensure_action_correction_page(self):
+        if self.action_correction_page is None:
+            from .action_correction import ActionCorrectionInterface
+            page=ActionCorrectionInterface(self,config=CFG)
+            self.action_correction_page=page;self.stackedWidget.addWidget(page)
+            self._preview_backdrop.attach(page.viewport);self._preview_backdrop.attach(page.official_viewport)
+            page.back_requested.connect(self.clear_action_preview_and_return)
+            page.save_requested.connect(self.save_action_correction)
+        return self.action_correction_page
+
+    def clear_action_preview_and_return(self):
+        if self._worker_busy():return
+        page=self.action_correction_page
+        if page is None:return
+        self._preview_resume_requested=False
+        bundle=page.suspend_preview()
+        self._preview_backdrop.invalidate()
+        def work():
+            try:
+                from ..action_resources import release_preview_resources
+                release_preview_resources(bundle)
+            except Exception as error:
+                self._signals.correction_failed.emit(exception_text(error))
+                self._signals.done.emit('预览资源卸载失败：'+exception_text(error));return
+            self._signals.correction_preview_cleared.emit()
+            self._signals.done.emit('预览资源已清空。')
+        self._start_worker(page,work,'清空动作预览')
+        # Disposal must finish once detached; it cannot restore a half-cleared preview.
+        page.cancel_button.hide()
+
+    def _on_correction_preview_cleared(self):
+        self._preview_resume_requested=False
+        self.switchTo(self.weapon_conversion_page)
+
+    def show_action_correction(self):
+        page=self._ensure_action_correction_page()
+        self._preview_resume_requested=page.suspended
+        self.switchTo(page)
+        self._resume_action_preview()
+
+    def _resume_action_preview(self):
+        page=self.action_correction_page
+        if (not getattr(self,"_preview_resume_requested",False) or page is None or not page.suspended
+                or self.stackedWidget.currentWidget() is not page
+                or self.weapon_conversion_page._pending_scan is not None):return
+        if self._worker_busy():
+            # Queued done can arrive while the worker is still returning.
+            if self._active_run_page is None:QTimer.singleShot(25,self._resume_action_preview)
+            return
+        self._preview_resume_requested=False
+        session=page.session
+        def work():
+            try:
+                if getattr(session,'standalone',False):
+                    payload=session.load_preview_assets(cancelled=self._cancel_event.is_set)
+                else:
+                    from ..action_assets import load_preview_assets
+                    payload=load_preview_assets(session,cancelled=self._cancel_event.is_set)
+                from ..action_compare import with_original_assets
+                payload=with_original_assets(payload,cancelled=self._cancel_event.is_set)
+                if self._cancel_event.is_set():raise InterruptedError('预览载入已取消。')
+                self._signals.correction_loaded.emit(payload)
+                self._signals.done.emit('动作预览已恢复。')
+            except Exception as error:
+                # A partially read model must not survive a cancelled restore.
+                session._preview_models.clear()
+                self._signals.correction_failed.emit(exception_text(error))
+                self._signals.done.emit('动作预览恢复失败：'+exception_text(error))
+        self._start_worker(page,work,'恢复动作预览')
+
+    def choose_action_model(self):
+        if self._worker_busy() or not self._leave_correction_draft():return
+        model_path,_=QFileDialog.getOpenFileName(self,'选择需要矫正的 V 模','','Source 模型 (*.mdl)')
+        if not model_path:return
+        from .action_correction import choose_model_profile
+        profile_id=choose_model_profile(self,model_path)
+        if profile_id is None:return
+        self.open_standalone_correction(model_path,profile_id)
+
+    def open_standalone_correction(self,model_path,profile_id):
+        if self._worker_busy():return
+        page=self._ensure_action_correction_page()
+        if not self._leave_correction_draft():return
+        page.clear_loaded();self.switchTo(page)
+        game_path=(CFG.game_path.value or '').strip();compiler=(CFG.studiomdl_path.value or '').strip()
+        def work():
+            try:
+                from ..action_standalone import StandaloneCorrectionSession
+                session=StandaloneCorrectionSession.from_model(model_path,profile_id,game_path=game_path,compiler_path=compiler)
+                payload=session.load_preview_assets(cancelled=self._cancel_event.is_set)
+                from ..action_compare import with_original_assets
+                payload=with_original_assets(payload,cancelled=self._cancel_event.is_set)
+                if self._cancel_event.is_set():raise InterruptedError('模型载入已取消。')
+                self._signals.correction_loaded.emit(payload);self._signals.done.emit('V 模已载入；保存时准备可编辑动作源。')
+            except Exception as error:
+                self._signals.correction_failed.emit(exception_text(error));self._signals.done.emit('V 模载入失败：'+exception_text(error))
+        self._start_worker(page,work,'载入待矫正 V 模')
+
+    def open_action_correction(self, conversion_page):
+        if self._worker_busy():return
+        result,options=conversion_page.correction_result,conversion_page.correction_options
+        if result is None or options is None:return
+        if not result.work_dir or not Path(result.work_dir).is_dir() or not Path(result.output_path).is_file():
+            conversion_page.invalidate_correction()
+            conversion_page.log_card.append('成品或保留临时文件已丢失，无法进入动作矫正。')
+            return
+        page=self._ensure_action_correction_page()
+        cached=page.session if page.session and getattr(page.session,'result',None) is result and page.session.options==options else None
+        if page.session and cached is None and not self._leave_correction_draft():return
+        if cached is not None and page.suspended:
+            self.show_action_correction();return
+        if self.weapon_conversion_page._pending_scan is not None:return
+        if cached is None:page.clear_loaded()
+        self.switchTo(page)
+        def work():
+            try:
+                from ..action_session import CorrectionSession
+                from ..action_assets import load_preview_assets
+                session=cached or CorrectionSession.from_result(result,options)
+                if cached:
+                    session.check_unchanged()
+                if cached and page._loaded_models is session.models:
+                    payload=(session,page._previews,page._materials)
+                else:payload=load_preview_assets(session,cancelled=self._cancel_event.is_set)
+                from ..action_compare import with_original_assets
+                payload=with_original_assets(payload,cancelled=self._cancel_event.is_set)
+                if self._cancel_event.is_set():raise InterruptedError('预览载入已取消。')
+                self._signals.correction_loaded.emit(payload)
+                self._signals.done.emit('成品动作预览已载入。')
+            except Exception as error:
+                self._signals.correction_failed.emit(exception_text(error))
+                self._signals.done.emit('动作矫正载入失败：'+exception_text(error))
+        self._start_worker(page,work,'载入成品动作预览')
+
+    def _on_correction_loaded(self,payload):
+        page=self.action_correction_page
+        if page is None:return
+        page.set_loaded(payload)
+
+    def _on_correction_failed(self,message):
+        page=self.action_correction_page
+        if page is None:return
+        page.log_card.append(message)
+        page.status_label.setText(message)
+
+    def _on_correction_save_finished(self,outcome):
+        status,path=outcome
+        success=status=='success'
+        title='动作矫正成功' if success else '动作矫正已取消' if status=='cancelled' else '动作矫正失败'
+        content='成品已保存：'+str(path) if success else '操作已取消。' if status=='cancelled' else '请查看处理日志。'
+        show=InfoBar.success if success else InfoBar.error
+        show(title,content,isClosable=False,duration=3000,
+             position=InfoBarPosition.TOP_RIGHT,parent=self)
+
+    def save_action_correction(self):
+        page=self.action_correction_page
+        if page is None or page.session is None or self._worker_busy():return
+        page.commit_fps_edit()
+        if not page.session.changes:return
+        session=page.session
+        standalone=bool(getattr(session,'standalone',False))
+        output_dir=getattr(session,'output_dir',None)
+        if standalone and not output_dir:
+            output_dir=QFileDialog.getExistingDirectory(self,'选择新的空目录以保存矫正模型',str(Path(session.models[0].model_path).parent))
+            if not output_dir:
+                self._on_correction_save_finished(('cancelled',None))
+                return
+        def work():
+            try:
+                kwargs={'output_dir':output_dir} if standalone else {}
+                saved=session.save(cancelled=self._cancel_event.is_set,on_log=self._signals.log.emit,**kwargs)
+            except Exception as error:
+                cancelled=isinstance(error,InterruptedError)
+                self._signals.correction_save_finished.emit(('cancelled' if cancelled else 'failed',None))
+                self._signals.correction_failed.emit(exception_text(error))
+                self._signals.done.emit(('动作矫正保存已取消：' if cancelled else '动作矫正保存失败：')+exception_text(error))
+                return
+            path=getattr(saved,'path',None) or getattr(session,'output_path',None) or output_dir
+            self._signals.correction_save_finished.emit(('success',path))
+            # Publication is already committed. A preview reload problem must
+            # be reported as a refresh problem, never as an unsuccessful save.
+            try:
+                from ..action_assets import load_preview_assets
+                # Always read the newly published MDL. A pre-save parsed model
+                # must not supply sequence descriptors after a permutation.
+                payload=(session.load_preview_assets(reload_models=True) if standalone else
+                         load_preview_assets(session,reload_models=True))
+                from ..action_compare import with_original_assets
+                payload=with_original_assets(payload)
+                self._signals.correction_loaded.emit(payload)
+                self._signals.done.emit('动作矫正已保存，编译模型及必要伴随文件已导出：'+str(path)
+                                       if standalone else '动作矫正已保存，成品 QC 和 VPK 已更新。')
+            except Exception as error:
+                self._signals.correction_failed.emit('成品已保存，预览刷新失败：'+exception_text(error))
+                self._signals.done.emit('成品已保存；请重新进入以刷新预览。')
+        self._start_worker(page,work,'保存动作矫正')
+
+    def _leave_correction_draft(self):
+        page=self.action_correction_page
+        if page is None or page.session is None:return True
+        page.commit_fps_edit()
+        if not page.session.changes:return True
+        from .action_dialogs import UnsavedActionDialog
+        box=UnsavedActionDialog(self);box.exec()
+        if box.choice=='discard':page.session.discard();return True
+        if box.choice=='save':
+            self.switchTo(page);page._confirm_save()
+        return False
+
+    def closeEvent(self,event):
+        if self.action_correction_page is not None and self._active_run_page is self.action_correction_page:
+            self.action_correction_page.log_card.append('请先等待当前动作任务完成，或取消任务后再关闭。')
+            event.ignore();return
+        if not self._leave_correction_draft():event.ignore();return
+        if self.action_correction_page is not None:
+            self.action_correction_page.pause()
+            self.action_correction_page.audio.close()
+            self.action_correction_page.viewport.release_resources()
+            self.action_correction_page.official_viewport.release_resources()
+        super().closeEvent(event)
 
     def _collect_targets(self, input_path: str, mode_index: int, output_path: str = "") -> list[str]:
         input_path = input_path.strip()
@@ -1852,6 +2169,8 @@ class MainWindow(FluentWindow):
         self._active_run_page = None
         self._active_scan_request = None
         QTimer.singleShot(0,self.weapon_conversion_page.dispatch_pending_scan)
+        # A request made during weapon work restores only while this page is visible.
+        QTimer.singleShot(0,self._resume_action_preview)
         self.setWindowTitle(f"Loka {__version__}")
 
 

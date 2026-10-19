@@ -1,0 +1,5385 @@
+{
+  "schema_version": 1,
+  "source": "docs/ACTION_CORRECTION_ACTIVITY_MAP_2026-10-19.md; docs/ACTION_CORRECTION_PROPOSAL_2026-10-19.md actual timing Y/N table",
+  "activities": {
+    "ACT_VM_DEPLOY": {
+      "display_name": "切出",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_DEPLOY_LAYER": {
+      "display_name": "切出",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_DEPLOY_SNIPER": {
+      "display_name": "切出",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_DEPLOY_SNIPER_LAYER": {
+      "display_name": "切出",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_DRAW": {
+      "display_name": "切出",
+      "condition": "近战切出播放；可取消时间另由游戏控制"
+    },
+    "ACT_VM_DRYFIRE": {
+      "display_name": "末发开火",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_DRYFIRE_LEFT": {
+      "display_name": "左手末发开火",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_FIDGET": {
+      "display_name": "检视",
+      "condition": "枪械 Necola 检视可播放；小刀官方 idle2 为 UNUSED 不列"
+    },
+    "ACT_VM_HELPINGHAND_EXTEND": {
+      "display_name": "援助手伸出",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_HELPINGHAND_EXTEND_LAYER": {
+      "display_name": "援助手伸出",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_HELPINGHAND_EXTEND_SNIPER": {
+      "display_name": "援助手伸出",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_HELPINGHAND_EXTEND_SNIPER_LAYER": {
+      "display_name": "援助手伸出",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_HELPINGHAND_LOOP": {
+      "display_name": "援助手保持",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_HELPINGHAND_LOOP_LAYER": {
+      "display_name": "援助手保持",
+      "condition": "播放；循环动作显示一轮时长，非固定结束时刻"
+    },
+    "ACT_VM_HELPINGHAND_LOOP_SNIPER": {
+      "display_name": "援助手保持",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_HELPINGHAND_LOOP_SNIPER_LAYER": {
+      "display_name": "援助手保持",
+      "condition": "播放；循环动作显示一轮时长，非固定结束时刻"
+    },
+    "ACT_VM_HELPINGHAND_RETRACT": {
+      "display_name": "援助手收回",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_HELPINGHAND_RETRACT_LAYER": {
+      "display_name": "援助手收回",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_HELPINGHAND_RETRACT_SNIPER": {
+      "display_name": "援助手收回",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_HELPINGHAND_RETRACT_SNIPER_LAYER": {
+      "display_name": "援助手收回",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_HITCENTER": {
+      "display_name": "近战攻击（中）",
+      "condition": "近战播放兼计时；列出"
+    },
+    "ACT_VM_HITLEFT": {
+      "display_name": "近战攻击（左）",
+      "condition": "近战播放兼计时；列出"
+    },
+    "ACT_VM_HITLEFT_LAYER": {
+      "display_name": "近战攻击（左）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_HITRIGHT": {
+      "display_name": "近战攻击（右）",
+      "condition": "近战播放兼计时；列出"
+    },
+    "ACT_VM_HITRIGHT_LAYER": {
+      "display_name": "近战攻击（右）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_IDLE": {
+      "display_name": "待机",
+      "condition": "播放；循环动作显示一轮时长，非固定结束时刻"
+    },
+    "ACT_VM_IDLE_LOWERED": {
+      "display_name": "空仓待机",
+      "condition": "播放；循环动作显示一轮时长，非固定结束时刻"
+    },
+    "ACT_VM_IDLE_SNIPER": {
+      "display_name": "待机",
+      "condition": "播放；循环动作显示一轮时长，非固定结束时刻"
+    },
+    "ACT_VM_ITEMPICKUP_EXTEND": {
+      "display_name": "拾取手伸出",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_ITEMPICKUP_EXTEND_LAYER": {
+      "display_name": "拾取手伸出",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_ITEMPICKUP_EXTEND_SNIPER": {
+      "display_name": "拾取手伸出",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_ITEMPICKUP_EXTEND_SNIPER_LAYER": {
+      "display_name": "拾取手伸出",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_ITEMPICKUP_LOOP": {
+      "display_name": "拾取手保持",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_ITEMPICKUP_LOOP_LAYER": {
+      "display_name": "拾取手保持",
+      "condition": "播放；循环动作显示一轮时长，非固定结束时刻"
+    },
+    "ACT_VM_ITEMPICKUP_LOOP_SNIPER": {
+      "display_name": "拾取手保持",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_ITEMPICKUP_LOOP_SNIPER_LAYER": {
+      "display_name": "拾取手保持",
+      "condition": "播放；循环动作显示一轮时长，非固定结束时刻"
+    },
+    "ACT_VM_ITEMPICKUP_RETRACT": {
+      "display_name": "拾取手收回",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_ITEMPICKUP_RETRACT_LAYER": {
+      "display_name": "拾取手收回",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_ITEMPICKUP_RETRACT_SNIPER": {
+      "display_name": "拾取手收回",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_ITEMPICKUP_RETRACT_SNIPER_LAYER": {
+      "display_name": "拾取手收回",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_MELEE": {
+      "display_name": "推击",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_MELEE_LAYER": {
+      "display_name": "推击",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_MELEE_SNIPER": {
+      "display_name": "推击",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_MELEE_SNIPER_LAYER": {
+      "display_name": "推击",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_PICKUP_CHARGING_SNIPER": {
+      "display_name": "拾取并上膛（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_PICKUP_CHARGING_SNIPER_LAYER": {
+      "display_name": "拾取并上膛（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_PICKUP_CLIPIN_SNIPER": {
+      "display_name": "拾取并入匣（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_PICKUP_CLIPIN_SNIPER_LAYER": {
+      "display_name": "拾取并入匣（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_PICKUP_SNIPER": {
+      "display_name": "拾取（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_PICKUP_SNIPER_LAYER": {
+      "display_name": "拾取（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_PRIMARYATTACK": {
+      "display_name": "开火／近战主攻击",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_PRIMARYATTACK_LAYER": {
+      "display_name": "开火／近战主攻击",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_PRIMARYATTACK_SNIPER": {
+      "display_name": "开火／近战主攻击",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_RELOAD": {
+      "display_name": "换弹／霰弹枪换弹起始",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_RELOAD_CLIPOUT_SNIPER": {
+      "display_name": "换弹出匣（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_RELOAD_CLIPOUT_SNIPER_LAYER": {
+      "display_name": "换弹出匣（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_RELOAD_EMPTY": {
+      "display_name": "空仓换弹",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_RELOAD_EMPTY_CLIPIN_SNIPER": {
+      "display_name": "空仓换弹入匣（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_RELOAD_EMPTY_CLIPIN_SNIPER_LAYER": {
+      "display_name": "空仓换弹入匣（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_RELOAD_EMPTY_CLIPOUT_SNIPER": {
+      "display_name": "空仓换弹出匣（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_RELOAD_EMPTY_CLIPOUT_SNIPER_LAYER": {
+      "display_name": "空仓换弹出匣（未使用）",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_RELOAD_EMPTY_LAYER": {
+      "display_name": "空仓换弹",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_RELOAD_EMPTY_SNIPER": {
+      "display_name": "空仓换弹",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_RELOAD_EMPTY_SNIPER_LAYER": {
+      "display_name": "空仓换弹",
+      "condition": "官方未使用槽；不列"
+    },
+    "ACT_VM_RELOAD_END": {
+      "display_name": "换弹结束",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_RELOAD_END_LAYER": {
+      "display_name": "换弹结束",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_RELOAD_LAYER": {
+      "display_name": "换弹／霰弹枪换弹起始",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_RELOAD_LOOP": {
+      "display_name": "逐发装填",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_RELOAD_LOOP_LAYER": {
+      "display_name": "逐发装填",
+      "condition": "播放；循环动作显示一轮时长，非固定结束时刻"
+    },
+    "ACT_VM_RELOAD_SNIPER": {
+      "display_name": "换弹／霰弹枪换弹起始",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_RELOAD_SNIPER_LAYER": {
+      "display_name": "换弹／霰弹枪换弹起始",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_SECONDARYATTACK": {
+      "display_name": "左手开火／近战推击",
+      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+    },
+    "ACT_VM_SECONDARYATTACK_LAYER": {
+      "display_name": "左手开火／近战推击",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_SHOOT_LAYER": {
+      "display_name": "近战主攻击",
+      "condition": "PRIMARYATTACK 配对时播放；HIT 系列无效配对层不列"
+    },
+    "ACT_VM_SHOOT_SNIPER_LAYER": {
+      "display_name": "近战主攻击",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_SWINGHARD": {
+      "display_name": "近战重击",
+      "condition": "重击对应非播放槽；不列"
+    },
+    "ACT_VM_SWINGHARD_LAYER": {
+      "display_name": "近战重击",
+      "condition": "扩展重击播放；默认原版不触发，需启用重击"
+    },
+    "ACT_VM_MIXED_OFF": {
+      "display_name": "退出 MIXED",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "ACT_VM_MIXED_ON": {
+      "display_name": "进入 MIXED",
+      "condition": "播放；列出，官方计时来源按武器规则选择"
+    },
+    "MIXED_ACT_VM_DRAW": {
+      "display_name": "MIXED 切出",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_DRYFIRE": {
+      "display_name": "MIXED 末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_DRYFIRE_LEFT": {
+      "display_name": "MIXED 左手末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_HITCENTER": {
+      "display_name": "MIXED 近战攻击（中）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_HITLEFT": {
+      "display_name": "MIXED 近战攻击（左）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_HITRIGHT": {
+      "display_name": "MIXED 近战攻击（右）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_IDLE": {
+      "display_name": "MIXED 待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_IDLE_LOWERED": {
+      "display_name": "MIXED 空仓待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_INSPECT": {
+      "display_name": "MIXED 检视",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_LOWERED_TO_IDLE": {
+      "display_name": "MIXED 退出瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_VM_LOWERED_TO_MIXED_IDLE": {
+      "display_name": "MIXED 退出瞄准并回到 MIXED 普通待机",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_VM_MELEE": {
+      "display_name": "MIXED 推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_PRIMARYATTACK": {
+      "display_name": "MIXED 开火／近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_RELOAD": {
+      "display_name": "MIXED 换弹／霰弹枪换弹起始",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_RELOAD_EMPTY": {
+      "display_name": "MIXED 空仓换弹",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_RELOAD_END": {
+      "display_name": "MIXED 换弹结束",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_RELOAD_LOOP": {
+      "display_name": "MIXED 逐发装填",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_SECONDARYATTACK": {
+      "display_name": "MIXED 左手开火／近战推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_SHOOT_LAYER": {
+      "display_name": "MIXED 近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_VM_SWINGHARD_LAYER": {
+      "display_name": "MIXED 近战重击",
+      "condition": "扩展近战重击；需要实际启用重击的运行路径"
+    },
+    "ACT_PRIMARY_VM_DRAW": {
+      "display_name": "ADS1 切出",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_DRYFIRE": {
+      "display_name": "ADS1 末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_DRYFIRE_LEFT": {
+      "display_name": "ADS1 左手末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_HITCENTER": {
+      "display_name": "ADS1 近战攻击（中）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_HITLEFT": {
+      "display_name": "ADS1 近战攻击（左）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_HITRIGHT": {
+      "display_name": "ADS1 近战攻击（右）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_IDLE": {
+      "display_name": "ADS1 待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_IDLE_LOWERED": {
+      "display_name": "ADS1 空仓待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_IDLE_TO_LOWERED": {
+      "display_name": "ADS1 进入瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_PRIMARY_VM_IDLE_TO_MIXED_IDLE": {
+      "display_name": "ADS1 由普通待机切至 MIXED 瞄准待机",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_PRIMARY_VM_IDLE_TO_MIXED_PREV": {
+      "display_name": "ADS1 返回 MIXED 前一状态",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_PRIMARY_VM_IDLE_TO_NEXT": {
+      "display_name": "ADS1 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_PRIMARY_VM_IDLE_TO_PREV": {
+      "display_name": "ADS1 返回前一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_PRIMARY_VM_INSPECT": {
+      "display_name": "ADS1 检视",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_LOWERED_TO_IDLE": {
+      "display_name": "ADS1 退出瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_PRIMARY_VM_MELEE": {
+      "display_name": "ADS1 推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_MIXED_OFF": {
+      "display_name": "ADS1 退出 MIXED",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_PRIMARY_VM_MIXED_ON": {
+      "display_name": "ADS1 进入 MIXED",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_PRIMARY_VM_PRIMARYATTACK": {
+      "display_name": "ADS1 开火／近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_RELOAD": {
+      "display_name": "ADS1 换弹／霰弹枪换弹起始",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_RELOAD_EMPTY": {
+      "display_name": "ADS1 空仓换弹",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_RELOAD_END": {
+      "display_name": "ADS1 换弹结束",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_RELOAD_LOOP": {
+      "display_name": "ADS1 逐发装填",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_SECONDARYATTACK": {
+      "display_name": "ADS1 左手开火／近战推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_SHOOT_LAYER": {
+      "display_name": "ADS1 近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_PRIMARY_VM_SWINGHARD_LAYER": {
+      "display_name": "ADS1 近战重击",
+      "condition": "扩展近战重击；需要实际启用重击的运行路径"
+    },
+    "ACT_SECONDARY_VM_DRAW": {
+      "display_name": "ADS2 切出",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_DRYFIRE": {
+      "display_name": "ADS2 末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_DRYFIRE_LEFT": {
+      "display_name": "ADS2 左手末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_HITCENTER": {
+      "display_name": "ADS2 近战攻击（中）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_HITLEFT": {
+      "display_name": "ADS2 近战攻击（左）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_HITRIGHT": {
+      "display_name": "ADS2 近战攻击（右）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_IDLE": {
+      "display_name": "ADS2 待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_IDLE_LOWERED": {
+      "display_name": "ADS2 空仓待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_IDLE_TO_LOWERED": {
+      "display_name": "ADS2 进入瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_SECONDARY_VM_IDLE_TO_MIXED_IDLE": {
+      "display_name": "ADS2 由普通待机切至 MIXED 瞄准待机",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_SECONDARY_VM_IDLE_TO_MIXED_PREV": {
+      "display_name": "ADS2 返回 MIXED 前一状态",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_SECONDARY_VM_IDLE_TO_NEXT": {
+      "display_name": "ADS2 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_SECONDARY_VM_IDLE_TO_PREV": {
+      "display_name": "ADS2 返回前一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_SECONDARY_VM_INSPECT": {
+      "display_name": "ADS2 检视",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_LOWERED_TO_IDLE": {
+      "display_name": "ADS2 退出瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_SECONDARY_VM_MELEE": {
+      "display_name": "ADS2 推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_MIXED_OFF": {
+      "display_name": "ADS2 退出 MIXED",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_SECONDARY_VM_MIXED_ON": {
+      "display_name": "ADS2 进入 MIXED",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_SECONDARY_VM_PRIMARYATTACK": {
+      "display_name": "ADS2 开火／近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_RELOAD": {
+      "display_name": "ADS2 换弹／霰弹枪换弹起始",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_RELOAD_EMPTY": {
+      "display_name": "ADS2 空仓换弹",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_RELOAD_END": {
+      "display_name": "ADS2 换弹结束",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_RELOAD_LOOP": {
+      "display_name": "ADS2 逐发装填",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_SECONDARYATTACK": {
+      "display_name": "ADS2 左手开火／近战推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_SHOOT_LAYER": {
+      "display_name": "ADS2 近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_SECONDARY_VM_SWINGHARD_LAYER": {
+      "display_name": "ADS2 近战重击",
+      "condition": "扩展近战重击；需要实际启用重击的运行路径"
+    },
+    "ACT_TERTIARY_VM_DRAW": {
+      "display_name": "ADS3 切出",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_DRYFIRE": {
+      "display_name": "ADS3 末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_DRYFIRE_LEFT": {
+      "display_name": "ADS3 左手末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_HITCENTER": {
+      "display_name": "ADS3 近战攻击（中）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_HITLEFT": {
+      "display_name": "ADS3 近战攻击（左）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_HITRIGHT": {
+      "display_name": "ADS3 近战攻击（右）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_IDLE": {
+      "display_name": "ADS3 待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_IDLE_LOWERED": {
+      "display_name": "ADS3 空仓待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_IDLE_TO_LOWERED": {
+      "display_name": "ADS3 进入瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_TERTIARY_VM_IDLE_TO_MIXED_IDLE": {
+      "display_name": "ADS3 由普通待机切至 MIXED 瞄准待机",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_TERTIARY_VM_IDLE_TO_MIXED_PREV": {
+      "display_name": "ADS3 返回 MIXED 前一状态",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_TERTIARY_VM_IDLE_TO_NEXT": {
+      "display_name": "ADS3 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_TERTIARY_VM_IDLE_TO_PREV": {
+      "display_name": "ADS3 返回前一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_TERTIARY_VM_INSPECT": {
+      "display_name": "ADS3 检视",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_LOWERED_TO_IDLE": {
+      "display_name": "ADS3 退出瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_TERTIARY_VM_MELEE": {
+      "display_name": "ADS3 推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_MIXED_OFF": {
+      "display_name": "ADS3 退出 MIXED",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_TERTIARY_VM_MIXED_ON": {
+      "display_name": "ADS3 进入 MIXED",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_TERTIARY_VM_PRIMARYATTACK": {
+      "display_name": "ADS3 开火／近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_RELOAD": {
+      "display_name": "ADS3 换弹／霰弹枪换弹起始",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_RELOAD_EMPTY": {
+      "display_name": "ADS3 空仓换弹",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_RELOAD_END": {
+      "display_name": "ADS3 换弹结束",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_RELOAD_LOOP": {
+      "display_name": "ADS3 逐发装填",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_SECONDARYATTACK": {
+      "display_name": "ADS3 左手开火／近战推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_SHOOT_LAYER": {
+      "display_name": "ADS3 近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_TERTIARY_VM_SWINGHARD_LAYER": {
+      "display_name": "ADS3 近战重击",
+      "condition": "扩展近战重击；需要实际启用重击的运行路径"
+    },
+    "ACT_FOURTH_VM_DRAW": {
+      "display_name": "ADS4 切出",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_DRYFIRE": {
+      "display_name": "ADS4 末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_DRYFIRE_LEFT": {
+      "display_name": "ADS4 左手末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_HITCENTER": {
+      "display_name": "ADS4 近战攻击（中）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_HITLEFT": {
+      "display_name": "ADS4 近战攻击（左）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_HITRIGHT": {
+      "display_name": "ADS4 近战攻击（右）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_IDLE": {
+      "display_name": "ADS4 待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_IDLE_LOWERED": {
+      "display_name": "ADS4 空仓待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_IDLE_TO_LOWERED": {
+      "display_name": "ADS4 进入瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_FOURTH_VM_IDLE_TO_MIXED_IDLE": {
+      "display_name": "ADS4 由普通待机切至 MIXED 瞄准待机",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_FOURTH_VM_IDLE_TO_MIXED_PREV": {
+      "display_name": "ADS4 返回 MIXED 前一状态",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_FOURTH_VM_IDLE_TO_NEXT": {
+      "display_name": "ADS4 切至下一档",
+      "condition": "名称保留；没有下一档的运行路径时不列"
+    },
+    "ACT_FOURTH_VM_IDLE_TO_PREV": {
+      "display_name": "ADS4 返回前一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_FOURTH_VM_INSPECT": {
+      "display_name": "ADS4 检视",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_LOWERED_TO_IDLE": {
+      "display_name": "ADS4 退出瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_FOURTH_VM_MELEE": {
+      "display_name": "ADS4 推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_MIXED_OFF": {
+      "display_name": "ADS4 退出 MIXED",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_FOURTH_VM_MIXED_ON": {
+      "display_name": "ADS4 进入 MIXED",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "ACT_FOURTH_VM_PRIMARYATTACK": {
+      "display_name": "ADS4 开火／近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_RELOAD": {
+      "display_name": "ADS4 换弹／霰弹枪换弹起始",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_RELOAD_EMPTY": {
+      "display_name": "ADS4 空仓换弹",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_RELOAD_END": {
+      "display_name": "ADS4 换弹结束",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_RELOAD_LOOP": {
+      "display_name": "ADS4 逐发装填",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_SECONDARYATTACK": {
+      "display_name": "ADS4 左手开火／近战推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_SHOOT_LAYER": {
+      "display_name": "ADS4 近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "ACT_FOURTH_VM_SWINGHARD_LAYER": {
+      "display_name": "ADS4 近战重击",
+      "condition": "扩展近战重击；需要实际启用重击的运行路径"
+    },
+    "MIXED_ACT_VM_IDLE_TO_NEXT": {
+      "display_name": "MIXED 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_VM_LOWERED_TO_NEXT": {
+      "display_name": "MIXED 保持 MIXED 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_PRIMARY_VM_DRAW": {
+      "display_name": "MIXED ADS1 切出",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_DRYFIRE": {
+      "display_name": "MIXED ADS1 末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_DRYFIRE_LEFT": {
+      "display_name": "MIXED ADS1 左手末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_HITCENTER": {
+      "display_name": "MIXED ADS1 近战攻击（中）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_HITLEFT": {
+      "display_name": "MIXED ADS1 近战攻击（左）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_HITRIGHT": {
+      "display_name": "MIXED ADS1 近战攻击（右）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_IDLE": {
+      "display_name": "MIXED ADS1 待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_IDLE_LOWERED": {
+      "display_name": "MIXED ADS1 空仓待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_IDLE_TO_MIXED_PREV": {
+      "display_name": "MIXED ADS1 返回 MIXED 前一状态",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_PRIMARY_VM_IDLE_TO_NEXT": {
+      "display_name": "MIXED ADS1 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_PRIMARY_VM_IDLE_TO_PREV": {
+      "display_name": "MIXED ADS1 返回前一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_PRIMARY_VM_INSPECT": {
+      "display_name": "MIXED ADS1 检视",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_LOWERED_TO_IDLE": {
+      "display_name": "MIXED ADS1 退出瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_PRIMARY_VM_LOWERED_TO_MIXED_IDLE": {
+      "display_name": "MIXED ADS1 退出瞄准并回到 MIXED 普通待机",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_PRIMARY_VM_LOWERED_TO_NEXT": {
+      "display_name": "MIXED ADS1 保持 MIXED 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_PRIMARY_VM_MELEE": {
+      "display_name": "MIXED ADS1 推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_PRIMARYATTACK": {
+      "display_name": "MIXED ADS1 开火／近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_RELOAD": {
+      "display_name": "MIXED ADS1 换弹／霰弹枪换弹起始",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_RELOAD_EMPTY": {
+      "display_name": "MIXED ADS1 空仓换弹",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_RELOAD_END": {
+      "display_name": "MIXED ADS1 换弹结束",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_RELOAD_LOOP": {
+      "display_name": "MIXED ADS1 逐发装填",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_SECONDARYATTACK": {
+      "display_name": "MIXED ADS1 左手开火／近战推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_SHOOT_LAYER": {
+      "display_name": "MIXED ADS1 近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_PRIMARY_VM_SWINGHARD_LAYER": {
+      "display_name": "MIXED ADS1 近战重击",
+      "condition": "扩展近战重击；需要实际启用重击的运行路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_DRAW": {
+      "display_name": "MIXED ADS2 切出",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_DRYFIRE": {
+      "display_name": "MIXED ADS2 末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_DRYFIRE_LEFT": {
+      "display_name": "MIXED ADS2 左手末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_HITCENTER": {
+      "display_name": "MIXED ADS2 近战攻击（中）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_HITLEFT": {
+      "display_name": "MIXED ADS2 近战攻击（左）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_HITRIGHT": {
+      "display_name": "MIXED ADS2 近战攻击（右）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_IDLE": {
+      "display_name": "MIXED ADS2 待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_IDLE_LOWERED": {
+      "display_name": "MIXED ADS2 空仓待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_IDLE_TO_LOWERED": {
+      "display_name": "MIXED ADS2 进入瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_SECONDARY_VM_IDLE_TO_MIXED_PREV": {
+      "display_name": "MIXED ADS2 返回 MIXED 前一状态",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_SECONDARY_VM_IDLE_TO_NEXT": {
+      "display_name": "MIXED ADS2 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_SECONDARY_VM_IDLE_TO_PREV": {
+      "display_name": "MIXED ADS2 返回前一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_SECONDARY_VM_INSPECT": {
+      "display_name": "MIXED ADS2 检视",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_LOWERED_TO_IDLE": {
+      "display_name": "MIXED ADS2 退出瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_SECONDARY_VM_LOWERED_TO_MIXED_IDLE": {
+      "display_name": "MIXED ADS2 退出瞄准并回到 MIXED 普通待机",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_SECONDARY_VM_LOWERED_TO_NEXT": {
+      "display_name": "MIXED ADS2 保持 MIXED 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_SECONDARY_VM_MELEE": {
+      "display_name": "MIXED ADS2 推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_PRIMARYATTACK": {
+      "display_name": "MIXED ADS2 开火／近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_RELOAD": {
+      "display_name": "MIXED ADS2 换弹／霰弹枪换弹起始",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_RELOAD_EMPTY": {
+      "display_name": "MIXED ADS2 空仓换弹",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_RELOAD_END": {
+      "display_name": "MIXED ADS2 换弹结束",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_RELOAD_LOOP": {
+      "display_name": "MIXED ADS2 逐发装填",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_SECONDARYATTACK": {
+      "display_name": "MIXED ADS2 左手开火／近战推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_SHOOT_LAYER": {
+      "display_name": "MIXED ADS2 近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_SECONDARY_VM_SWINGHARD_LAYER": {
+      "display_name": "MIXED ADS2 近战重击",
+      "condition": "扩展近战重击；需要实际启用重击的运行路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_DRAW": {
+      "display_name": "MIXED ADS3 切出",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_DRYFIRE": {
+      "display_name": "MIXED ADS3 末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_DRYFIRE_LEFT": {
+      "display_name": "MIXED ADS3 左手末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_HITCENTER": {
+      "display_name": "MIXED ADS3 近战攻击（中）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_HITLEFT": {
+      "display_name": "MIXED ADS3 近战攻击（左）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_HITRIGHT": {
+      "display_name": "MIXED ADS3 近战攻击（右）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_IDLE": {
+      "display_name": "MIXED ADS3 待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_IDLE_LOWERED": {
+      "display_name": "MIXED ADS3 空仓待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_IDLE_TO_LOWERED": {
+      "display_name": "MIXED ADS3 进入瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_TERTIARY_VM_IDLE_TO_MIXED_PREV": {
+      "display_name": "MIXED ADS3 返回 MIXED 前一状态",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_TERTIARY_VM_IDLE_TO_NEXT": {
+      "display_name": "MIXED ADS3 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_TERTIARY_VM_IDLE_TO_PREV": {
+      "display_name": "MIXED ADS3 返回前一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_TERTIARY_VM_INSPECT": {
+      "display_name": "MIXED ADS3 检视",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_LOWERED_TO_IDLE": {
+      "display_name": "MIXED ADS3 退出瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_TERTIARY_VM_LOWERED_TO_MIXED_IDLE": {
+      "display_name": "MIXED ADS3 退出瞄准并回到 MIXED 普通待机",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_TERTIARY_VM_LOWERED_TO_NEXT": {
+      "display_name": "MIXED ADS3 保持 MIXED 切至下一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_TERTIARY_VM_MELEE": {
+      "display_name": "MIXED ADS3 推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_PRIMARYATTACK": {
+      "display_name": "MIXED ADS3 开火／近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_RELOAD": {
+      "display_name": "MIXED ADS3 换弹／霰弹枪换弹起始",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_RELOAD_EMPTY": {
+      "display_name": "MIXED ADS3 空仓换弹",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_RELOAD_END": {
+      "display_name": "MIXED ADS3 换弹结束",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_RELOAD_LOOP": {
+      "display_name": "MIXED ADS3 逐发装填",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_SECONDARYATTACK": {
+      "display_name": "MIXED ADS3 左手开火／近战推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_SHOOT_LAYER": {
+      "display_name": "MIXED ADS3 近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_TERTIARY_VM_SWINGHARD_LAYER": {
+      "display_name": "MIXED ADS3 近战重击",
+      "condition": "扩展近战重击；需要实际启用重击的运行路径"
+    },
+    "MIXED_ACT_FOURTH_VM_DRAW": {
+      "display_name": "MIXED ADS4 切出",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_DRYFIRE": {
+      "display_name": "MIXED ADS4 末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_DRYFIRE_LEFT": {
+      "display_name": "MIXED ADS4 左手末发开火",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_HITCENTER": {
+      "display_name": "MIXED ADS4 近战攻击（中）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_HITLEFT": {
+      "display_name": "MIXED ADS4 近战攻击（左）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_HITRIGHT": {
+      "display_name": "MIXED ADS4 近战攻击（右）",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_IDLE": {
+      "display_name": "MIXED ADS4 待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_IDLE_LOWERED": {
+      "display_name": "MIXED ADS4 空仓待机",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_IDLE_TO_LOWERED": {
+      "display_name": "MIXED ADS4 进入瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_FOURTH_VM_IDLE_TO_MIXED_PREV": {
+      "display_name": "MIXED ADS4 返回 MIXED 前一状态",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_FOURTH_VM_IDLE_TO_NEXT": {
+      "display_name": "MIXED ADS4 切至下一档",
+      "condition": "名称保留；没有下一档的运行路径时不列"
+    },
+    "MIXED_ACT_FOURTH_VM_IDLE_TO_PREV": {
+      "display_name": "MIXED ADS4 返回前一档",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_FOURTH_VM_INSPECT": {
+      "display_name": "MIXED ADS4 检视",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_LOWERED_TO_IDLE": {
+      "display_name": "MIXED ADS4 退出瞄准",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_FOURTH_VM_LOWERED_TO_MIXED_IDLE": {
+      "display_name": "MIXED ADS4 退出瞄准并回到 MIXED 普通待机",
+      "condition": "Necola 状态过渡播放；检查进入条件及目标状态"
+    },
+    "MIXED_ACT_FOURTH_VM_LOWERED_TO_NEXT": {
+      "display_name": "MIXED ADS4 保持 MIXED 切至下一档",
+      "condition": "名称保留；没有下一档的运行路径时不列"
+    },
+    "MIXED_ACT_FOURTH_VM_MELEE": {
+      "display_name": "MIXED ADS4 推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_PRIMARYATTACK": {
+      "display_name": "MIXED ADS4 开火／近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_RELOAD": {
+      "display_name": "MIXED ADS4 换弹／霰弹枪换弹起始",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_RELOAD_EMPTY": {
+      "display_name": "MIXED ADS4 空仓换弹",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_RELOAD_END": {
+      "display_name": "MIXED ADS4 换弹结束",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_RELOAD_LOOP": {
+      "display_name": "MIXED ADS4 逐发装填",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_SECONDARYATTACK": {
+      "display_name": "MIXED ADS4 左手开火／近战推击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_SHOOT_LAYER": {
+      "display_name": "MIXED ADS4 近战主攻击",
+      "condition": "Necola 对应状态下播放；必须存在有效触发路径"
+    },
+    "MIXED_ACT_FOURTH_VM_SWINGHARD_LAYER": {
+      "display_name": "MIXED ADS4 近战重击",
+      "condition": "扩展近战重击；需要实际启用重击的运行路径"
+    }
+  },
+  "profiles": {
+    "pistol": [
+      {
+        "index": 0,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback",
+        "timer_index": 6
+      },
+      {
+        "index": 8,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "playback",
+        "timer_index": 8
+      },
+      {
+        "index": 10,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "dual_pistol": [
+      {
+        "index": 0,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "playback",
+        "timer_index": 8
+      },
+      {
+        "index": 10,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "playback",
+        "timer_index": 10
+      },
+      {
+        "index": 12,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 27,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 28,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 29,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 30,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 31,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "pistol_magnum": [
+      {
+        "index": 0,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback",
+        "timer_index": 6
+      },
+      {
+        "index": 8,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "playback",
+        "timer_index": 8
+      },
+      {
+        "index": 10,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "pumpshotgun": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "shotgun_chrome": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "autoshotgun": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "shotgun_spas": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "rifle_ak47": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "rifle_desert": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "rifle_m60": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "rifle": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "rifle_sg552": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": 3
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "smg": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "smg_silenced": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "smg_mp5": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "hunting_rifle": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "playback",
+        "timer_index": 8
+      },
+      {
+        "index": 10,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "playback",
+        "timer_index": 18
+      },
+      {
+        "index": 20,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 27,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 28,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 29,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 30,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 31,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 32,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 33,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 34,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 35,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "sniper_military": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "sniper_awp": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "sniper_scout": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "grenade_launcher": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": 3
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "baseball_bat": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback_timer",
+        "timer_index": 3
+      },
+      {
+        "index": 4,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "playback_timer",
+        "timer_index": 5
+      },
+      {
+        "index": 6,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback_timer",
+        "timer_index": 7
+      },
+      {
+        "index": 8,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "disabled_playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "cricket_bat": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback_timer",
+        "timer_index": 3
+      },
+      {
+        "index": 4,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "playback_timer",
+        "timer_index": 5
+      },
+      {
+        "index": 6,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback_timer",
+        "timer_index": 7
+      },
+      {
+        "index": 8,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "disabled_playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "crowbar": [
+      {
+        "index": 0,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "playback",
+        "timer_index": 4
+      },
+      {
+        "index": 6,
+        "role": "playback_timer",
+        "timer_index": 6
+      },
+      {
+        "index": 7,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "playback",
+        "timer_index": 8
+      },
+      {
+        "index": 10,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "electric_guitar": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": 3
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": 5
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "playback_timer",
+        "timer_index": 9
+      },
+      {
+        "index": 10,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "playback_timer",
+        "timer_index": 11
+      },
+      {
+        "index": 12,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "disabled_playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 27,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 28,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "fireaxe": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": 3
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": 5
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "playback_timer",
+        "timer_index": 9
+      },
+      {
+        "index": 10,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "playback_timer",
+        "timer_index": 11
+      },
+      {
+        "index": 12,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "disabled_playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 27,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 28,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "frying_pan": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "playback",
+        "timer_index": 4
+      },
+      {
+        "index": 6,
+        "role": "playback_timer",
+        "timer_index": 6
+      },
+      {
+        "index": 7,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "disabled_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "golfclub": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback_timer",
+        "timer_index": 3
+      },
+      {
+        "index": 4,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "playback_timer",
+        "timer_index": 5
+      },
+      {
+        "index": 6,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback_timer",
+        "timer_index": 7
+      },
+      {
+        "index": 8,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "playback_timer",
+        "timer_index": 9
+      },
+      {
+        "index": 10,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "katana": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback_timer",
+        "timer_index": 3
+      },
+      {
+        "index": 4,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 5,
+        "role": "playback_timer",
+        "timer_index": 5
+      },
+      {
+        "index": 6,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback_timer",
+        "timer_index": 7
+      },
+      {
+        "index": 8,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "playback_timer",
+        "timer_index": 9
+      },
+      {
+        "index": 10,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "machete": [
+      {
+        "index": 0,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": 3
+      },
+      {
+        "index": 5,
+        "role": "playback_timer",
+        "timer_index": 5
+      },
+      {
+        "index": 6,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback_timer",
+        "timer_index": 7
+      },
+      {
+        "index": 8,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "disabled_playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "pitchfork": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": 3
+      },
+      {
+        "index": 5,
+        "role": "playback_timer",
+        "timer_index": 5
+      },
+      {
+        "index": 6,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback_timer",
+        "timer_index": 7
+      },
+      {
+        "index": 8,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 10,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "shovel": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": 3
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": 5
+      },
+      {
+        "index": 7,
+        "role": "playback_timer",
+        "timer_index": 7
+      },
+      {
+        "index": 8,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 9,
+        "role": "playback_timer",
+        "timer_index": 9
+      },
+      {
+        "index": 10,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "tonfa": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback",
+        "timer_index": 3
+      },
+      {
+        "index": 5,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "playback",
+        "timer_index": 5
+      },
+      {
+        "index": 7,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 8,
+        "role": "playback",
+        "timer_index": 7
+      },
+      {
+        "index": 9,
+        "role": "playback_timer",
+        "timer_index": 9
+      },
+      {
+        "index": 10,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 11,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 12,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 13,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 14,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 15,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 16,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 17,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 18,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 19,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 20,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 21,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 22,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 23,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 24,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 25,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 26,
+        "role": "playback",
+        "timer_index": null
+      }
+    ],
+    "knife": [
+      {
+        "index": 0,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 1,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 2,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 3,
+        "role": "playback",
+        "timer_index": null
+      },
+      {
+        "index": 4,
+        "role": "playback_timer",
+        "timer_index": 4
+      },
+      {
+        "index": 5,
+        "role": "unused",
+        "timer_index": null
+      },
+      {
+        "index": 6,
+        "role": "non_playback",
+        "timer_index": null
+      },
+      {
+        "index": 7,
+        "role": "playback",
+        "timer_index": null
+      }
+    ]
+  }
+}

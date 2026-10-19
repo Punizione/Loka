@@ -1,12 +1,14 @@
 """Official firearm slots and Activity-based planning; source SMDs stay unchanged."""
 from dataclasses import dataclass, replace
 from functools import lru_cache
+from fractions import Fraction
 import json
 import math
 import re
 from pathlib import Path
 from typing import Iterable
 from .weapon_ads import is_ads_or_mixed_activity
+from .fps_values import round_fps, scaled_fps
 
 
 @dataclass(frozen=True)
@@ -80,6 +82,10 @@ class PlannedSequence:
     idle_fallback: bool = False
     # Scale each original reference's effective FPS, independent of its length.
     fps_scale: float | None = None
+    # Preserve actual authored reference rates for the six helper semantics.
+    preserve_source_fps: bool = False
+    # Exact original official timing ratio; fps_scale is a reporting float only.
+    fps_scale_ratio: tuple[int, int] | None = None
 
 
 @dataclass(frozen=True)
@@ -165,7 +171,7 @@ def _classify(source, profile, index):
 
 
 def _extra_activity(activity):
-    return activity.startswith(('ACT_PRIMARY_VM_','ACT_SECONDARY_VM_','ACT_TERTIARY_VM_',
+    return activity.upper().startswith(('ACT_PRIMARY_VM_','ACT_SECONDARY_VM_','ACT_TERTIARY_VM_',
                                 'ACT_FOURTH_VM_','MIXED_ACT_'))
 
 
@@ -177,7 +183,7 @@ def _timing(source,slot):
     if not timed:return source.fps,None
     if source.frame_count==1:return source.fps,None
     # End Frame is zero-based; duration is end_frame / FPS, not frame_count / FPS.
-    return (source.frame_count-1)*slot.fps/slot.end_frame,None
+    return Fraction(source.frame_count-1)*Fraction(str(slot.fps))/Fraction(str(slot.end_frame)),None
 
 
 def _static_timing_warning(source,slot):
@@ -193,16 +199,21 @@ def _timer_slot(slot,profile):
     return partner.layer and not partner.unused and partner.semantic==slot.semantic
 
 
-def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True, fps_match=False) -> SequencePlan:
+def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True, fps_match=False, exclude_inspect_fps=False) -> SequencePlan:
     sources=tuple(sources)
     plan=_plan_sequences(sources,source_id,target_id,keep_ads=keep_ads)
-    if not fps_match:return plan
     source_profile=get_profile(source_id);target_profile=get_profile(target_id)
     indexes={s.name.lower():i for i,s in enumerate(sources)}
     rows=[];warnings=list(plan.warnings)
     for row in plan.sequences:
-        if 'LAYER' not in row.activity.upper():
-            rows.append(row);continue
+        slot=target_profile.slots[row.official_index] if row.official_index is not None else None
+        source=row.source
+        semantic=(slot.semantic if slot else _ACTIONS.get(
+            _normalized_timing_activity(row.activity or row.inferred_source_activity or '').removeprefix('ACT_VM_').removesuffix('_LAYER'),''))
+        if exclude_inspect_fps and source is not None and semantic in _IDLE_HELPER_ACTIONS:
+            rows.append(replace(row,fps=round_fps(source.fps),fps_scale=None,preserve_source_fps=True));continue
+        if not fps_match or 'LAYER' not in row.activity.upper():
+            rows.append(replace(row,fps=round_fps(row.fps)));continue
         reason=None;source=row.source
         if source is None:reason='占位动作'
         elif source.loop:reason='循环动作'
@@ -212,15 +223,16 @@ def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id:
             target_slot=(target_profile.slots[row.official_index] if row.official_index is not None else
                          _official_timing_slot(replace(source,name='__loka_target',original_name=None,
                                                        activity=row.activity),target_profile,0))
-            source_time=_official_timer_duration(source_slot,source_profile)
-            target_time=_official_timer_duration(target_slot,target_profile)
+            source_time=_official_timer_fraction(source_slot,source_profile)
+            target_time=_official_timer_fraction(target_slot,target_profile)
             if source_time is None:reason='缺少可靠的源官方计时基准'
             elif target_time is None:reason='缺少可靠的目标官方计时基准'
             else:
                 scale=source_time/target_time
-                row=replace(row,fps=source.fps*scale,fps_scale=scale)
+                ratio=(scale.numerator,scale.denominator)
+                row=replace(row,fps=scaled_fps(source.fps,*ratio),fps_scale=float(scale),fps_scale_ratio=ratio)
         if reason:warnings.append(f'FPS匹配 {row.name}: {reason}，回退原换算规则。')
-        rows.append(row)
+        rows.append(replace(row,fps=round_fps(row.fps)))
     return replace(plan,sequences=tuple(rows),warnings=tuple(warnings))
 
 
@@ -242,11 +254,16 @@ def _official_timing_slot(source,profile,index):
     candidates=[s for s in profile.slots if _normalized_timing_activity(s.activity)==activity and not s.unused]
     if not candidates:return None
     # Repeated Activity slots are safe only when their official timers agree.
-    durations={_official_timer_duration(s,profile) for s in candidates}
+    durations={_official_timer_fraction(s,profile) for s in candidates}
     return candidates[0] if len(durations)==1 and None not in durations else None
 
 
 def _official_timer_duration(slot,profile):
+    duration=_official_timer_fraction(slot,profile)
+    return float(duration) if duration is not None else None
+
+
+def _official_timer_fraction(slot,profile):
     if slot is None:return None
     if slot.layer:
         # The preceding non-layer owns timing, even if a melee pair has different semantics.
@@ -254,8 +271,8 @@ def _official_timer_duration(slot,profile):
         slot=profile.slots[slot.index-1]
         if slot.layer:return None
     if slot.unused or slot.loop or slot.flexible or not slot.end_frame or not slot.fps:return None
-    duration=slot.end_frame/slot.fps
-    return duration if math.isfinite(duration) and duration>0 else None
+    duration=Fraction(str(slot.end_frame))/Fraction(str(slot.fps))
+    return duration if math.isfinite(float(duration)) and duration>0 else None
 
 
 def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True) -> SequencePlan:
@@ -378,6 +395,36 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
         result.append(PlannedSequence(name,activity,
                                      s,fps,numframes,False,None,inferred,layer))
         if not compatible and not s.loop:warnings.append(f'额外动作 {s.name} 没有目标官方时间基准，保留原 FPS。')
+    if keep_ads and pistol_target:
+        # Only authored ADS roots donate motion, within their own Activity domain.
+        # Append after every authored alternative so neither native slots nor
+        # dedicated special actions are replaced by a generated fallback.
+        authored=tuple(result)
+        activities={row.activity.upper() for row in authored}
+        donors={}
+        for row in authored:
+            match=re.fullmatch(r'((?:MIXED_)?ACT_(?:PRIMARY|SECONDARY|TERTIARY|FOURTH)_VM_|MIXED_ACT_VM_)'
+                               r'(PRIMARYATTACK(?:_LAYER)?|SHOOT_LAYER|RELOAD)',row.activity.upper())
+            if match and row.source is not None:
+                domain,action=match.groups()
+                donors.setdefault((domain,'reload' if action=='RELOAD' else 'fire'),row)
+        for (domain,action),donor in donors.items():
+            suffixes=('RELOAD_EMPTY',) if action=='reload' else ('SECONDARYATTACK','DRYFIRE','DRYFIRE_LEFT')
+            for suffix in suffixes:
+                activity=domain+suffix
+                if activity in activities:continue
+                role=_classify(replace(donor.source,name='__loka_ads_role',activity=activity),target,0)
+                compatible=next((slot for slot in target.slots if
+                                 (slot.semantic,slot.layer)==role[:2] and not slot.unused),None)
+                if compatible is None:continue
+                name=donor.name+'_'+suffix.lower();stem=name;n=1
+                while name.lower() in reserved:
+                    name=f'{stem}_{n}';n+=1
+                reserved.add(name.lower());activities.add(activity)
+                # A reload donor has already been timed for RELOAD. Re-evaluate
+                # its original motion for RELOAD_EMPTY's distinct target timer.
+                fps,numframes=_timing(donor.source,replace(compatible,hidden=False))
+                result.append(replace(donor,name=name,activity=activity,fps=fps,numframes=numframes))
     # Only roots that actually survived planning own dependencies. In particular,
     # removing an ADS root must not keep its private pose helpers alive.
     available={s.name.lower():i for i,s in reversed(tuple(enumerate(sources)))}

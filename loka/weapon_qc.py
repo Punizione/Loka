@@ -8,6 +8,7 @@ from .weapon_catalog import get_weapon
 from .weapon_sequences import get_profile, validate_sequence_layout, _classify, _timer_slot
 from .vpk import safe_archive_path
 from .weapon_ads import remove_ads_layers,is_ads_or_mixed_activity
+from .fps_values import round_fps, fps_text, round_qc_fps, scaled_fps
 
 
 @dataclass(frozen=True)
@@ -272,7 +273,7 @@ def _retime(text,row,*,preserve_numframes=False,write_fps=True):
         if not t.quoted and t.value.lower()=='event':
             if i+2>=len(tokens) or not math.isfinite(float(tokens[i+2].value)):
                 raise ValueError('QC event 帧数无效')
-    return _options(text,{'fps':_number(row.fps)} if write_fps else {})
+    return _options(text,{'fps':fps_text(row.fps)} if write_fps else {})
 
 
 class _Document:
@@ -496,6 +497,7 @@ def validate_converted_qc(text,plan,target_id,*,origin_expectations=None):
 
 
 def _timing_reference(row,profile):
+    if row.preserve_source_fps:return None
     if row.official_index is not None:slot=profile.slots[row.official_index]
     else:
         activity=row.activity or row.inferred_source_activity or ''
@@ -548,7 +550,7 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
             physical=_tokens(named.text)[2].value if named else ref.value
             # Borrow the SMD itself, not the named animation's modifiers or the
             # idle sequence's layers, blends, events and IK directives.
-            body=_quote(physical)+'\n\tfps '+_number(row.source.fps)
+            body=_quote(physical)+'\n\tfps '+fps_text(row.source.fps)
             if slot.loop:body+='\n\tloop'
             command=replace(command,text='$sequence '+_quote(command.name)+' {\n '+body+'\n}')
         opts=_read_options(command.text)
@@ -572,9 +574,11 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
             else:raise ValueError('QC animation 引用不存在: '+original.value)
             original_rate=rate
             if row.fps_scale is not None and count>1:
-                rate*=row.fps_scale
+                ratio=row.fps_scale_ratio or (row.fps_scale,1)
+                rate=scaled_fps(rate,*ratio)
             elif not row.source.loop and reference and count>1:
-                rate=(count-1)*reference.fps/reference.end_frame
+                rate=scaled_fps(count-1,reference.fps,reference.end_frame)
+            rate=round_fps(rate)
             if fps_matches is not None and row.fps_scale is not None:
                 fps_matches.append(dict(sequence=row.name,source=row.source.name,reference=original.value,
                                         original_fps=original_rate,scale=row.fps_scale if count>1 else 1.0,
@@ -583,7 +587,7 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
             if not math.isfinite(rate) or rate<=0:raise ValueError('动画 FPS 无效')
             binding=dict(name=ref.value,fps=rate,frames=count,options={k:v for k,v in _read_options(named.text).items() if k!='fps'} if named else {})
             if named:
-                binding['demand']=(doc.index,key,_number(rate));demands.setdefault((doc.index,key),{})[_number(rate)]=rate
+                binding['demand']=(doc.index,key,fps_text(rate));demands.setdefault((doc.index,key),{})[fps_text(rate)]=rate
             bindings.append(binding)
         common=bindings[0]['fps']
         # Named-first without a sequence FPS supplies the implicit/direct common rate too.
@@ -592,7 +596,7 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
         for ai,(ref,binding) in enumerate(zip(refs,bindings)):
             if 'demand' not in binding and not math.isclose(binding['fps'],implicit_rate,rel_tol=1e-9,abs_tol=1e-9):
                 name=f'loka_s{index}_a{ai}'
-                clone='$animation '+_quote(name)+' '+_quote(ref.value)+' {\n\tfps '+_number(binding['fps'])+'\n}\n'
+                clone='$animation '+_quote(name)+' '+_quote(ref.value)+' {\n\tfps '+fps_text(binding['fps'])+'\n}\n'
                 variants[name]=clone;binding['name']=name
         # Rebuild references after demand allocation below, so shared named symbols are chosen once.
         source_activity=row.source.activity or row.inferred_source_activity or ''
@@ -604,15 +608,15 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
     for doc in documents:
         for key,command in doc.animations.items():
             requested=demands.get((doc.index,key),{});original_rate=_read_options(command.text).get('fps',30.0)
-            base_rate=requested.get(_number(original_rate),next(iter(requested.values()),original_rate))
+            base_rate=requested.get(fps_text(original_rate),next(iter(requested.values()),round_fps(original_rate)))
             base=doc.animation_names[key]
             base_text=_rename(command.text,base)
-            if not math.isclose(base_rate,original_rate,rel_tol=1e-9,abs_tol=1e-9):base_text=_options(base_text,{'fps':_number(base_rate)})
+            if 'fps' in _read_options(command.text) or requested:base_text=_options(base_text,{'fps':fps_text(base_rate)})
             named_text[base]=doc.rebase(doc.symbols(base_text))
             for ri,(rate_key,rate) in enumerate(requested.items()):
                 name=base if math.isclose(rate,base_rate,rel_tol=1e-9,abs_tol=1e-9) else base+'_t'+str(ri)
                 names[(doc.index,key,rate_key)]=name
-                if name!=base:named_text[name]=doc.rebase(doc.symbols(_options(_rename(command.text,name),{'fps':_number(rate)})))
+                if name!=base:named_text[name]=doc.rebase(doc.symbols(_options(_rename(command.text,name),{'fps':fps_text(rate)})))
     header=[];sequences=[];merged=set();origin_expectations=[]
     for doc in documents:
         for command in doc.commands:
@@ -651,6 +655,7 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
            get_weapon(target_id).view_models[0].removeprefix('models/'))
     text='// Generated by Loka: conversion source; original export is preserved.\n'
     text+='$modelname '+_quote(model)+'\n\n'+'\n\n'.join(header+animations+sequences)+'\n'
+    text=round_qc_fps(text)
     validate_converted_qc(text,plan,target_id,origin_expectations=origin_expectations)
     _validate_include_bones(documents)
     return _write_output(output_dir,Path(model).stem+'.qc',text,documents,placeholder)
@@ -663,6 +668,7 @@ def rewrite_worldmodel_qc(source_qc,target_modelname,output_dir):
         raise ValueError('目标模型名称无效')
     text='\n\n'.join(doc.rebase(_rename(c.text,target_modelname) if c.kind=='modelname' else c.text)
                        for c in doc.commands)+'\n'
+    text=round_qc_fps(text)
     doc.include_resources()
     result=_write_output(output_dir,Path(target_modelname).stem+'.qc',text,[doc])
     from .world_physics import MANIFEST,SOURCE_PHY
