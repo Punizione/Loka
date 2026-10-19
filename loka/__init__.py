@@ -1,6 +1,6 @@
 """Loka model decompilation, weapon conversion and desktop interface."""
 
-__version__ = "1.0.6"
+__version__ = "0.1.7"
 
 #: The MDL versions this port decompiles, mirroring the parser's ``SourceModel.Create``.
 SUPPORTED_MDL_VERSIONS = (44, 45, 46, 47, 48, 49, 54, 55, 56, 58, 59)

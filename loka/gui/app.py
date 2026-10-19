@@ -79,6 +79,7 @@ from qfluentwidgets import (
 )
 
 from .. import __version__
+from ..i18n import tr, display_text, set_language, install_qt_translations
 from ..process_limits import exception_text
 from ..core.bodygroup_events import DEFAULT_MIXED_SMD_NAMES, MIXED_ACTIVITIES
 from ..decompiler import DecompileOptions, MdlDecompiler, detect_mdl_version  # noqa: F401
@@ -175,6 +176,7 @@ class GuiConfig(QConfig):
     studiomdl_path = ConfigItem("ToolPaths", "StudiomdlPath", "")
     #: Advanced mode reveals the three specialized pages and detail options.
     advanced = ConfigItem("General", "Advanced", False)
+    language = ConfigItem("General", "Language", "zh_CN", OptionsValidator(["zh_CN", "en_US"]))
     conversion_isolate_materials = ConfigItem("WeaponConversion", "IsolateMaterials", False, _BoolValidator(False))
     conversion_normalize_vmt = ConfigItem("WeaponConversion", "NormalizeVmt", False, _BoolValidator(False))
     conversion_keep_ads = ConfigItem("WeaponConversion", "KeepAds", True, _BoolValidator(True))
@@ -264,7 +266,7 @@ class LogCard(CardWidget):
         layout.addWidget(self.text)
 
     def append(self, message: str) -> None:
-        self.text.append(message)
+        self.text.append(display_text(message))
         scrollbar = self.text.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
 
@@ -335,14 +337,14 @@ class HomeInterface(ScrollArea):
         by_label.setAlignment(Qt.AlignHCenter)
         layout.addWidget(by_label)
 
-        version_label = BodyLabel(f"Version: {__version__}", self)
+        version_label = BodyLabel(tr("版本：{version}", version=__version__), self)
         version_label.setAlignment(Qt.AlignHCenter)
         layout.addWidget(version_label)
 
         layout.addSpacing(10)
         for text in (
-            "本工具开源，免费，如果你是花钱获取的，说明你被骗了",
-            "作者无Q群不接定制没有爱发电，不教任何提取/加密/外挂相关知识",
+            tr('本工具开源，免费，如果你是花钱获取的，说明你被骗了'),
+            tr('作者无Q群不接定制没有爱发电，不教任何提取/加密/外挂相关知识'),
         ):
             note = BodyLabel(text, self)
             note.setWordWrap(True)
@@ -376,19 +378,19 @@ class HomeInterface(ScrollArea):
         layout.setContentsMargins(12, 12, 12, 12)
         layout.setSpacing(6)
         self.artwork_group_combo = ComboBox(panel)
-        self.artwork_group_combo.addItems([f'第 {i} 组' for i in range(1, 7)] + ['夜间背景'])
+        self.artwork_group_combo.addItems([tr('第 {value0} 组', value0=i) for i in range(1, 7)] + [tr('夜间背景')])
         self.artwork_group_combo.setCurrentIndex(6 if self.startup_artwork.is_night
                                                  else self.startup_artwork.pair_id - 1)
         self.artwork_group_combo.currentIndexChanged.connect(
             lambda index: self.artwork_preview_changed.emit(PREVIEW_CHOICES[index]))
         layout.addWidget(self.artwork_group_combo)
-        hint = CaptionLabel('X 向右、Y 向下，单位为 px', panel)
+        hint = CaptionLabel(tr('X 向右、Y 向下，单位为 px'), panel)
         layout.addWidget(hint)
         for prefix, title, transform in (
-                ('avatar', '头像（圆内图像）', self.artwork_layout.avatar),
-                ('background', '背景', self.artwork_layout.background)):
+                ('avatar', tr('头像（圆内图像）'), self.artwork_layout.avatar),
+                ('background', tr('背景'), self.artwork_layout.background)):
             layout.addWidget(BodyLabel(title, panel))
-            for field, label in (('x', 'X'), ('y', 'Y'), ('scale', '缩放')):
+            for field, label in (('x', 'X'), ('y', 'Y'), ('scale', tr('缩放'))):
                 row = QHBoxLayout()
                 row.addWidget(CaptionLabel(label, panel))
                 box = DoubleSpinBox(panel)
@@ -401,11 +403,11 @@ class HomeInterface(ScrollArea):
                 self.artwork_controls[f'{prefix}_{field}'] = box
                 box.valueChanged.connect(
                     lambda value, p=prefix, f=field: self._artwork_value_changed(p, f, value))
-        self.artwork_confirm_button = PrimaryPushButton('确认当前组', panel)
+        self.artwork_confirm_button = PrimaryPushButton(tr('确认当前组'), panel)
         self.artwork_confirm_button.clicked.connect(
             lambda: self.artwork_layout_confirmed.emit(self.artwork_layout))
         layout.addWidget(self.artwork_confirm_button)
-        self.artwork_tuning_status = CaptionLabel('切换保留草稿，确认后保存', panel)
+        self.artwork_tuning_status = CaptionLabel(tr('切换保留草稿，确认后保存'), panel)
         self.artwork_tuning_status.setWordWrap(True)
         layout.addWidget(self.artwork_tuning_status)
         panel.adjustSize()
@@ -428,13 +430,13 @@ class HomeInterface(ScrollArea):
         finally:
             for widget, previous in zip(widgets, blocked):
                 widget.blockSignals(previous)
-        self.artwork_tuning_status.setText('切换保留草稿，确认后保存')
+        self.artwork_tuning_status.setText(tr('切换保留草稿，确认后保存'))
 
     def _artwork_value_changed(self, prefix: str, field: str, value: float) -> None:
         transform = replace(getattr(self.artwork_layout, prefix), **{field: value})
         self.artwork_layout = replace(self.artwork_layout, **{prefix: transform})
         self._render_avatar()
-        self.artwork_tuning_status.setText('修改实时预览，确认后保存')
+        self.artwork_tuning_status.setText(tr('修改实时预览，确认后保存'))
         self.artwork_layout_changed.emit(self.artwork_layout)
 
     def event(self, event: QEvent) -> bool:
@@ -452,40 +454,40 @@ class SettingsInterface(ScrollArea):
         super().__init__(parent)
         self.scrollWidget = QWidget(self)
         layout = _vbox(self.scrollWidget)
-        layout.addWidget(SubtitleLabel("设置", self))
+        layout.addWidget(SubtitleLabel(tr('设置'), self))
 
-        group = SettingCardGroup("工具路径", self)
+        group = SettingCardGroup(tr('工具路径'), self)
 
         self.game_card = PushSettingCard(
-            "浏览",
+            tr('浏览'),
             FluentIcon.GLOBE,
-            "游戏路径",
-            CFG.game_path.value or "未设置（用于自动查找 studiomdl.exe 与编译 -game 目录）",
+            tr('游戏路径'),
+            CFG.game_path.value or tr('未设置（用于自动查找 studiomdl.exe 与编译 -game 目录）'),
             self,
         )
         self.game_card.clicked.connect(self._browse_game)
 
         self.compiler_card = PushSettingCard(
-            "浏览",
+            tr('浏览'),
             FluentIcon.APPLICATION,
-            "studiomdl.exe / 第三方编译器路径",
-            CFG.studiomdl_path.value or "未设置（请选择模型编译器）",
+            tr('studiomdl.exe / 第三方编译器路径'),
+            CFG.studiomdl_path.value or tr('未设置（请选择模型编译器）'),
             self,
         )
         self.compiler_card.clicked.connect(self._browse_compiler)
 
         self.find_card = PushSettingCard(
-            "自动查找",
+            tr('自动查找'),
             FluentIcon.SEARCH,
-            "从游戏路径查找编译器",
-            "在游戏路径的 bin 目录（或深度 3 内）查找 studiomdl.exe，并定位 -game 目录",
+            tr('从游戏路径查找编译器'),
+            tr('在游戏路径的 bin 目录（或深度 3 内）查找 studiomdl.exe，并定位 -game 目录'),
             self,
         )
         self.find_card.clicked.connect(self._auto_find)
 
         self.advanced_card = SwitchSettingCard(
             FluentIcon.DEVELOPER_TOOLS,
-            "高级",
+            tr('高级'),
             configItem=CFG.advanced,
             parent=self,
         )
@@ -496,16 +498,25 @@ class SettingsInterface(ScrollArea):
         group.addSettingCard(self.advanced_card)
         layout.addWidget(group)
 
+        language_row = QHBoxLayout()
+        language_row.addWidget(BodyLabel(tr("语言"), self))
+        self.language_box = ComboBox(self)
+        self.language_box.addItem("中文", userData="zh_CN")
+        self.language_box.addItem("English", userData="en_US")
+        self.language_box.setCurrentIndex(0 if CFG.get(CFG.language) == "zh_CN" else 1)
+        self.language_box.currentIndexChanged.connect(self._language_changed)
+        language_row.addWidget(self.language_box, 1)
+        layout.addLayout(language_row)
+
         hint = CaptionLabel(
-            "填游戏路径时 兼容ADS处理会自动查找其中的 studiomdl.exe（bin 下）；"
-            "也可直接指定兼容的模型编译器。设置会自动保存。",
+            tr('填游戏路径时 兼容ADS处理会自动查找其中的 studiomdl.exe（bin 下）；也可直接指定兼容的模型编译器。设置会自动保存。'),
             self,
         )
         hint.setWordWrap(True)
         layout.addWidget(hint)
 
         self.update_link = BodyLabel(
-            '<a href="https://github.com/Punizione/Loka/releases">[更新链接]</a> 随缘更新',
+            tr('<a href="https://github.com/Punizione/Loka/releases">[更新链接]</a> 随缘更新'),
             self.scrollWidget,
         )
         self.update_link.setOpenExternalLinks(True)
@@ -519,48 +530,52 @@ class SettingsInterface(ScrollArea):
         self.enableTransparentBackground()
 
 
+    def _language_changed(self, index: int) -> None:
+        CFG.set(CFG.language, self.language_box.itemData(index))
+        self._toast(tr("切换成功，重启后生效"), "success")
+
     def _browse_game(self) -> None:
-        path = QFileDialog.getExistingDirectory(self, "选择游戏路径", CFG.game_path.value or "")
+        path = QFileDialog.getExistingDirectory(self, tr('选择游戏路径'), CFG.game_path.value or "")
         if not path:
             return
         CFG.game_path.value = path
         qconfig.save()
         self.game_card.setContent(path)
-        self._toast("游戏路径已设置", "success")
+        self._toast(tr('游戏路径已设置'), "success")
 
     def _browse_compiler(self) -> None:
         path, _filter = QFileDialog.getOpenFileName(
-            self, "选择模型编译器", CFG.studiomdl_path.value or "",
-            "Executable (*.exe);;All files (*.*)",
+            self, tr('选择模型编译器'), CFG.studiomdl_path.value or "",
+            tr('可执行文件 (*.exe);;所有文件 (*.*)'),
         )
         if not path:
             return
         CFG.studiomdl_path.value = path
         qconfig.save()
         self.compiler_card.setContent(path)
-        self._toast("编译器路径已设置", "success")
+        self._toast(tr('编译器路径已设置'), "success")
 
     def _auto_find(self) -> None:
         game_path = CFG.game_path.value or ""
         if not game_path:
-            self._toast("请先设置游戏路径", "warning")
+            self._toast(tr('请先设置游戏路径'), "warning")
             return
         exe_path, game_dir = find_studiomdl(game_path)
         if not exe_path:
-            self._toast(f"在游戏路径中未找到 studiomdl.exe：{game_path}", "error")
+            self._toast(tr('在游戏路径中未找到 studiomdl.exe：{value0}', value0=game_path), "error")
             return
         CFG.studiomdl_path.value = exe_path
         qconfig.save()
         self.compiler_card.setContent(exe_path)
-        message = f"找到编译器: {exe_path}"
+        message = tr('找到编译器: {value0}', value0=exe_path)
         if game_dir:
-            message += f"\n-game 目录: {game_dir}"
+            message += tr('\n-game 目录: {value0}', value0=game_dir)
         self._toast(message, "success")
 
     def _toast(self, message: str, kind: str) -> None:
         show = getattr(InfoBar, kind)
         show(
-            "设置", message, self, duration=3000, parent=self,
+            tr('设置'), display_text(message), self, duration=3000, parent=self,
         )
 
 
@@ -571,23 +586,22 @@ class OneClickInterface(ScrollArea):
         super().__init__(parent)
         self.scrollWidget = QWidget(self)
         layout = _vbox(self.scrollWidget)
-        layout.addWidget(SubtitleLabel("兼容ADS处理", self))
+        layout.addWidget(SubtitleLabel(tr('兼容ADS处理'), self))
 
         note = CaptionLabel(
-            "备份原始模型 → 反编译（自动开启 subtract 修正 + BodyGroup处理）→ "
-            "编译 → 产物回填原位。编译失败会自动还原备份。", self)
+            tr('备份原始模型 → 反编译（自动开启 subtract 修正 + BodyGroup处理）→ 编译 → 产物回填原位。编译失败会自动还原备份。'), self)
         note.setWordWrap(True)
         layout.addWidget(note)
 
         input_card = CardWidget(self)
         input_layout = QVBoxLayout(input_card)
         input_layout.setContentsMargins(18, 14, 18, 14)
-        input_layout.addWidget(BodyLabel("输入模型（.mdl 文件或文件夹）", input_card))
+        input_layout.addWidget(BodyLabel(tr('输入模型（.mdl 文件或文件夹）'), input_card))
         path_row = QHBoxLayout()
         self.input_edit = LineEdit(input_card)
-        self.input_edit.setPlaceholderText("拖入 .mdl 文件或文件夹，或点浏览选择")
+        self.input_edit.setPlaceholderText(tr('拖入 .mdl 文件或文件夹，或点浏览选择'))
         path_row.addWidget(self.input_edit, 1)
-        browse = PushButton("浏览", input_card)
+        browse = PushButton(tr('浏览'), input_card)
         browse.clicked.connect(self._browse)
         path_row.addWidget(browse)
         input_layout.addLayout(path_row)
@@ -596,12 +610,9 @@ class OneClickInterface(ScrollArea):
         flow_card = CardWidget(self)
         flow_layout = QVBoxLayout(flow_card)
         flow_layout.setContentsMargins(18, 14, 18, 14)
-        flow_layout.addWidget(BodyLabel("执行流程", flow_card))
+        flow_layout.addWidget(BodyLabel(tr('执行流程'), flow_card))
         steps = QLabel(
-            "① 原始模型及附属文件备份到 <mdl目录>/source\n"
-            "② 反编译到 <mdl目录>/dec（qc/smd 固定位置，忽略 Output folder）\n"
-            "③ 用「设置」页配置的编译器编译 qc\n"
-            "④ 编译产物移回原模型位置",
+            tr('① 原始模型及附属文件备份到 <mdl目录>/source\n② 反编译到 <mdl目录>/dec（qc/smd 固定位置，忽略 Output folder）\n③ 用「设置」页配置的编译器编译 qc\n④ 编译产物移回原模型位置'),
             flow_card,
         )
         steps.setWordWrap(True)
@@ -611,25 +622,26 @@ class OneClickInterface(ScrollArea):
         options_card = CardWidget(self)
         options_layout = QVBoxLayout(options_card)
         options_layout.setContentsMargins(18, 14, 18, 14)
-        options_layout.addWidget(BodyLabel("处理选项", options_card))
+        options_layout.addWidget(BodyLabel(tr('处理选项'), options_card))
         ik_row = QHBoxLayout()
-        ik_row.addWidget(BodyLabel("IK 处理 (ikrule):", options_card))
+        ik_row.addWidget(BodyLabel(tr('IK 处理 (ikrule):'), options_card))
         self.ik_box = ComboBox(options_card)
-        self.ik_box.addItems(list(IK_HANDLING_LABELS.values()))
+        for value, label in IK_HANDLING_LABELS.items():
+            self.ik_box.addItem(tr(label), userData=value)
         self.ik_box.setMinimumWidth(140)
         ik_row.addWidget(self.ik_box, 1)
         options_layout.addLayout(ik_row)
-        self.fadein_check = CheckBox("推击淡入", options_card)
+        self.fadein_check = CheckBox(tr('推击淡入'), options_card)
         self.fadein_check.setChecked(False)
         options_layout.addWidget(self.fadein_check)
         fadein_note = CaptionLabel(
-            "勾选后，普通、15连及 ADS/MIXED 推击动画的 fadein 强制为 0.2", options_card)
+            tr('勾选后，普通、15连及 ADS/MIXED 推击动画的 fadein 强制为 0.2'), options_card)
         fadein_note.setWordWrap(True)
         options_layout.addWidget(fadein_note)
         layout.addWidget(options_card)
 
         run_row = QHBoxLayout()
-        self.run_button = PrimaryPushButton("开始处理", self)
+        self.run_button = PrimaryPushButton(tr('开始处理'), self)
         self.run_button.clicked.connect(self._run)
         run_row.addWidget(self.run_button)
         self.progress = IndeterminateProgressBar(self)
@@ -637,7 +649,7 @@ class OneClickInterface(ScrollArea):
         run_row.addWidget(self.progress, 1)
         layout.addLayout(run_row)
 
-        self.log_card = LogCard("运行日志", self)
+        self.log_card = LogCard(tr('运行日志'), self)
         layout.addWidget(self.log_card)
 
         self.setWidget(self.scrollWidget)
@@ -649,7 +661,7 @@ class OneClickInterface(ScrollArea):
 
 
     def _browse(self) -> None:
-        path, _filter = QFileDialog.getOpenFileName(self, "选择输入模型", "", "MDL (*.mdl)")
+        path, _filter = QFileDialog.getOpenFileName(self, tr('选择输入模型'), "", "MDL (*.mdl)")
         if path:
             self.input_edit.setText(path)
 
@@ -665,41 +677,42 @@ class DecompileInterface(ScrollArea):
         super().__init__(parent)
         self.scrollWidget = QWidget(self)
         layout = _vbox(self.scrollWidget)
-        layout.addWidget(SubtitleLabel("反编译", self))
+        layout.addWidget(SubtitleLabel(tr('反编译'), self))
 
         # Input card
         input_card = CardWidget(self)
         grid = QVBoxLayout(input_card)
         grid.setContentsMargins(18, 14, 18, 14)
-        grid.addWidget(BodyLabel("输入 / 输出", input_card))
+        grid.addWidget(BodyLabel(tr('输入 / 输出'), input_card))
 
         mode_row = QHBoxLayout()
-        mode_row.addWidget(BodyLabel("模式:", input_card))
+        mode_row.addWidget(BodyLabel(tr('模式:'), input_card))
         self.mode_box = ComboBox(input_card)
-        self.mode_box.addItems(INPUT_MODES)
+        for mode in INPUT_MODES:
+            self.mode_box.addItem(tr(mode), userData=mode)
         mode_row.addWidget(self.mode_box)
         mode_row.addStretch(1)
         grid.addLayout(mode_row)
 
-        grid.addWidget(CaptionLabel("输入 MDL / 文件夹:", input_card))
+        grid.addWidget(CaptionLabel(tr('输入 MDL / 文件夹:'), input_card))
         input_row = QHBoxLayout()
         self.input_edit = LineEdit(input_card)
         input_row.addWidget(self.input_edit, 1)
-        self.input_browse = PushButton("浏览", input_card)
+        self.input_browse = PushButton(tr('浏览'), input_card)
         self.input_browse.clicked.connect(self._browse_input)
         input_row.addWidget(self.input_browse)
         grid.addLayout(input_row)
 
-        grid.addWidget(CaptionLabel("输出文件夹（留空 = 输入目录下的 dec）:", input_card))
+        grid.addWidget(CaptionLabel(tr('输出文件夹（留空 = 输入目录下的 dec）:'), input_card))
         output_row = QHBoxLayout()
         self.output_edit = LineEdit(input_card)
         output_row.addWidget(self.output_edit, 1)
-        self.output_browse = PushButton("浏览", input_card)
+        self.output_browse = PushButton(tr('浏览'), input_card)
         self.output_browse.clicked.connect(self._browse_output)
         output_row.addWidget(self.output_browse)
         grid.addLayout(output_row)
 
-        self.drop_hint = CaptionLabel("支持将 .mdl 文件或文件夹直接拖入窗口任意位置", input_card)
+        self.drop_hint = CaptionLabel(tr('支持将 .mdl 文件或文件夹直接拖入窗口任意位置'), input_card)
         grid.addWidget(self.drop_hint)
         layout.addWidget(input_card)
 
@@ -707,19 +720,19 @@ class DecompileInterface(ScrollArea):
         files_card = CardWidget(self)
         files_layout = QVBoxLayout(files_card)
         files_layout.setContentsMargins(18, 14, 18, 14)
-        files_layout.addWidget(BodyLabel("文件输出", files_card))
+        files_layout.addWidget(BodyLabel(tr('文件输出'), files_card))
         files_grid = QHBoxLayout()
         self.file_checks: dict[str, CheckBox] = {}
         files = [
-            ("write_qc_file", "QC 文件 (.qc)", True),
-            ("write_reference_mesh_smd_file", "参考网格 SMD", True),
-            ("write_lod_mesh_smd_files", "LOD 网格 SMD", True),
-            ("write_physics_mesh_smd_file", "物理网格 SMD", True),
-            ("write_vertex_animation_vta_file", "顶点动画 (.vta)", True),
-            ("write_bone_animation_smd_files", "骨骼动画 SMD", True),
-            ("write_procedural_bones_vrd_file", "程序骨骼 (.vrd)", True),
-            ("write_declare_sequence_qci_file", "DeclareSequence QCI 文件", False),
-            ("write_texture_files", "贴图 BMP 文件", False),
+            ("write_qc_file", tr('QC 文件 (.qc)'), True),
+            ("write_reference_mesh_smd_file", tr('参考网格 SMD'), True),
+            ("write_lod_mesh_smd_files", tr('LOD 网格 SMD'), True),
+            ("write_physics_mesh_smd_file", tr('物理网格 SMD'), True),
+            ("write_vertex_animation_vta_file", tr('顶点动画 (.vta)'), True),
+            ("write_bone_animation_smd_files", tr('骨骼动画 SMD'), True),
+            ("write_procedural_bones_vrd_file", tr('程序骨骼 (.vrd)'), True),
+            ("write_declare_sequence_qci_file", tr('DeclareSequence QCI 文件'), False),
+            ("write_texture_files", tr('贴图 BMP 文件'), False),
         ]
         columns = [QVBoxLayout() for _ in range(2)]
         for index, (attribute, label, default) in enumerate(files):
@@ -737,16 +750,16 @@ class DecompileInterface(ScrollArea):
         text_card = CardWidget(self)
         text_layout = QHBoxLayout(text_card)
         text_layout.setContentsMargins(18, 14, 18, 14)
-        text_layout.addWidget(BodyLabel("文本选项", text_card))
+        text_layout.addWidget(BodyLabel(tr('文本选项'), text_card))
         text_column = QVBoxLayout()
         text_layout.addLayout(text_column, 2)
         self.text_checks: dict[str, CheckBox] = {}
         texts = [
-            ("remove_path_from_smd_material_file_names", "移除 SMD 材质名中的路径", True),
-            ("use_non_valve_uv_conversion", "使用非 Valve UV 转换", False),
-            ("stricter_format", "更严格的格式（无头部注释）", False),
-            ("prefix_file_names_with_model_name", "文件名前加模型名前缀", False),
-            ("bone_animation_place_in_subfolder", "动画 SMD 放入子文件夹", True),
+            ("remove_path_from_smd_material_file_names", tr('移除 SMD 材质名中的路径'), True),
+            ("use_non_valve_uv_conversion", tr('使用非 Valve UV 转换'), False),
+            ("stricter_format", tr('更严格的格式（无头部注释）'), False),
+            ("prefix_file_names_with_model_name", tr('文件名前加模型名前缀'), False),
+            ("bone_animation_place_in_subfolder", tr('动画 SMD 放入子文件夹'), True),
         ]
         for attribute, label, default in texts:
             box = CheckBox(label, text_card)
@@ -757,18 +770,18 @@ class DecompileInterface(ScrollArea):
         combo_column = QVBoxLayout()
         text_layout.addLayout(combo_column)
         text_layout.addStretch(1)
-        combo_column.addWidget(BodyLabel("覆盖 MDL 版本:", text_card))
+        combo_column.addWidget(BodyLabel(tr('覆盖 MDL 版本:'), text_card))
         self.version_box = ComboBox(text_card)
-        self.version_box.addItems(["不覆盖"] + SUPPORTED_VERSIONS_TEXT.replace(" ", "").split(","))
+        self.version_box.addItems([tr('不覆盖')] + SUPPORTED_VERSIONS_TEXT.replace(" ", "").split(","))
         combo_column.addWidget(self.version_box)
         layout.addWidget(text_card)
 
         # Run row
         run_row = QHBoxLayout()
-        self.run_button = PrimaryPushButton("开始反编译", self)
+        self.run_button = PrimaryPushButton(tr('开始反编译'), self)
         self.run_button.clicked.connect(self._run)
         run_row.addWidget(self.run_button)
-        self.cancel_button = PushButton("取消", self)
+        self.cancel_button = PushButton(tr('取消'), self)
         self.cancel_button.clicked.connect(self._cancel)
         self.cancel_button.setEnabled(False)
         run_row.addWidget(self.cancel_button)
@@ -777,7 +790,7 @@ class DecompileInterface(ScrollArea):
         run_row.addWidget(self.progress, 1)
         layout.addLayout(run_row)
 
-        self.log_card = LogCard("运行日志", self)
+        self.log_card = LogCard(tr('运行日志'), self)
         layout.addWidget(self.log_card)
 
         self.setWidget(self.scrollWidget)
@@ -792,14 +805,14 @@ class DecompileInterface(ScrollArea):
     # -- input helpers -------------------------------------------------
     def _browse_input(self) -> None:
         if self.mode_box.currentIndex() == 0:  # File
-            path, _filter = QFileDialog.getOpenFileName(self, "选择输入模型", "", "MDL (*.mdl)")
+            path, _filter = QFileDialog.getOpenFileName(self, tr('选择输入模型'), "", "MDL (*.mdl)")
         else:
-            path = QFileDialog.getExistingDirectory(self, "选择输入文件夹")
+            path = QFileDialog.getExistingDirectory(self, tr('选择输入文件夹'))
         if path:
             self.set_input_path(path)
 
     def _browse_output(self) -> None:
-        path = QFileDialog.getExistingDirectory(self, "选择输出文件夹")
+        path = QFileDialog.getExistingDirectory(self, tr('选择输出文件夹'))
         if path:
             self.output_edit.setText(path)
 
@@ -814,7 +827,7 @@ class DecompileInterface(ScrollArea):
 
     def _cancel(self) -> None:
         self._cancel_event.set()
-        self.log_card.append("已请求取消，正在完成当前模型 ...")
+        self.log_card.append(tr('已请求取消，正在完成当前模型 ...'))
 
     def collect_options(self) -> DecompileOptions:
         options = DecompileOptions()
@@ -823,14 +836,11 @@ class DecompileInterface(ScrollArea):
             setattr(options, attribute, box.isChecked())
         for attribute, box in self.text_checks.items():
             setattr(options, attribute, box.isChecked())
-        if self.version_box.currentText() != "不覆盖":
+        if self.version_box.currentText() != tr('不覆盖'):
             options.override_mdl_version = int(self.version_box.currentText())
         # IK 处理 moved to the one-click page.
         main_window: MainWindow = self.window()
-        for value, label in IK_HANDLING_LABELS.items():
-            if label == main_window.one_click_page.ik_box.currentText():
-                options.ik_rule_handling = value
-                break
+        options.ik_rule_handling = main_window.one_click_page.ik_box.currentData()
         # Subtract修正 / BodyGroup处理 settings come from their pages and
         # always apply (their switches were removed - the one-click flow is
         # the primary path and always uses them).
@@ -856,26 +866,25 @@ class SubtractInterface(ScrollArea):
         super().__init__(parent)
         self.scrollWidget = QWidget(self)
         layout = _vbox(self.scrollWidget)
-        layout.addWidget(SubtitleLabel("Subtract修正", self))
+        layout.addWidget(SubtitleLabel(tr('Subtract修正'), self))
 
         note = CaptionLabel(
-            "用真实 idle 作为 delta 序列的 subtract 基准，替代空的 *_corrective_animation；"
-            "设置在反编译时自动应用。", self)
+            tr('用真实 idle 作为 delta 序列的 subtract 基准，替代空的 *_corrective_animation；设置在反编译时自动应用。'), self)
         note.setWordWrap(True)
         layout.addWidget(note)
 
-        self.path_label = CaptionLabel("当前输入: 未选择", self)
+        self.path_label = CaptionLabel(tr('当前输入: 未选择'), self)
         self.path_label.setWordWrap(True)
         layout.addWidget(self.path_label)
 
         toolbar = QHBoxLayout()
         self.idle_box = ComboBox(self)
-        self.idle_box.addItem(AUTO_IDLE_CHOICE)
+        self.idle_box.addItem(tr(AUTO_IDLE_CHOICE), userData=AUTO_IDLE_CHOICE)
         self.idle_box.setMinimumWidth(96)
         self.idle_box.currentIndexChanged.connect(self._sync_idle_label)
-        toolbar.addWidget(BodyLabel("subtract 基准 (idle):", self))
+        toolbar.addWidget(BodyLabel(tr('subtract 基准 (idle):'), self))
         toolbar.addWidget(self.idle_box, 1)
-        self.load_button = PushButton("从输入 MDL 读取", self)
+        self.load_button = PushButton(tr('从输入 MDL 读取'), self)
         self.load_button.clicked.connect(self._load_overview)
         toolbar.addWidget(self.load_button)
         layout.addLayout(toolbar)
@@ -883,7 +892,7 @@ class SubtractInterface(ScrollArea):
         self.table = TableWidget(self)
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels(
-            ["名称", "类型", "标记", "生成subtract", "帧数", "subtract基准", "轴向调整(°)"]
+            [tr('名称'), tr('类型'), tr('标记'), tr('生成subtract'), tr('帧数'), tr('subtract基准'), tr('轴向调整(°)')]
         )
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -902,7 +911,7 @@ class SubtractInterface(ScrollArea):
         edit_layout.setContentsMargins(18, 14, 18, 14)
         edit_column = QVBoxLayout()
         edit_layout.addLayout(edit_column, 1)
-        edit_column.addWidget(BodyLabel("选中动作的轴向调整 (°) 与 subtract 基准", edit_card))
+        edit_column.addWidget(BodyLabel(tr('选中动作的轴向调整 (°) 与 subtract 基准'), edit_card))
         editor_row = QHBoxLayout()
         self.axis_spins: list[DoubleSpinBox] = []
         for label in ("X", "Y", "Z"):
@@ -917,14 +926,14 @@ class SubtractInterface(ScrollArea):
 
         base_row = QHBoxLayout()
         self.base_box = ComboBox(edit_card)
-        self.base_box.addItem(AUTO_IDLE_CHOICE)
+        self.base_box.addItem(tr(AUTO_IDLE_CHOICE), userData=AUTO_IDLE_CHOICE)
         self.base_box.setMinimumWidth(96)
-        base_row.addWidget(BodyLabel("基准:", edit_card))
+        base_row.addWidget(BodyLabel(tr('基准:'), edit_card))
         base_row.addWidget(self.base_box, 1)
-        apply_button = PushButton("应用到选中动作", edit_card)
+        apply_button = PushButton(tr('应用到选中动作'), edit_card)
         apply_button.clicked.connect(self._apply_to_selected)
         base_row.addWidget(apply_button)
-        clear_button = PushButton("清除选中动作", edit_card)
+        clear_button = PushButton(tr('清除选中动作'), edit_card)
         clear_button.clicked.connect(self._clear_selected)
         base_row.addWidget(clear_button)
         edit_column.addLayout(base_row)
@@ -952,7 +961,7 @@ class SubtractInterface(ScrollArea):
         header.setMinimumSectionSize(48)
 
     def idle_choice(self) -> str:
-        return self.idle_box.currentText()
+        return self.idle_box.currentData() or self.idle_box.currentText()
 
     def event_map(self) -> dict:  # pragma: no cover - symmetry with bodygroup page
         return {}
@@ -963,14 +972,14 @@ class SubtractInterface(ScrollArea):
         input_path = window.decompile_page.input_edit.text().strip()
         if not input_path or not os.path.isfile(input_path):
             InfoBar.warning(
-                "Subtract修正", "先在「兼容ADS处理」或「反编译」页选择一个 .mdl 文件，再点“从输入 MDL 读取”。",
+                tr('Subtract修正'), tr('先在「兼容ADS处理」或「反编译」页选择一个 .mdl 文件，再点“从输入 MDL 读取”。'),
                 duration=3000, parent=self, position=InfoBarPosition.TOP,
             )
             return
 
         overview = read_mdl_overview(input_path)
         if overview.errors:
-            InfoBar.error("Subtract修正", "\n".join(overview.errors), duration=-1,
+            InfoBar.error(tr('Subtract修正'), display_text("\n".join(overview.errors)), duration=-1,
                           parent=self, position=InfoBarPosition.TOP)
             return
 
@@ -991,8 +1000,8 @@ class SubtractInterface(ScrollArea):
             row = self.table.rowCount()
             self.table.insertRow(row)
             values = (
-                item.name, item.kind_label, flags,
-                "是" if item.is_subtract else "-", str(item.frame_count),
+                item.name, display_text(item.kind_label), flags,
+                tr('是') if item.is_subtract else "-", str(item.frame_count),
                 base_text, offset_text,
             )
             for column, value in enumerate(values):
@@ -1001,18 +1010,18 @@ class SubtractInterface(ScrollArea):
 
         candidates = [item.name for item in overview.idle_candidates]
         self.idle_box.clear()
-        self.idle_box.addItem(AUTO_IDLE_CHOICE)
+        self.idle_box.addItem(tr(AUTO_IDLE_CHOICE), userData=AUTO_IDLE_CHOICE)
         for name in candidates:
             self.idle_box.addItem(name)
         self.idle_box.setCurrentIndex(0)
         self.base_box.clear()
-        self.base_box.addItem(AUTO_IDLE_CHOICE)
+        self.base_box.addItem(tr(AUTO_IDLE_CHOICE), userData=AUTO_IDLE_CHOICE)
         for name in candidates:
             self.base_box.addItem(name)
         if candidates:
-            self.log_append(f"可选 idle 基准: {', '.join(candidates)}")
+            self.log_append(tr('可选 idle 基准: {value0}', value0=', '.join(candidates)))
         else:
-            self.log_append("该模型没有找到符合条件（无 subtract、带 loop、名称含 idle）的 $animation。")
+            self.log_append(tr('该模型没有找到符合条件（无 subtract、带 loop、名称含 idle）的 $animation。'))
 
     def log_append(self, message: str) -> None:
         window: MainWindow = self.window()
@@ -1033,20 +1042,20 @@ class SubtractInterface(ScrollArea):
         for spin, value in zip(self.axis_spins, offset):
             spin.setValue(float(value))
         base = self.item_bases.get(item.name, AUTO_IDLE_CHOICE)
-        index = self.base_box.findText(base)
+        index = self.base_box.findData(base) if base == AUTO_IDLE_CHOICE else self.base_box.findText(base)
         self.base_box.setCurrentIndex(index if index >= 0 else 0)
 
     def _apply_to_selected(self) -> None:
         item = self._selected_item()
         if item is None:
-            self.log_append("Subtract修正: 请先在表格中选中一个动作。")
+            self.log_append(tr('Subtract修正: 请先在表格中选中一个动作。'))
             return
         offsets = tuple(spin.value() for spin in self.axis_spins)
         if any(abs(value) > 1e-9 for value in offsets):
             self.axis_offsets[item.name] = offsets
         else:
             self.axis_offsets.pop(item.name, None)
-        base = self.base_box.currentText()
+        base = self.base_box.currentData() or self.base_box.currentText()
         if base != AUTO_IDLE_CHOICE:
             self.item_bases[item.name] = base
         else:
@@ -1083,23 +1092,22 @@ class BodyGroupInterface(ScrollArea):
         super().__init__(parent)
         self.scrollWidget = QWidget(self)
         layout = _vbox(self.scrollWidget)
-        layout.addWidget(SubtitleLabel("BodyGroup处理", self))
+        layout.addWidget(SubtitleLabel(tr('BodyGroup处理'), self))
 
         note = CaptionLabel(
-            "给 MIXED_ON/MIXED_OFF 及 ads 过渡序列添加 AE_CL_BODYGROUP_SET_VALUE 事件；"
-            "设置在反编译时自动应用。", self)
+            tr('给 MIXED_ON/MIXED_OFF 及 ads 过渡序列添加 AE_CL_BODYGROUP_SET_VALUE 事件；设置在反编译时自动应用。'), self)
         note.setWordWrap(True)
         layout.addWidget(note)
 
-        self.path_label = CaptionLabel("当前输入: 未选择", self)
+        self.path_label = CaptionLabel(tr('当前输入: 未选择'), self)
         self.path_label.setWordWrap(True)
         layout.addWidget(self.path_label)
 
         toolbar = QHBoxLayout()
-        self.load_button = PushButton("从输入 MDL 读取", self)
+        self.load_button = PushButton(tr('从输入 MDL 读取'), self)
         self.load_button.clicked.connect(self._load_overview)
         toolbar.addWidget(self.load_button)
-        toolbar.addWidget(BodyLabel("混合 bodygroup:", self))
+        toolbar.addWidget(BodyLabel(tr('混合 bodygroup:'), self))
         self.group_box = ComboBox(self)
         self.group_box.setMinimumWidth(96)
         self.group_box.currentIndexChanged.connect(lambda _i: self._refresh())
@@ -1108,7 +1116,7 @@ class BodyGroupInterface(ScrollArea):
 
         self.table = TableWidget(self)
         self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["SMD 名称", "序号 (smd_index)", "自动匹配的活动"])
+        self.table.setHorizontalHeaderLabels([tr('SMD 名称'), tr('序号 (smd_index)'), tr('自动匹配的活动')])
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.table.setBorderVisible(True)
@@ -1124,7 +1132,7 @@ class BodyGroupInterface(ScrollArea):
         mapping_card = CardWidget(self)
         mapping_layout = QVBoxLayout(mapping_card)
         mapping_layout.setContentsMargins(18, 14, 18, 14)
-        mapping_layout.addWidget(BodyLabel("活动 → bodygroup 条目 映射", mapping_card))
+        mapping_layout.addWidget(BodyLabel(tr('活动 → bodygroup 条目 映射'), mapping_card))
         self.activity_boxes: dict[str, ComboBox] = {}
         self.activity_infos: dict[str, CaptionLabel] = {}
         for activity in MIXED_ACTIVITIES:
@@ -1155,7 +1163,7 @@ class BodyGroupInterface(ScrollArea):
         return {
             activity: box.currentText()
             for activity, box in self.activity_boxes.items()
-            if box.currentText() != AUTO_BG_CHOICE
+            if box.currentText() and box.currentData() != AUTO_BG_CHOICE
         }
 
     # -- loading ----------------------------------------------------------
@@ -1164,22 +1172,22 @@ class BodyGroupInterface(ScrollArea):
         input_path = window.decompile_page.input_edit.text().strip()
         if not input_path or not os.path.isfile(input_path):
             InfoBar.warning(
-                "BodyGroup处理", "先在「兼容ADS处理」或「反编译」页选择一个 .mdl 文件，再点“从输入 MDL 读取”。",
+                tr('BodyGroup处理'), tr('先在「兼容ADS处理」或「反编译」页选择一个 .mdl 文件，再点“从输入 MDL 读取”。'),
                 duration=3000, parent=self, position=InfoBarPosition.TOP,
             )
             return
 
         overview = read_mdl_overview(input_path)
         if overview.errors:
-            InfoBar.error("BodyGroup处理", "\n".join(overview.errors), duration=-1, parent=self)
+            InfoBar.error(tr('BodyGroup处理'), display_text("\n".join(overview.errors)), duration=-1, parent=self)
             return
 
         self._overview = overview
         self._mixed_bodygroups = overview.mixed_bodygroups
         if len(overview.bodygroup_names) < 3:
-            self._log("该模型的 bodygroup 数量少于 3 个，不满足条件。")
+            self._log(tr('该模型的 bodygroup 数量少于 3 个，不满足条件。'))
         if not self._mixed_bodygroups:
-            self._log("没有找到包含 mixed_ 开头 SMD 的 bodygroup。")
+            self._log(tr('没有找到包含 mixed_ 开头 SMD 的 bodygroup。'))
 
         self.group_box.blockSignals(True)
         self.group_box.clear()
@@ -1190,7 +1198,7 @@ class BodyGroupInterface(ScrollArea):
 
     def _log(self, message: str) -> None:
         window: MainWindow = self.window()
-        window.decompile_page.log_card.append("BodyGroup处理: " + message)
+        window.decompile_page.log_card.append(tr('BodyGroup处理: ') + message)
 
     def _selected_group(self):
         if not self._mixed_bodygroups:
@@ -1223,8 +1231,7 @@ class BodyGroupInterface(ScrollArea):
                     self.table.setItem(row, column, QTableWidgetItem(value))
             if group.mixed_count < 4:
                 self._log(
-                    f"bodygroup \"{group.name}\" 只有 {group.mixed_count} 个 mixed_ "
-                    "开头条目（一般最少 4 个）。"
+                    tr('bodygroup "{value0}" 只有 {value1} 个 mixed_ 开头条目（一般最少 4 个）。', value0=group.name, value1=group.mixed_count)
                 )
 
         sequences_by_activity: dict[str, list] = {}
@@ -1237,7 +1244,7 @@ class BodyGroupInterface(ScrollArea):
             box = self.activity_boxes[activity]
             box.blockSignals(True)
             box.clear()
-            box.addItem(AUTO_BG_CHOICE)
+            box.addItem(tr(AUTO_BG_CHOICE), userData=AUTO_BG_CHOICE)
             for name in entry_names:
                 box.addItem(name)
             box.setCurrentIndex(0)
@@ -1245,9 +1252,9 @@ class BodyGroupInterface(ScrollArea):
             matched = sequences_by_activity.get(activity, [])
             if matched:
                 names = ", ".join(item.name for item in matched)
-                info_text = f"序列: {names} | 帧数: {matched[0].frame_count} | 事件帧: 0"
+                info_text = tr('序列: {value0} | 帧数: {value1} | 事件帧: 0', value0=names, value1=matched[0].frame_count)
             elif self._overview is not None:
-                info_text = "未找到对应 $sequence"
+                info_text = tr('未找到对应 $sequence')
             else:
                 info_text = "-"
             self.activity_infos[activity].setText(info_text)
@@ -1286,6 +1293,8 @@ class MainWindow(FluentWindow):
 
     def __init__(self, preview_artwork: str | None = None, *,
                  layout_store: ArtworkLayoutStore | None = None) -> None:
+        set_language(CFG.get(CFG.language))
+        install_qt_translations(QApplication.instance())
         super().__init__()
         if getattr(sys, 'frozen', False):
             preview_artwork = None
@@ -1378,7 +1387,7 @@ class MainWindow(FluentWindow):
             blocked = combo.blockSignals(True)
             combo.setCurrentIndex(previous)
             combo.blockSignals(blocked)
-            InfoBar.error('预览素材未就绪', '请补齐该组素材后再预览', duration=5000,
+            InfoBar.error(tr('预览素材未就绪'), tr('请补齐该组素材后再预览'), duration=5000,
                           position=InfoBarPosition.TOP_RIGHT, parent=self)
             return
         self._apply_artwork_layout(self.artwork_layout)
@@ -1401,15 +1410,15 @@ class MainWindow(FluentWindow):
         try:
             path = self._artwork_layout_store.save(self.startup_artwork, layout)
         except (OSError, ValueError, TypeError) as error:
-            self.home_page.artwork_tuning_status.setText('保存失败，请重试')
-            InfoBar.error('布局保存失败', str(error), duration=5000,
+            self.home_page.artwork_tuning_status.setText(tr('保存失败，请重试'))
+            InfoBar.error(tr('布局保存失败'), display_text(str(error)), duration=5000,
                           position=InfoBarPosition.TOP_RIGHT, parent=self)
             return
-        self.home_page.artwork_tuning_status.setText('当前组参数已保存')
+        self.home_page.artwork_tuning_status.setText(tr('当前组参数已保存'))
         print(json.dumps({'artwork_layout_confirmed': 'night' if self.startup_artwork.is_night
                           else str(self.startup_artwork.pair_id),
                           'values': asdict(layout), 'path': str(path)}, ensure_ascii=False), flush=True)
-        InfoBar.success('布局已保存', '当前组的头像与背景参数已确认', duration=3000,
+        InfoBar.success(tr('布局已保存'), tr('当前组的头像与背景参数已确认'), duration=3000,
                         position=InfoBarPosition.TOP_RIGHT, parent=self)
 
     # -- background watermark ---------------------------------------------
@@ -1422,7 +1431,7 @@ class MainWindow(FluentWindow):
         self._bg_pixmap = QPixmap(str(self.startup_artwork.background_path))
         self._bg_fallback_used = self._bg_pixmap.isNull()
         if self._bg_fallback_used:
-            warnings.warn(f"启动背景素材未就绪：{self.startup_artwork.background_path}；暂用第 2 组背景。",
+            warnings.warn(tr('启动背景素材未就绪：{value0}；暂用第 2 组背景。', value0=self.startup_artwork.background_path),
                           RuntimeWarning, stacklevel=2)
             self._bg_pixmap = QPixmap(os.path.join(_ASSET_DIR, 'startup', 'background_02.png'))
         opacity = QGraphicsOpacityEffect(self._bg_label)
@@ -1488,16 +1497,16 @@ class MainWindow(FluentWindow):
 
     # -- navigation -------------------------------------------------------
     def _init_navigation(self) -> None:
-        self.addSubInterface(self.home_page, FluentIcon.HOME, "首页")
-        self.addSubInterface(self.settings_page, FluentIcon.SETTING, "设置")
-        self.addSubInterface(self.weapon_conversion_page, FluentIcon.SYNC, "武器转模")
+        self.addSubInterface(self.home_page, FluentIcon.HOME, tr('首页'))
+        self.addSubInterface(self.settings_page, FluentIcon.SETTING, tr('设置'))
+        self.addSubInterface(self.weapon_conversion_page, FluentIcon.SYNC, tr('武器转模'))
         self.navigationInterface.addItem(routeKey='actionCorrectionInterface',icon=FluentIcon.PLAY,
-                                         text='动作矫正',onClick=self.show_action_correction)
-        self.addSubInterface(self.decompile_page, FluentIcon.DOCUMENT, "反编译")
+                                         text=tr('动作矫正'),onClick=self.show_action_correction)
+        self.addSubInterface(self.decompile_page, FluentIcon.DOCUMENT, tr('反编译'))
         self._advanced_nav = (
-            (self.one_click_page, FluentIcon.PLAY, "兼容ADS处理", self.weapon_conversion_page),
-            (self.subtract_page, FluentIcon.SYNC, "Subtract修正", self.decompile_page),
-            (self.bodygroup_page, FluentIcon.TILES, "BodyGroup处理", self.subtract_page),
+            (self.one_click_page, FluentIcon.PLAY, tr('兼容ADS处理'), self.weapon_conversion_page),
+            (self.subtract_page, FluentIcon.SYNC, tr('Subtract修正'), self.decompile_page),
+            (self.bodygroup_page, FluentIcon.TILES, tr('BodyGroup处理'), self.subtract_page),
         )
 
         # Always-on navigation chrome.  This used to live at the end of
@@ -1512,7 +1521,7 @@ class MainWindow(FluentWindow):
         self.navigationInterface.addItem(
             routeKey="theme",
             icon=FluentIcon.CONSTRACT,
-            text="深浅色",
+            text=tr('深浅色'),
             onClick=self._toggle_theme,
             selectable=False,
             position=NavigationItemPosition.BOTTOM,
@@ -1610,7 +1619,7 @@ class MainWindow(FluentWindow):
             return
         if len(usable) > 1:
             self.decompile_page.log_card.append(
-                f"拖入了 {len(usable)} 项；使用第一项（{os.path.basename(usable[0])}）。"
+                tr('拖入了 {value0} 项；使用第一项（{value1}）。', value0=len(usable), value1=os.path.basename(usable[0]))
             )
         path = usable[0]
         if os.path.isfile(path) and path.lower().endswith('.vpk'):
@@ -1625,7 +1634,7 @@ class MainWindow(FluentWindow):
             self.decompile_page.mode_box.setCurrentIndex(0)
         self.decompile_page.set_input_path(path)
         self.decompile_page.log_card.append(
-            f"Dropped {'folder' if kind == 'folder' else 'MDL file'}: {path}"
+            tr("已拖入{kind}：{path}", kind=tr("文件夹") if kind == "folder" else tr("MDL 文件"), path=path)
         )
 
     # -- input syncing ------------------------------------------------------
@@ -1649,9 +1658,9 @@ class MainWindow(FluentWindow):
     def _update_path_labels(self, text: str) -> None:
         """Show the synced input path (read-only) on the tuning pages."""
         path = (text or "").strip()
-        display = path if path else "未选择"
-        self.subtract_page.path_label.setText("当前输入: " + display)
-        self.bodygroup_page.path_label.setText("当前输入: " + display)
+        display = path if path else tr('未选择')
+        self.subtract_page.path_label.setText(tr('当前输入: ') + display)
+        self.bodygroup_page.path_label.setText(tr('当前输入: ') + display)
 
     # -- run orchestration --------------------------------------------------
     def _worker_busy(self) -> bool:
@@ -1686,7 +1695,7 @@ class MainWindow(FluentWindow):
             except Exception as error:
                 signals.weapon_scan_outcome.emit((request,None,exception_text(error)))
                 signals.done.emit('解析失败：'+exception_text(error))
-        self._start_weapon_worker(page,work,'解析 VPK',scan_request=request)
+        self._start_weapon_worker(page,work,tr('解析 VPK'),scan_request=request)
         self._active_scan_request=request
         return True
 
@@ -1738,7 +1747,7 @@ class MainWindow(FluentWindow):
                 self._signals.done.emit(summary)
             except Exception as error:
                 self._signals.done.emit('转换失败：'+exception_text(error))
-        self._start_weapon_worker(page,work,'武器转模')
+        self._start_weapon_worker(page,work,tr('武器转模'))
 
     def _start_weapon_worker(self,page,work,status,*,scan_request=None):
         correction=self.action_correction_page
@@ -1785,7 +1794,7 @@ class MainWindow(FluentWindow):
                 self._signals.done.emit('预览资源卸载失败：'+exception_text(error));return
             self._signals.correction_preview_cleared.emit()
             self._signals.done.emit('预览资源已清空。')
-        self._start_worker(page,work,'清空动作预览')
+        self._start_worker(page,work,tr('清空动作预览'))
         # Disposal must finish once detached; it cannot restore a half-cleared preview.
         page.cancel_button.hide()
 
@@ -1827,11 +1836,11 @@ class MainWindow(FluentWindow):
                 session._preview_models.clear()
                 self._signals.correction_failed.emit(exception_text(error))
                 self._signals.done.emit('动作预览恢复失败：'+exception_text(error))
-        self._start_worker(page,work,'恢复动作预览')
+        self._start_worker(page,work,tr('恢复动作预览'))
 
     def choose_action_model(self):
         if self._worker_busy() or not self._leave_correction_draft():return
-        model_path,_=QFileDialog.getOpenFileName(self,'选择需要矫正的 V 模','','Source 模型 (*.mdl)')
+        model_path,_=QFileDialog.getOpenFileName(self,tr('选择需要矫正的 V 模'),'',tr('Source 模型 (*.mdl)'))
         if not model_path:return
         from .action_correction import choose_model_profile
         profile_id=choose_model_profile(self,model_path)
@@ -1855,7 +1864,7 @@ class MainWindow(FluentWindow):
                 self._signals.correction_loaded.emit(payload);self._signals.done.emit('V 模已载入；保存时准备可编辑动作源。')
             except Exception as error:
                 self._signals.correction_failed.emit(exception_text(error));self._signals.done.emit('V 模载入失败：'+exception_text(error))
-        self._start_worker(page,work,'载入待矫正 V 模')
+        self._start_worker(page,work,tr('载入待矫正 V 模'))
 
     def open_action_correction(self, conversion_page):
         if self._worker_busy():return
@@ -1863,7 +1872,7 @@ class MainWindow(FluentWindow):
         if result is None or options is None:return
         if not result.work_dir or not Path(result.work_dir).is_dir() or not Path(result.output_path).is_file():
             conversion_page.invalidate_correction()
-            conversion_page.log_card.append('成品或保留临时文件已丢失，无法进入动作矫正。')
+            conversion_page.log_card.append(tr('成品或保留临时文件已丢失，无法进入动作矫正。'))
             return
         page=self._ensure_action_correction_page()
         cached=page.session if page.session and getattr(page.session,'result',None) is result and page.session.options==options else None
@@ -1891,7 +1900,7 @@ class MainWindow(FluentWindow):
             except Exception as error:
                 self._signals.correction_failed.emit(exception_text(error))
                 self._signals.done.emit('动作矫正载入失败：'+exception_text(error))
-        self._start_worker(page,work,'载入成品动作预览')
+        self._start_worker(page,work,tr('载入成品动作预览'))
 
     def _on_correction_loaded(self,payload):
         page=self.action_correction_page
@@ -1902,13 +1911,13 @@ class MainWindow(FluentWindow):
         page=self.action_correction_page
         if page is None:return
         page.log_card.append(message)
-        page.status_label.setText(message)
+        page.status_label.setText(display_text(message))
 
     def _on_correction_save_finished(self,outcome):
         status,path=outcome
         success=status=='success'
-        title='动作矫正成功' if success else '动作矫正已取消' if status=='cancelled' else '动作矫正失败'
-        content='成品已保存：'+str(path) if success else '操作已取消。' if status=='cancelled' else '请查看处理日志。'
+        title=tr('动作矫正成功') if success else tr('动作矫正已取消') if status=='cancelled' else tr('动作矫正失败')
+        content=tr('成品已保存：')+str(path) if success else tr('操作已取消。') if status=='cancelled' else tr('请查看处理日志。')
         show=InfoBar.success if success else InfoBar.error
         show(title,content,isClosable=False,duration=3000,
              position=InfoBarPosition.TOP_RIGHT,parent=self)
@@ -1922,7 +1931,7 @@ class MainWindow(FluentWindow):
         standalone=bool(getattr(session,'standalone',False))
         output_dir=getattr(session,'output_dir',None)
         if standalone and not output_dir:
-            output_dir=QFileDialog.getExistingDirectory(self,'选择新的空目录以保存矫正模型',str(Path(session.models[0].model_path).parent))
+            output_dir=QFileDialog.getExistingDirectory(self,tr('选择新的空目录以保存矫正模型'),str(Path(session.models[0].model_path).parent))
             if not output_dir:
                 self._on_correction_save_finished(('cancelled',None))
                 return
@@ -1954,7 +1963,7 @@ class MainWindow(FluentWindow):
             except Exception as error:
                 self._signals.correction_failed.emit('成品已保存，预览刷新失败：'+exception_text(error))
                 self._signals.done.emit('成品已保存；请重新进入以刷新预览。')
-        self._start_worker(page,work,'保存动作矫正')
+        self._start_worker(page,work,tr('保存动作矫正'))
 
     def _leave_correction_draft(self):
         page=self.action_correction_page
@@ -1970,7 +1979,7 @@ class MainWindow(FluentWindow):
 
     def closeEvent(self,event):
         if self.action_correction_page is not None and self._active_run_page is self.action_correction_page:
-            self.action_correction_page.log_card.append('请先等待当前动作任务完成，或取消任务后再关闭。')
+            self.action_correction_page.log_card.append(tr('请先等待当前动作任务完成，或取消任务后再关闭。'))
             event.ignore();return
         if not self._leave_correction_draft():event.ignore();return
         if self.action_correction_page is not None:
@@ -1983,13 +1992,13 @@ class MainWindow(FluentWindow):
     def _collect_targets(self, input_path: str, mode_index: int, output_path: str = "") -> list[str]:
         input_path = input_path.strip()
         if not input_path:
-            InfoBar.warning("反编译", "请先选择输入的 .mdl 文件或文件夹。", duration=3000,
+            InfoBar.warning(tr('反编译'), tr('请先选择输入的 .mdl 文件或文件夹。'), duration=3000,
                             parent=self, position=InfoBarPosition.TOP)
             return []
         if os.path.isfile(input_path):
             return [input_path]
         if not os.path.isdir(input_path):
-            InfoBar.error("反编译", f"路径不存在：\n{input_path}", duration=3000,
+            InfoBar.error(tr('反编译'), tr('路径不存在：\n{value0}', value0=input_path), duration=3000,
                           parent=self, position=InfoBarPosition.TOP)
             return []
         targets: list[str] = []
@@ -2014,7 +2023,7 @@ class MainWindow(FluentWindow):
             # NOTE: parented to the window, not to the decompile page: this path
             # runs from the one-click page too, and the decompile page is hidden
             # whenever advanced mode is off -- a hidden parent hides the InfoBar.
-            InfoBar.warning("反编译", "该文件夹内没有 .mdl 文件。", duration=3000,
+            InfoBar.warning(tr('反编译'), tr('该文件夹内没有 .mdl 文件。'), duration=3000,
                             parent=self, position=InfoBarPosition.TOP)
         return targets
 
@@ -2031,7 +2040,7 @@ class MainWindow(FluentWindow):
         self._start_worker(
             page,
             self._work_decompile(targets, options, output_base),
-            f"Decompiling {len(targets)} model(s) ...",
+            tr("正在反编译 {count} 个模型 ...", count=len(targets)),
         )
 
     def run_one_click_page(self, page: OneClickInterface) -> None:
@@ -2041,7 +2050,7 @@ class MainWindow(FluentWindow):
         exe_path = (CFG.studiomdl_path.value or "").strip()
         if not game_path and not exe_path:
             InfoBar.warning(
-                "兼容ADS处理", "请先在「设置」页配置游戏路径或编译器路径。",
+                tr('兼容ADS处理'), tr('请先在「设置」页配置游戏路径或编译器路径。'),
                 duration=4000, parent=page, position=InfoBarPosition.TOP,
             )
             return
@@ -2056,7 +2065,7 @@ class MainWindow(FluentWindow):
         self._start_worker(
             page,
             self._work_one_click(targets, options, exe_path, game_path),
-            f"兼容ADS处理 {len(targets)} model(s) ...",
+            tr('兼容ADS处理 {value0} model(s) ...', value0=len(targets)),
         )
 
     def _start_worker(self, page, work, status: str) -> None:

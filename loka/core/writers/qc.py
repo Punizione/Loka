@@ -2609,6 +2609,11 @@ class QcFile49:
           release, attachment, unlatch) keep the parser's output.
         """
         ik_rule_handling = self.theSettings.decompile_ik_rule_handling
+        if (ik_rule_handling == "default" and
+                _get(self.theSettings.options,"preserve_animation_semantics",False)):
+            # Emit only the decoded table. Otherwise studiomdl inserts release
+            # rules for unmentioned chains, including authored empty tables.
+            self._emit(_TAB + "noautoik")
         ik_rules = _get(an_animation_desc, "theIkRules", None)
         if ik_rules is not None and ik_rule_handling != "delete":
             end_frame_index = _get(an_animation_desc, "frameCount", 0) - 1

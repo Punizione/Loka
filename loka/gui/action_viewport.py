@@ -7,6 +7,7 @@ from PySide6.QtCore import Signal, QTimer, Qt
 from PySide6.QtGui import QImage, QMatrix4x4, QSurfaceFormat, QVector3D
 from PySide6.QtOpenGL import QOpenGLBuffer, QOpenGLShader, QOpenGLShaderProgram, QOpenGLTexture
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
+from ..i18n import tr, display_text
 
 
 def preview_surface_format():
@@ -34,8 +35,8 @@ def camera_view(pose,mode,*,reference=None):
         if valid:
             if reference is None:return view*inverse,''
             if name in anchors:return view*_matrix(anchors[name])*inverse,''
-            return view,'模型摄像头没有有效的初始基准；当前使用固定第一人称视角。'
-    return view,'模型没有有效 camera/attach_camera；当前使用固定第一人称视角。'
+            return view,tr('模型摄像头没有有效的初始基准；当前使用固定第一人称视角。')
+    return view,tr('模型没有有效 camera/attach_camera；当前使用固定第一人称视角。')
 
 
 def projection_matrix(width,height,fov=90):
@@ -56,7 +57,7 @@ def preview_rect(width,height):
 def pack_mesh(mesh):
     count=len(mesh.positions)
     if any(len(values)!=count for values in (mesh.normals,mesh.uvs,mesh.bone_indices,mesh.bone_weights)):
-        raise ValueError('预览网格顶点属性长度不一致。')
+        raise ValueError(tr('预览网格顶点属性长度不一致。'))
     vertices=bytearray(count*56)
     for i,(position,normal,uv,bones,weights) in enumerate(zip(
             mesh.positions,mesh.normals,mesh.uvs,mesh.bone_indices,mesh.bone_weights)):
@@ -172,7 +173,7 @@ class ActionViewport(QOpenGLWidget):
 
     def _report(self,message):
         if message and message not in self._reported:
-            self._reported.add(message);self.warning.emit(message)
+            self._reported.add(message);self.warning.emit(display_text(message))
 
     def set_model(self,model,materials):
         # Hidden viewports may not paint again. Retire the previous model now,
@@ -199,7 +200,7 @@ class ActionViewport(QOpenGLWidget):
                 if self._camera_reference is None:self._camera_reference=dict(self._pose.attachments)
                 for message in self.model.warnings:self._report(message)
             except Exception as error:
-                self._pose=None;self._report('成品动作求值失败: '+str(error))
+                self._pose=None;self._report(tr('成品动作求值失败: {error}',error=display_text(str(error))))
         self.update()
 
     def set_camera_mode(self,mode):
@@ -207,7 +208,7 @@ class ActionViewport(QOpenGLWidget):
 
     def set_fov(self,value):
         value=float(value)
-        if not math.isfinite(value) or not 70<=value<=160:raise ValueError('无效的摄像头 FOV。')
+        if not math.isfinite(value) or not 70<=value<=160:raise ValueError(tr('无效的摄像头 FOV。'))
         self.fov=value;self.update()
 
     def initializeGL(self):
@@ -223,7 +224,7 @@ class ActionViewport(QOpenGLWidget):
 
     def _check_context(self):
         if self.isVisible() and not self.isValid():
-            self.render_error='无法创建硬件 OpenGL 预览，请检查显卡驱动；当前配置未附带软件渲染库。'
+            self.render_error=tr('无法创建硬件 OpenGL 预览，请检查显卡驱动；当前配置未附带软件渲染库。')
             self._report(self.render_error)
 
     def _texture(self,image):
@@ -243,9 +244,9 @@ class ActionViewport(QOpenGLWidget):
         self._destroy()
         if self.model is None:return
         if self._pose is None:self.set_frame(self.sequence_index,self.frame,frame_span=self.frame_span)
-        if self._pose is None:raise ValueError('没有可绘制的成品动作姿态。')
+        if self._pose is None:raise ValueError(tr('没有可绘制的成品动作姿态。'))
         count=len(self._pose.bone_matrices)
-        if not count:raise ValueError('成品模型没有可绘制的骨骼。')
+        if not count:raise ValueError(tr('成品模型没有可绘制的骨骼。'))
         program=QOpenGLShaderProgram(self)
         self._program=program
         if not program.addShaderFromSourceCode(QOpenGLShader.Vertex,_VERTEX.replace('BONE_COUNT',str(count))):
@@ -258,14 +259,14 @@ class ActionViewport(QOpenGLWidget):
             raw,indices=pack_mesh(mesh)
             vbo=QOpenGLBuffer(QOpenGLBuffer.VertexBuffer)
             ibo=QOpenGLBuffer(QOpenGLBuffer.IndexBuffer)
-            if not vbo.create() or not ibo.create():raise ValueError('显卡无法分配预览缓冲区。')
+            if not vbo.create() or not ibo.create():raise ValueError(tr('显卡无法分配预览缓冲区。'))
             vbo.bind();vbo.allocate(raw,len(raw));vbo.release()
             ibo.bind();ibo.allocate(indices,len(indices));ibo.release()
             base=self._texture(material.texture)
             bump=self._texture(material.normal_texture) if material.normal_texture else None
             self._resources.append((vbo,ibo,base,bump,material,len(mesh.indices)))
-        if len(self.model.meshes)!=len(self.materials):raise ValueError('预览材质与网格数量不一致。')
-        if not self.model.meshes:self._report('成品模型没有可显示的 LOD0 网格。')
+        if len(self.model.meshes)!=len(self.materials):raise ValueError(tr('预览材质与网格数量不一致。'))
+        if not self.model.meshes:self._report(tr('成品模型没有可显示的 LOD0 网格。'))
 
     def paintGL(self):
         functions=self._functions
@@ -328,7 +329,7 @@ class ActionViewport(QOpenGLWidget):
             functions.glDepthMask(True);functions.glDisable(0x0BE2);functions.glDisable(0x0B44)
             program.release()
         except Exception as error:
-            self.render_error='OpenGL 预览不可用: '+str(error)
+            self.render_error=tr('OpenGL 预览不可用: {error}',error=display_text(str(error)))
             self._report(self.render_error)
 
     def _paint_background(self):
@@ -341,7 +342,7 @@ class ActionViewport(QOpenGLWidget):
             program.bindAttributeLocation('position',0);program.bindAttributeLocation('texCoord',1)
             if not program.link():raise ValueError(program.log())
             buffer=QOpenGLBuffer(QOpenGLBuffer.VertexBuffer);self._background_buffer=buffer
-            if not buffer.create():raise ValueError('无法创建预览背景缓冲区。')
+            if not buffer.create():raise ValueError(tr('无法创建预览背景缓冲区。'))
             vertices=struct.pack('<16f',-1,-1,0,1, 1,-1,1,1, -1,1,0,0, 1,1,1,0)
             buffer.bind();buffer.allocate(vertices,len(vertices));buffer.release()
         if self._background_key!=image.cacheKey():

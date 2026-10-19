@@ -163,10 +163,8 @@ def _semantic_idle_candidates(mdl_file_data: Any, excluded_descs: list) -> list:
             if not isinstance(index, int) or not 0 <= index < len(animations):
                 continue
             animation = animations[index]
-            name = str(_get(animation, "theName", ""))
             animation_flags = _get(animation, "flags", 0)
-            if (not name or name.startswith("@") or
-                    animation_flags & STUDIO_DELTA or
+            if (animation_flags & STUDIO_DELTA or
                     id(animation) in excluded or id(animation) in seen):
                 continue
             seen.add(id(animation))
@@ -646,6 +644,10 @@ def apply_corrective_subtract_setup(mdl_file_data: Any, options: Any) -> list:
     semantic_candidates = _semantic_idle_candidates(
         mdl_file_data, [d for _s, d in subtract_pairs if _get(d, "flags", 0) & STUDIO_DELTA]
     ) if preserve else []
+    if active and preserve:
+        for _source,candidate in semantic_candidates:
+            if all(candidate is not existing for existing in candidates):
+                candidates.append(candidate)
     candidate_roles={}
     animations=_get(mdl_file_data,'theAnimationDescs',[]) or []
     for source in (_get(mdl_file_data,'theSequenceDescs',[]) or []):
@@ -657,6 +659,25 @@ def apply_corrective_subtract_setup(mdl_file_data: Any, options: Any) -> list:
     reserved={_get(item,'theName','').casefold() for item in (
         *(_get(mdl_file_data,'theAnimationDescs',[]) or []),
         *(_get(mdl_file_data,'theSequenceDescs',[]) or []))}
+
+    def base_symbol(animation):
+        name=_get(animation,'theName','')
+        if not preserve or (name and not name.startswith('@')):
+            return name
+        alias=_get(animation,'theSemanticAnimationName','')
+        if not alias:
+            index=next(i for i,item in enumerate(animations) if item is animation)
+            alias=f'loka_semantic_ref_{index}'
+            while alias.casefold() in reserved:
+                alias+='_'
+            reserved.add(alias.casefold())
+            animation.theSemanticAnimationName=alias
+        return alias
+
+    # Declare the whole idle blend explicitly: leaving one implied reference
+    # would apply its sequence-local IK/options to the named base as well.
+    for _source,candidate in semantic_candidates:
+        base_symbol(candidate)
 
     def assign_subtract(sequence,animation,target_name):
         name=_get(animation,"theName","")
@@ -691,7 +712,7 @@ def apply_corrective_subtract_setup(mdl_file_data: Any, options: Any) -> list:
                  if selected or wanted_ads in candidate_roles.get(id(candidate),{_ads_idle_role(source,candidate)})], selected, old_choice,
                 validate_errors=bool(getattr(options,'validate_ik_errors',True)),
             )
-            assign_subtract(a_sequence_desc,an_animation_desc,base.theName)
+            assign_subtract(a_sequence_desc,an_animation_desc,base_symbol(base))
             an_animation_desc.theSubtractCorrectionBaseDesc = base
             an_animation_desc.theRequiresSemanticBase = True
             continue
@@ -720,7 +741,7 @@ def apply_corrective_subtract_setup(mdl_file_data: Any, options: Any) -> list:
                 candidate_roles=candidate_roles
             )
             if base_desc is not None:
-                idle_name = _get(base_desc, "theName", "")
+                idle_name = base_symbol(base_desc)
                 assign_subtract(a_sequence_desc,an_animation_desc,idle_name)
                 setattr(an_animation_desc, "theSubtractCorrectionBaseDesc", base_desc)
                 continue

@@ -22,6 +22,10 @@ from .core.writers.animation import _stored_euler_to_quaternion
 SUFFIXES=('.mdl','.vvd','.dx90.vtx','.dx80.vtx','.sw.vtx','.dx11.vtx','.vtx','.phy','.ani')
 
 
+class _OriginalMeshVertexIndexError(ValueError):
+    """Official compiler output cannot safely address its MDL mesh vertices."""
+
+
 @dataclass
 class CompileResult:
     models: list[dict]
@@ -91,8 +95,9 @@ def _options(command):
     return result
 
 
-def _validate_vtx_tables(payload,info,data):
+def _validate_vtx_tables(payload,info,data,*,compiler_path=''):
     """Strict bounds checks for fresh compiler output; core readers are tolerant."""
+    check_original_mesh_vertices=Path(compiler_path).name.lower()=='studiomdl.exe'
     def table(base,count,offset,size,*,signed_offset=False):
         start=base+offset
         if count<0 or (count and (offset==0 or (offset<0 and not signed_offset) or start<36 or start+count*size>len(payload))):
@@ -110,6 +115,7 @@ def _validate_vtx_tables(payload,info,data):
                     raise ValueError('编译 VTX 材质引用无效')
     # Source's two packed strip layouts differ by eight optional bytes.
     def geometry(extra):
+        original_mesh_vertices=[]
         bodies=list(table(0,info.bodyPartCount,info.bodyPartOffset,8))
         for pos,body in zip(bodies,data.theBodyParts or []):
             count,offset=struct.unpack_from('<ii',payload,pos)
@@ -120,11 +126,13 @@ def _validate_vtx_tables(payload,info,data):
                 for lod in table(model_pos,lods,lod_offset,12):
                     meshes,mesh_offset=struct.unpack_from('<ii',payload,lod)
                     if meshes!=model.meshCount:raise ValueError('编译 VTX mesh 数量不符')
-                    for mesh in table(lod,meshes,mesh_offset,9):
+                    for mesh_index,mesh in enumerate(table(lod,meshes,mesh_offset,9)):
                         groups,group_offset=struct.unpack_from('<ii',payload,mesh)
                         for group in table(mesh,groups,group_offset,25+extra):
                             vertices,vertex_offset,indexes,index_offset,strips,strip_offset=struct.unpack_from('<6i',payload,group)
-                            table(group,vertices,vertex_offset,9)
+                            vertex_positions=table(group,vertices,vertex_offset,9)
+                            if check_original_mesh_vertices:
+                                original_mesh_vertices.append((vertex_positions,model.theMeshes[mesh_index].vertexCount))
                             index_positions=table(group,indexes,index_offset,2)
                             if any(struct.unpack_from('<H',payload,p)[0]>=vertices for p in index_positions):
                                 raise ValueError('编译 VTX 顶点索引越界')
@@ -136,10 +144,20 @@ def _validate_vtx_tables(payload,info,data):
                                 if min(ic,io,vc,vo,bones)<0 or io+ic>indexes or vo+vc>vertices:
                                     raise ValueError('编译 VTX strip 引用越界')
                                 table(strip,changes,change_offset,8)
-    try:geometry(0)
+        return original_mesh_vertices
+    try:original_mesh_vertices=geometry(0)
     except ValueError as normal_error:
-        try:geometry(8)
+        try:original_mesh_vertices=geometry(8)
         except ValueError:raise normal_error
+    # Check only after selecting a structurally valid packed layout. A bad ID
+    # must not be mistaken for evidence that the other layout should be tried.
+    for positions,mesh_vertex_count in original_mesh_vertices:
+        for position in positions:
+            original=struct.unpack_from('<H',payload,position+4)[0]
+            if original>=mesh_vertex_count:
+                raise _OriginalMeshVertexIndexError(
+                    f'编译 VTX originalMeshVertexIndex 越界（索引 {original}，mesh 顶点数 {mesh_vertex_count}）：'
+                    '请使用第三方编译器进行转模')
 
 
 def _ik_samples(animation,rule,source_samples=None):
@@ -316,7 +334,7 @@ def _validated_qc_references(data,qc,*,doc=None):
     return result
 
 
-def validate_compiled_model(model,qc,*,keep_ads=True,bindings=(),semantic_origins=None):
+def validate_compiled_model(model,qc,*,keep_ads=True,bindings=(),semantic_origins=None,compiler_path=''):
     raw=model.read_bytes();header=read_reference_data(raw)
     if header.version>49 or header.fileSize!=len(raw):raise ValueError('编译 MDL 版本/长度不正确')
     from .core.animation_sections import validate_animation_sections
@@ -370,7 +388,7 @@ def validate_compiled_model(model,qc,*,keep_ads=True,bindings=(),semantic_origin
     for file in model.parent.glob(model.stem+'*.vtx'):
         payload=file.read_bytes();info=SourceVtxFileData07();parser=SourceVtxFile07(BinaryReader(payload),info);parser.read_source_vtx_header()
         if info.version not in (6,7) or info.checksum!=data.checksum or info.bodyPartCount!=data.bodyPartCount:raise ValueError('编译 VTX 标头/checksum 无效')
-        _validate_vtx_tables(payload,info,data)
+        _validate_vtx_tables(payload,info,data,compiler_path=compiler_path)
         parser.read_source_vtx_material_replacement_lists()
         expected_names={b['target_name'].replace('\\','/').lower() for b in bindings if b['qc']==str(qc)}
         source_names={b['source_name'].replace('\\','/').lower() for b in bindings if b['qc']==str(qc)}
@@ -393,6 +411,9 @@ def compile_and_fill(pack_dir,qc_paths,compiler_path,*,game_path='',retired_mode
     pack=Path(pack_dir).resolve();compiler=Path(compiler_path).resolve()
     if pack.name!='pack' or not pack.is_dir():raise ValueError('编译回填只能使用独立 pack')
     if not compiler.is_file():raise ValueError('未找到配置的模型编译器')
+    output_suffixes=SUFFIXES
+    if compiler.name.lower()=='studiomdl.exe':
+        output_suffixes=tuple(s for s in SUFFIXES if s not in ('.dx80.vtx','.sw.vtx'))
     qcs=[Path(p).resolve() for p in qc_paths]
     if not qcs:raise ValueError('没有可编译的转换 QC')
     for qc in qcs:
@@ -426,14 +447,21 @@ def compile_and_fill(pack_dir,qc_paths,compiler_path,*,game_path='',retired_mode
         origins=None if semantic_origins is None else semantic_origins[str(qc)]
         from .core.ik_curve_preservation import preserve_compiled_touch_curves
         restoration=preserve_compiled_touch_curves(model,origins,staging_root=stage,qc=qc)
-        data,verification=validate_compiled_model(model,qc,keep_ads=keep_ads,bindings=bindings,semantic_origins=origins)
+        try:
+            data,verification=validate_compiled_model(model,qc,keep_ads=keep_ads,bindings=bindings,
+                semantic_origins=origins,compiler_path=compiler)
+        except _OriginalMeshVertexIndexError as error:
+            with (job/'compiler.log').open('a',encoding='utf-8') as log:
+                log.write('\n'+str(error)+'\n')
+            if on_log:on_log(str(error))
+            raise
         from .world_physics import validate_compiled_world_physics
         world_physics=validate_compiled_world_physics(model,qc)
         if world_physics:verification['world_physics']=world_physics
         if restoration:verification['touch_curve_restoration']=restoration
         if section_repairs:verification['animation_section_repairs']=section_repairs
         for file in model.parent.iterdir():
-            if file.is_file() and file.name.lower() in {model.stem.lower()+s for s in SUFFIXES}:
+            if file.is_file() and file.name.lower() in {model.stem.lower()+s for s in output_suffixes}:
                 key=file.relative_to(game).as_posix().lower()
                 if key in generated:raise ValueError('编译输出文件重复')
                 generated[key]=file

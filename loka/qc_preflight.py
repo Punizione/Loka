@@ -75,16 +75,12 @@ def prepare_conversion_qcs(models):
 
     ``models`` contains ``(model key, completed MdlDecompiler)`` pairs. All
     names are reserved together so a repaired include name cannot shadow a
-    distinct valid primary name. Equal original labels still share a mapping,
-    preserving the existing primary-over-include override policy.
+    distinct valid primary name. Equal original labels across models share a
+    mapping, preserving primary-over-include overrides. Local duplicates get
+    distinct indexed symbols so none of their motions or layers are discarded.
     """
     models=list(models);fields=[];repairs=[];correctives={}
     for model,dec in models:
-        seen=set()
-        for sequence in dec.mdl_file_data.theSequenceDescs or []:
-            key=sequence.theName.casefold()
-            if key in seen:raise ValueError(f'QC 前置校验：重复 sequence: {model}: {sequence.theName!r}')
-            seen.add(key)
         fields.extend((model,*field) for field in _symbol_fields(dec.mdl_file_data))
         correctives[model]=[(getattr(animation,'theCorrectiveAnimationSymbol','') or create_corrective_animation_name(animation.theName),
             create_corrective_animation_smd_relative_path_file_name(animation.theName,dec.result.model_name,
@@ -110,6 +106,24 @@ def prepare_conversion_qcs(models):
         setattr(item,attribute,repaired)
         repairs.append(dict(model=model,kind=kind,index=index,attribute=attribute,
                             original=original,repaired=repaired))
+
+    # MDL layers address sequence indexes, so equal labels can still describe
+    # different motions. Keep every descriptor and re-emit indexed references
+    # with a distinct conversion-only symbol for each later occurrence.
+    for model,dec in models:
+        seen=set()
+        for index,sequence in enumerate(dec.mdl_file_data.theSequenceDescs or []):
+            original=sequence.theName
+            if original.casefold() not in seen:
+                seen.add(original.casefold());continue
+            number=1
+            candidate=original+'_loka_'+str(number)
+            while candidate.casefold() in reserved:
+                number+=1;candidate=original+'_loka_'+str(number)
+            reserved.add(candidate.casefold());seen.add(candidate.casefold())
+            sequence.theName=candidate
+            repairs.append(dict(model=model,kind='sequence',index=index,attribute='theName',
+                                original=original,repaired=candidate))
 
     paths={}
     for model,dec in models:

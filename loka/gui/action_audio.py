@@ -6,6 +6,7 @@ from PySide6.QtCore import QObject, QTimer, Signal
 from PySide6.QtWidgets import QApplication
 
 from ..action_audio import SoundBank, due_cues, load_sound_bank
+from ..i18n import tr, display_text
 
 
 class ActionAudio(QObject):
@@ -78,7 +79,7 @@ class ActionAudio(QObject):
                 source = None
                 return
             except Exception as error:
-                bank = SoundBank({}, {}, ('音效载入失败：'+str(error),))
+                bank = SoundBank({}, {}, (tr('音效载入失败：{error}',error=display_text(str(error))),))
             source = None
             if not cancel.is_set():
                 result.append(bank)
@@ -123,7 +124,7 @@ class ActionAudio(QObject):
                 self._cleanup.start()
             except OSError as error:
                 self.set_enabled(False)
-                self.failed.emit('音效预览不可用：'+str(error))
+                self.failed.emit(tr('音效预览不可用：{error}',error=display_text(str(error))))
                 break
 
     def _collect(self):
