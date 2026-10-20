@@ -259,15 +259,18 @@ class CorrectionSession:
                     timed=with_timing_reference(destination,self.models[model_index].profile_id,requested)
                     duration=timed.official_duration
                     selected_timings[destination.index]=requested
-                if duration is None or duration<=0:
-                    raise ValueError('近战跨 Activity 调换需要为每个目标选择明确的官方实际计时槽。')
-                durations[destination.index]=duration
-            if preview is None:
+                if duration is not None and math.isfinite(duration) and duration>0:
+                    durations[destination.index]=duration
+            # A missing timer is not a ban on moving the action. Keep that
+            # destination's incoming FPS; never invent a limit from an unused
+            # partner layer or an unrelated official animation.
+            if durations and preview is None:
                 from .action_preview import PreviewModel
                 if model_index not in self._preview_models:
                     self._preview_models[model_index]=PreviewModel.load(self.models[model_index].model_path)
                 preview=self._preview_models[model_index]
             for destination,donor in ((a,b),(b,a)):
+                if destination.index not in durations:continue
                 source=self.source_index(model_index,donor.index)
                 source_fps=self.baseline_action(model_index,source,all_slots=True).fps
                 timeline=preview.timeline(source,rate_scale=rates[destination.index]/source_fps)

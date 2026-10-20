@@ -6,11 +6,16 @@ from .weapon_catalog import MELEE_IDS
 from .weapon_sequences import get_profile
 
 
-_HIT_DOMAIN = re.compile(r'^((?:MIXED_)?ACT_(?:(?:PRIMARY|SECONDARY|TERTIARY|FOURTH)_)?VM_)HIT(?:LEFT|RIGHT|CENTER)(_LAYER)?$')
+_ATTACK_DOMAIN = re.compile(r'^((?:MIXED_)?ACT_(?:(?:PRIMARY|SECONDARY|TERTIARY|FOURTH)_)?VM_)(?:HIT(?:LEFT|RIGHT|CENTER)(_LAYER)?|SHOOT_LAYER)$')
 
 
 def validate_swap_pair(first, second, profile_id) -> None:
-    """Allow exact Activity peers or melee directions within one Activity domain."""
+    """Allow Activity peers or same-domain melee HIT/SHOOT playback attacks.
+
+    SHOOT_LAYER joins the ordinary three-direction HIT group. The separate
+    HIT*_LAYER group retains its existing boundary, keeping chained swaps
+    closed under composition when the final payload permutation is saved.
+    """
     get_profile(profile_id)
     left = first.activity
     right = second.activity
@@ -18,11 +23,11 @@ def validate_swap_pair(first, second, profile_id) -> None:
         raise ValueError('无 Activity 的动作不能调换')
     if left == right:
         return
-    a = _HIT_DOMAIN.fullmatch(left)
-    b = _HIT_DOMAIN.fullmatch(right)
+    a = _ATTACK_DOMAIN.fullmatch(left)
+    b = _ATTACK_DOMAIN.fullmatch(right)
     if profile_id in MELEE_IDS and a and b and a.groups() == b.groups():
         return
-    raise ValueError('动作 Activity 不同，且不属于同域近战三方向攻击')
+    raise ValueError('动作 Activity 不同，且不属于同域近战 HIT/SHOOT 攻击组')
 
 
 def load_swap_actions(qc_path, profile_id, indexes=None):

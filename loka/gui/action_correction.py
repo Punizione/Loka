@@ -514,7 +514,7 @@ class ActionCorrectionInterface(QWidget):
         actions=model.swap_actions or model.actions
         if len(actions)<2:return
         box=ActionFormDialog(tr('序列调换'),self,width=740);layout=box.viewLayout
-        description=BodyLabel(tr('相同 Activity 交换整套动作；近战不同 HIT Activity 保留槽位并匹配官方实际时长。'),box)
+        description=BodyLabel(tr('相同 Activity 交换整套动作；近战 SHOOT_LAYER 与三方向 HIT 可互换。目标有官方计时则匹配时长，无计时则保留换入动作 FPS。'),box)
         description.setWordWrap(True);layout.addWidget(description)
         first=ComboBox(box);second=ComboBox(box)
         for action in actions:first.addItem(sequence_option_text(action)+'  '+action.name,userData=action.index)
@@ -524,7 +524,7 @@ class ActionCorrectionInterface(QWidget):
         layout.addWidget(CaptionLabel(tr('目标槽位二'),box));layout.addWidget(second)
         timing_boxes={}
         for slot in (0,1):
-            label=CaptionLabel(tr('目标槽位一的官方实际计时') if slot==0 else tr('目标槽位二的官方实际计时'),box)
+            label=CaptionLabel(tr('目标槽位一的计时参考（可选）') if slot==0 else tr('目标槽位二的计时参考（可选）'),box)
             combo=ComboBox(box);layout.addWidget(label);layout.addWidget(combo)
             timing_boxes[slot]=(label,combo)
         message=CaptionLabel('',box);message.setWordWrap(True);layout.addWidget(message)
@@ -541,10 +541,10 @@ class ActionCorrectionInterface(QWidget):
                 choices=self.session.timing_choices(model_index,index)
                 combo.setEnabled(action.official_index is None)
                 if action.official_index is not None:
-                    combo.addItem(tr('{duration:.2f} 秒（官方槽位固定计时）',duration=action.official_duration) if action.official_duration else tr('无有效官方计时'),
+                    combo.addItem(tr('{duration:.2f} 秒（官方槽位固定计时）',duration=action.official_duration) if action.official_duration else tr('无已确认计时（保留换入动作 FPS）'),
                                   userData=action.official_index)
                     continue
-                combo.addItem(tr('请选择官方计时槽'),userData=None)
+                combo.addItem(tr('不指定计时参考（无计时则保留换入动作 FPS）'),userData=None)
                 for official,name,duration in choices:combo.addItem(tr('{name}[顺位：{index}]  {duration:.2f} 秒',
                     name=display_text(name),index=official,duration=duration),userData=official)
                 current_timer=self.session.timing_index(model_index,index)
@@ -555,7 +555,7 @@ class ActionCorrectionInterface(QWidget):
                                  if math.isclose(duration,action.official_duration)),None)
                 if chosen is None and len({duration for _,_,duration in choices})==1 and choices:chosen=1
                 if chosen is not None:combo.setCurrentIndex(chosen)
-            message.setText(tr('两个动作的 FPS、事件、IK、淡入淡出等内容将一起调换。') if valid else tr('没有符合调换规则的另一个槽位。'))
+            message.setText(tr('事件、IK、淡入淡出等内容一起调换；有官方计时的目标重算 FPS，无计时的目标保留换入动作 FPS。') if valid else tr('没有符合调换规则的另一个槽位。'))
             box.yesButton.setEnabled(valid)
         def fill_second(*_):
             second.blockSignals(True);second.clear()
@@ -572,9 +572,7 @@ class ActionCorrectionInterface(QWidget):
                 label,combo=timing_boxes[slot]
                 if not label.isHidden():
                     if self.session.baseline_action(model_index,index,all_slots=True).official_index is not None:continue
-                    if combo.currentData() is None:
-                        message.setText(tr('请选择两个目标槽位的官方实际计时后再调换。'));return False
-                    slots[index]=combo.currentData()
+                    if combo.currentData() is not None:slots[index]=combo.currentData()
             try:self.swap_sequences(first.currentData(),second.currentData(),timing_slots=slots)
             except (ValueError,OSError) as error:message.setText(display_text(str(error)));return False
             return True
