@@ -61,8 +61,11 @@ def _validate_info(data,start,end):
     while position<end:
         if position+8>end or not all(32<=byte<=126 for byte in data[position:position+4]):raise ValueError('Invalid WAV LIST/INFO field')
         amount=struct.unpack_from('<I',data,position+4)[0]
-        position+=8+amount+(amount&1)
+        position+=8+amount
         if position>end:raise ValueError('WAV LIST/INFO field exceeds bounds')
+        # Editors may omit the final INFO field's odd-byte padding. Its full
+        # declared payload must fit; no next field or audio boundary is guessed.
+        if position<end:position+=amount&1
 
 def _parse(data):
     if len(data)<12 or data[:4]!=b'RIFF' or data[8:12]!=b'WAVE':raise ValueError('Invalid RIFF WAV header')

@@ -91,6 +91,7 @@ from ..weapon_conversion import (ConversionOptions, inspect_weapon_package, conv
 from .weapon_conversion import WeaponConversionInterface,IK_HANDLING_LABELS
 from .startup_artwork import BACKGROUND_PIDS, PREVIEW_CHOICES, StartupArtwork, select_startup_artwork
 from .artwork_layout import ArtworkLayout, ArtworkLayoutStore
+from .update_check import UpdateCheckController
 
 #: "自动匹配" choice in the Subtract tab's idle selector (uses name matching).
 AUTO_IDLE_CHOICE = "自动（按名称匹配，ads 优先）"
@@ -177,6 +178,8 @@ class GuiConfig(QConfig):
     #: Advanced mode reveals the three specialized pages and detail options.
     advanced = ConfigItem("General", "Advanced", False)
     language = ConfigItem("General", "Language", "zh_CN", OptionsValidator(["zh_CN", "en_US"]))
+    update_use_proxy = ConfigItem("UpdateCheck", "UseProxy", False, _BoolValidator(False))
+    update_proxy_url = ConfigItem("UpdateCheck", "ProxyUrl", "")
     conversion_isolate_materials = ConfigItem("WeaponConversion", "IsolateMaterials", False, _BoolValidator(False))
     conversion_normalize_vmt = ConfigItem("WeaponConversion", "NormalizeVmt", False, _BoolValidator(False))
     conversion_keep_ads = ConfigItem("WeaponConversion", "KeepAds", True, _BoolValidator(True))
@@ -450,6 +453,8 @@ class HomeInterface(ScrollArea):
 class SettingsInterface(ScrollArea):
     """Nav item 2: tool paths used by the one-click pipeline."""
 
+    check_update_requested = Signal(str)
+
     def __init__(self, parent: FluentWindow | None = None) -> None:
         super().__init__(parent)
         self.scrollWidget = QWidget(self)
@@ -515,6 +520,29 @@ class SettingsInterface(ScrollArea):
         hint.setWordWrap(True)
         layout.addWidget(hint)
 
+        update_row = QHBoxLayout()
+        update_row.addWidget(BodyLabel(tr('更新'), self))
+        self.check_update_button = PushButton(tr('检查更新'), self)
+        self.check_update_button.clicked.connect(
+            lambda: self.check_update_requested.emit(self.update_proxy_url()))
+        update_row.addWidget(self.check_update_button)
+        update_row.addStretch(1)
+        layout.addLayout(update_row)
+
+        proxy_row = QHBoxLayout()
+        self.update_proxy_check = CheckBox(tr('使用代理检查更新'), self)
+        self.update_proxy_check.setChecked(CFG.get(CFG.update_use_proxy))
+        proxy_row.addWidget(self.update_proxy_check)
+        self.update_proxy_edit = LineEdit(self)
+        self.update_proxy_edit.setPlaceholderText(tr('http://127.0.0.1:7890 或 socks5://127.0.0.1:1080'))
+        self.update_proxy_edit.setText(CFG.get(CFG.update_proxy_url))
+        self.update_proxy_edit.setEnabled(self.update_proxy_check.isChecked())
+        self.update_proxy_check.toggled.connect(self.update_proxy_edit.setEnabled)
+        self.update_proxy_check.toggled.connect(lambda enabled: CFG.set(CFG.update_use_proxy, enabled))
+        self.update_proxy_edit.textChanged.connect(lambda text: CFG.set(CFG.update_proxy_url, text))
+        proxy_row.addWidget(self.update_proxy_edit, 1)
+        layout.addLayout(proxy_row)
+
         self.update_link = BodyLabel(
             tr('<a href="https://github.com/Punizione/Loka/releases">[更新链接]</a> 随缘更新'),
             self.scrollWidget,
@@ -529,6 +557,8 @@ class SettingsInterface(ScrollArea):
         self.setObjectName("settingsInterface")
         self.enableTransparentBackground()
 
+    def update_proxy_url(self) -> str:
+        return self.update_proxy_edit.text().strip() if self.update_proxy_check.isChecked() else ''
 
     def _language_changed(self, index: int) -> None:
         CFG.set(CFG.language, self.language_box.itemData(index))
@@ -1351,6 +1381,10 @@ class MainWindow(FluentWindow):
         self._active_run_page = None
         self._active_scan_request = None
 
+        self._update_check = UpdateCheckController(self)
+        self._update_check.notified.connect(self.settings_page._toast)
+        self.settings_page.check_update_requested.connect(self._check_for_updates)
+
         self._init_background_image()
         self._prepare_preview_surface()
 
@@ -1609,10 +1643,16 @@ class MainWindow(FluentWindow):
 
     # -- drag & drop -------------------------------------------------------
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:  # noqa: N802
+        if self._update_check.active:
+            event.ignore()
+            return
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
 
     def dropEvent(self, event: QDropEvent) -> None:  # noqa: N802
+        if self._update_check.active:
+            event.ignore()
+            return
         paths = [url.toLocalFile() for url in event.mimeData().urls() if url.toLocalFile()]
         usable = [p for p in paths if p and os.path.exists(p)]
         if not usable:
@@ -1663,9 +1703,15 @@ class MainWindow(FluentWindow):
         self.bodygroup_page.path_label.setText(tr('当前输入: ') + display)
 
     # -- run orchestration --------------------------------------------------
+    def _check_for_updates(self, proxy_url: str) -> None:
+        if self._worker_busy():
+            self.settings_page._toast(tr('请先等待当前任务完成，再检查更新。'), 'warning')
+            return
+        self._update_check.start(proxy_url)
+
     def _worker_busy(self) -> bool:
         # A finished thread remains active until its queued completion reaches Qt.
-        return self._active_run_page is not None or (
+        return self._update_check.active or self._active_run_page is not None or (
             self._worker is not None and self._worker.is_alive())
 
     def run_weapon_scan(self, page, request=None):
@@ -1978,6 +2024,8 @@ class MainWindow(FluentWindow):
         return False
 
     def closeEvent(self,event):
+        if self._update_check.active:
+            event.ignore();return
         if self.action_correction_page is not None and self._active_run_page is self.action_correction_page:
             self.action_correction_page.log_card.append(tr('请先等待当前动作任务完成，或取消任务后再关闭。'))
             event.ignore();return
