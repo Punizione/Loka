@@ -58,6 +58,7 @@ from qfluentwidgets import (
     FluentWindow,
     InfoBar,
     InfoBarPosition,
+    InfoBadge,
     IndeterminateProgressBar,
     LineEdit,
     NavigationItemPosition,
@@ -92,6 +93,7 @@ from .weapon_conversion import WeaponConversionInterface,IK_HANDLING_LABELS
 from .startup_artwork import BACKGROUND_PIDS, PREVIEW_CHOICES, StartupArtwork, select_startup_artwork
 from .artwork_layout import ArtworkLayout, ArtworkLayoutStore
 from .update_check import UpdateCheckController
+from .status_badges import active_badges
 
 #: "自动匹配" choice in the Subtract tab's idle selector (uses name matching).
 AUTO_IDLE_CHOICE = "自动（按名称匹配，ads 优先）"
@@ -173,6 +175,10 @@ class _PreviewDistanceValidator(ConfigValidator):
 class GuiConfig(QConfig):
     """Persisted GUI settings (theme comes from the base Config)."""
 
+    def save(self):
+        from ..runtime_options import save_gui_settings
+        return save_gui_settings(self._cfg.file, self._cfg.toDict())
+
     game_path = ConfigItem("ToolPaths", "GamePath", "")
     studiomdl_path = ConfigItem("ToolPaths", "StudiomdlPath", "")
     #: Advanced mode reveals the three specialized pages and detail options.
@@ -226,6 +232,19 @@ def _ensure_config_file() -> str:
 
 
 qconfig.load(_ensure_config_file(), CFG)
+
+
+def _save_active_gui_config():
+    # Fluent's global save() otherwise opens/truncates the file before toDict.
+    # Delegate to the active GuiConfig so both global theme saves and CFG.set
+    # retain separately managed values before writing any bytes.
+    active = qconfig._cfg
+    if isinstance(active, GuiConfig):
+        return active.save()
+    return QConfig.save(qconfig)
+
+
+qconfig.save = _save_active_gui_config
 
 
 # ---------------------------------------------------------------------------
@@ -548,7 +567,15 @@ class SettingsInterface(ScrollArea):
             self.scrollWidget,
         )
         self.update_link.setOpenExternalLinks(True)
-        layout.addWidget(self.update_link)
+        footer_row = QHBoxLayout()
+        footer_row.setSpacing(8)
+        footer_row.addWidget(self.update_link)
+        footer_row.addStretch(1)
+        for identifier, label in active_badges():
+            badge = InfoBadge.success(tr(label), self.scrollWidget)
+            badge.setObjectName('statusBadge_' + str(identifier))
+            footer_row.addWidget(badge, 0, Qt.AlignVCenter)
+        layout.addLayout(footer_row)
 
         self.setWidget(self.scrollWidget)
         self.setWidgetResizable(True)
@@ -2014,6 +2041,7 @@ class MainWindow(FluentWindow):
     def _leave_correction_draft(self):
         page=self.action_correction_page
         if page is None or page.session is None:return True
+        page.continuous.exit()
         page.commit_fps_edit()
         if not page.session.changes:return True
         from .action_dialogs import UnsavedActionDialog

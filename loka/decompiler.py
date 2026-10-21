@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 from typing import Callable, Optional
 
 from . import SUPPORTED_MDL_VERSIONS
+from .runtime_options import option_enabled
+from .model_status import UnsupportedModelError
 from .core.constants import MDL_VERSIONS_USING_SOURCE_MODEL_49
 from .core.mdl_data import SourceMdlFileData49
 from .core.mdl_file import SourceMdlFile49
@@ -262,6 +264,9 @@ class MdlDecompiler:
         report("正在读取 MDL 文件 ...")
         try:
             self._read_mdl_file(mdl_path)
+        except UnsupportedModelError as error:
+            self.result.errors.append(str(error))
+            return self.result
         except Exception as error:  # noqa: BLE001 - mirror the parser's catch-all
             from .process_limits import exception_text
             self.result.errors.append('Failed to read MDL file: '+exception_text(error))
@@ -285,11 +290,24 @@ class MdlDecompiler:
                 prepare_animation_library(mdl_path, self.mdl_file_data)
                 report("识别为 v_model 动画库，按实际文件名生成可重编译源码。")
 
+        if self.mdl_file_data.theBoneNameRemap and self.mdl_file_data.theModelGroups:
+            from .vmodel import copy_include_dependencies
+            try:
+                copy_include_dependencies(mdl_path, self.mdl_file_data, output_path,
+                                          self.options.game_path, validate_only=True)
+            except (OSError, ValueError) as error:
+                self.result.errors.append(str(error))
+                return self.result
+
         if self.options.remove_path_from_smd_material_file_names:
             self._process_texture_paths()
 
         report("正在读取附属文件 ...")
-        self._read_phy_file(mdl_path)
+        try:
+            self._read_phy_file(mdl_path)
+        except ValueError as error:
+            self.result.errors.append(str(error))
+            return self.result
         try:
             self._read_vtx_file(mdl_path)
         except VtxValidationError as error:
@@ -303,6 +321,9 @@ class MdlDecompiler:
             try:
                 from .world_physics import prepare_include_world_physics
                 prepare_include_world_physics(self,mdl_path,output_path)
+            except UnsupportedModelError as error:
+                self.result.errors.append(str(error))
+                return self.result
             except Exception as error:
                 from .process_limits import exception_text
                 self.result.errors.append('W 模 include 物理兼容失败: '+exception_text(error))
@@ -409,6 +430,9 @@ class MdlDecompiler:
         self._call(mdl_file, "read_flex_controller_uis")
         self._call(mdl_file, "read_bodygroup_presets")
         self._call(mdl_file, "post_process")
+        if option_enabled(0):
+            from .core.bone_names import normalize_bone_names
+            normalize_bone_names(data, reader)
         # the parser ends ReadMdlFile_Internal with CreateFlexFrameList().  It has to run
         # during the READ phase, not lazily from the VTA writer: the QC writer resolves
         # each eyelid's `lowerer`/`raiser` frame index out of `bodyPart.theFlexFrames`,
@@ -641,6 +665,9 @@ class MdlDecompiler:
             self.result.warnings.append(
                 "PHY file checksum does not match MDL file checksum."
             )
+
+        from .core.bone_names import normalize_physics_bone_names
+        normalize_physics_bone_names(self.mdl_file_data, self.phy_file_data)
 
     # ------------------------------------------------------------------
     # Writing

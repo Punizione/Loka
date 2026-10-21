@@ -44,6 +44,7 @@ MESSAGES = {
     '高级': 'Advanced',
     '填游戏路径时 兼容ADS处理会自动查找其中的 studiomdl.exe（bin 下）；也可直接指定兼容的模型编译器。设置会自动保存。': 'ADS compatibility finds studiomdl.exe under the game folder (in bin). You can also select a compatible model compiler. Settings save automatically.',
     '<a href="https://github.com/Punizione/Loka/releases">[更新链接]</a> 随缘更新': '<a href="https://github.com/Punizione/Loka/releases">[Releases]</a> Updated occasionally',
+    '骨骼强兼': 'Bone compatibility',
     '选择游戏路径': 'Select game folder',
     '游戏路径已设置': 'Game folder saved',
     '选择模型编译器': 'Select model compiler',

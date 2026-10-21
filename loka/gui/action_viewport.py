@@ -206,6 +206,13 @@ class ActionViewport(QOpenGLWidget):
     def set_camera_mode(self,mode):
         self.camera_mode='follow' if mode=='follow' else 'fixed';self.update()
 
+    def set_pose(self, pose):
+        """Display a local-pose blend evaluated by the existing model pipeline."""
+        self._pose = pose
+        if self._camera_reference is None:
+            self._camera_reference = dict(pose.attachments)
+        self.update()
+
     def set_fov(self,value):
         value=float(value)
         if not math.isfinite(value) or not 70<=value<=160:raise ValueError(tr('无效的摄像头 FOV。'))

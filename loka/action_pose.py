@@ -371,6 +371,8 @@ class PoseEvaluator:
         return self._accumulate(base, layer.iSequence, layer_cycle, weight, stack)
 
     def _accumulate(self, base, index, cycle, weight, stack):
+        if weight <= 0:
+            return base
         if index in stack or len(stack) >= 32:
             self.warn('Autolayer cycle/depth limit encountered; cyclic layer omitted.')
             return base
@@ -381,9 +383,14 @@ class PoseEvaluator:
             self.warn('Cycle-pose/realtime/world-space sequence modifiers are not simulated: ' + s.theName)
         raw = self._raw_sequence(s, cycle)
         layers = s.theAutoLayers or []
+        local_request_start = len(self._ik_requests)
         for layer in layers:
             if layer.flags & 0x1000:
                 raw = self._layer(raw, layer, cycle, 1., stack)
+        # Local layers build the raw sequence at full influence; their IK
+        # requests still inherit the outer sequence's accumulation weight.
+        self._ik_requests[local_request_start:] = [
+            (grid, c, w*weight) for grid, c, w in self._ik_requests[local_request_start:]]
         result = self._blend(base, raw, s, weight)
         grid = tuple((self._animation(i), w) for i, w in self._grid(s))
         if weight > 0 and any(a.theIkRules for a, _ in grid):
@@ -407,6 +414,15 @@ class PoseEvaluator:
         cycle = max(0., min(1., frame/length))
         if s.flags & 1 and (frame < 0 or frame > length):
             cycle = (frame/length) % 1.
+        base = self._delta_base(s) if s.flags & 4 else self.bind
+        pose = self._accumulate(base, index, cycle, 1., ())
+        return self._apply_ik(pose)
+
+    def _delta_base(self, s, selected=None):
+        if selected is not None:
+            index, cycle = selected
+            self.warn('Delta sequences use the preceding selected absolute idle; gameplay layer weights may differ.')
+            return self._accumulate(self.bind, index, cycle, 1., ())
         base = self.bind
         if s.flags & 4:
             from .core.subtract_correction import _is_real_idle_activity
@@ -433,8 +449,99 @@ class PoseEvaluator:
                 self.warn('Delta sequences use an absolute idle at frame 0; gameplay-selected base/layer weights may differ.')
             else:
                 self.warn('No absolute idle available for delta sequence; bind pose is used as base.')
-        pose = self._accumulate(base, index, cycle, 1., ())
-        return self._apply_ik(pose)
+        return base
+
+    def sample_continuous(self, entries):
+        """Accumulate a short sequence history locally, then solve IK once.
+
+        Entries carry (index, cycle, incoming weight, explicit idle base).
+        Earlier transitions keep advancing when a short clip starts another
+        fade. Absolute incoming weights retain the outgoing value on masked
+        bones. Delta entries replace the outgoing contribution over their
+        selected absolute base before adding their weighted local delta.
+        """
+        self._ik_requests = []
+        return self._apply_ik(self._continuous_pose(entries))
+
+    def _continuous_pose(self, entries):
+        """Build a playlist locally, leaving its ordered IK requests unsolved."""
+        pose = self.bind
+        for ordinal, (index, cycle, weight, selected) in enumerate(entries):
+            sequence = self.checked_sequence(index)
+            if not math.isfinite(cycle) or not math.isfinite(weight) or not 0 <= weight <= 1:
+                raise ValueError('Invalid continuous pose cycle/weight')
+            if ordinal:
+                self._ik_requests = [(grid, c, w*(1-weight)) for grid, c, w in self._ik_requests if w*(1-weight) > 0]
+            if sequence.flags & 4:
+                outgoing_requests = self._ik_requests
+                self._ik_requests = []
+                base = self._delta_base(sequence, selected)
+                base_requests = [(grid, c, w*weight) for grid, c, w in self._ik_requests if w*weight > 0]
+                # An explicitly reused idle is the same dependency on both
+                # sides of this blend. Merge its influence instead of applying
+                # two fractional constraints sequentially (which weakens it).
+                for grid, c, w in base_requests:
+                    key = tuple((id(a), gw) for a, gw in grid)
+                    for i, (old_grid, old_cycle, old_weight) in enumerate(outgoing_requests):
+                        if abs(old_cycle-c) < 1e-12 and tuple((id(a), gw) for a, gw in old_grid) == key:
+                            outgoing_requests[i] = old_grid, old_cycle, min(1., old_weight+w)
+                            break
+                    else:
+                        outgoing_requests.append((grid, c, w))
+                self._ik_requests = outgoing_requests
+                pose = (tuple((lerp(a[0], b[0], weight), slerp(a[1], b[1], weight))
+                              for a, b in zip(pose, base)) if ordinal else base)
+            pose = self._accumulate(pose, index, cycle, weight, ())
+        return pose
+
+    @staticmethod
+    def _mix_local(first, second, weight):
+        if weight <= 0:
+            return first
+        if weight >= 1:
+            return second
+        return tuple((lerp(a[0], b[0], weight), slerp(a[1], b[1], weight))
+                     for a, b in zip(first, second))
+
+    def sample_layered(self, main_entries, layers):
+        """HLMV ordered local accumulation with a single shared IK solve.
+
+        Queue candidates all use the current lower-lane pose. Crossfading
+        those candidates replaces this lane's old delta without rebuilding
+        an unrelated idle or erasing a lower lane's contribution.
+        """
+        main_entries = tuple(main_entries)
+        self._ik_requests = []
+        pose = self._continuous_pose((index, cycle, weight, None)
+                                     for index, cycle, weight in main_entries)
+        # Retain the main playlist's FK mask/delta behavior, but treat its IK
+        # clips as alternatives too. Collect each full candidate separately;
+        # this also retains any idle-base/autolayer dependencies of delta donors.
+        main_candidates = []
+        for index, cycle, weight in main_entries:
+            self._ik_requests = []
+            self._continuous_pose(((index, cycle, 1., None),))
+            main_candidates.append((self._ik_requests, weight))
+        ik_lanes = [(main_candidates, 1.)]
+        for entries, presence in layers:
+            if presence <= 0 or not entries:
+                continue
+            underlying = pose
+            lane_pose = underlying
+            candidates = []
+            for ordinal, (index, cycle, weight) in enumerate(entries):
+                self._ik_requests = []
+                candidate = self._accumulate(underlying, index, cycle, 1., ())
+                candidate_requests = self._ik_requests
+                candidates.append((candidate_requests, weight))
+                if ordinal == 0:
+                    lane_pose = candidate
+                else:
+                    lane_pose = self._mix_local(lane_pose, candidate, weight)
+            pose = self._mix_local(underlying, lane_pose, presence)
+            ik_lanes.append((candidates, presence))
+        self._ik_requests = []
+        return self._apply_ik(pose, ik_lanes)
 
     @staticmethod
     def _ik_window(rule):
@@ -527,16 +634,11 @@ class PoseEvaluator:
             except (ValueError, IndexError, AttributeError, TypeError) as error:
                 self.warn('Touch IK curve unavailable; constraint omitted: ' + str(error))
 
-    def _apply_ik(self, pose):
-        """Stateless, bone-relative touch IK for ordinary three-link limbs.
-
-        Ground/attachment targets and lock history require engine world state.
-        These are explicitly reported instead of silently fabricating targets.
-        """
-        targets = {}
+    def _ik_targets(self, requests, world, previous=None):
+        """Apply Source dependency order without solving any limb yet."""
+        targets = dict(previous) if previous is not None else {}
         chains = self.data.theIkChains or []
-        world = world_transforms(self.bones, pose)
-        for grid, cycle, sequence_weight in self._ik_requests:
+        for grid, cycle, sequence_weight in requests:
             for rule, error_p, error_q, influence in self._ik_sequence_rules(grid, cycle):
                 if not 0 <= rule.chain < len(chains):
                     self.warn('Touch IK has an invalid chain and was omitted.'); continue
@@ -569,6 +671,47 @@ class PoseEvaluator:
                 # The resulting target already contains its influence; the limb
                 # solver must not interpolate it by that influence a second time.
                 targets[rule.chain] = (lerp(old_p, desired_p, weight), slerp(old_q, desired_q, weight), old_weight, ids)
+        return targets
+
+    @staticmethod
+    def _mix_ik_targets(first, second, weight, world):
+        """Mix alternative lane targets; absent/released chains use FK."""
+        if weight <= 0:
+            return first
+        if weight >= 1:
+            return second
+        targets = {}
+        for chain in dict.fromkeys((*first, *second)):
+            ids = (first[chain] if chain in first else second[chain])[3]
+            original_p, original_q = world[ids[-1]]
+            fallback = (original_p, original_q, 0., ids)
+            old_p, old_q, old_weight, _ = first.get(chain, fallback)
+            new_p, new_q, new_weight, _ = second.get(chain, fallback)
+            targets[chain] = (lerp(old_p, new_p, weight), slerp(old_q, new_q, weight),
+                              old_weight+(new_weight-old_weight)*weight, ids)
+        return targets
+
+    def _apply_ik(self, pose, lanes=()):
+        """Stateless, bone-relative touch IK for ordinary three-link limbs.
+
+        Main and independent overlay lanes retain Source dependency order.
+        Within a queued overlay, clips are alternatives: resolve each against
+        the same lower target state, mix their targets, then apply presence.
+        Scaling two requests by complementary weights and applying them in
+        sequence would weaken the lane and leak the lower target into it.
+        Ground/attachment targets and lock history still require engine state.
+        """
+        chains = self.data.theIkChains or []
+        world = world_transforms(self.bones, pose)
+        targets = self._ik_targets(self._ik_requests, world)
+        for candidates, presence in lanes:
+            lane_targets = None
+            for requests, weight in candidates:
+                candidate = self._ik_targets(requests, world, targets)
+                lane_targets = candidate if lane_targets is None else self._mix_ik_targets(
+                    lane_targets, candidate, weight, world)
+            if lane_targets is not None:
+                targets = self._mix_ik_targets(targets, lane_targets, presence, world)
         result = list(pose)
         for chain_index, (desired_p, desired_q, weight, ids) in targets.items():
             if weight <= 0:

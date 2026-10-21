@@ -247,6 +247,8 @@ class ActionCorrectionInterface(QWidget):
         sequence_layout.addWidget(self.fps_label,0,2);sequence_layout.addWidget(self.fps_input,0,3)
         self.fps_input.setMaximumWidth(150)
         layout.addWidget(self.sequence_controls)
+        from .action_continuous import ContinuousPreview
+        self.continuous=ContinuousPreview(self,sequence_layout,layout)
         self.progress=IndeterminateProgressBar(self);self.progress.hide();layout.addWidget(self.progress)
         status=QHBoxLayout()
         self.status_label=CaptionLabel('',self);self.status_label.setWordWrap(True)
@@ -339,6 +341,7 @@ class ActionCorrectionInterface(QWidget):
         if index!=self._model_index:self._model_index=index;self._model_changed()
 
     def commit_fps_edit(self):
+        if self.continuous.active:return
         if self._busy or self._loading_values or not self.current_action() or self._loaded_models is not self.session.models:return
         self.fps_input.interpretText();self._update_controls()
 
@@ -347,6 +350,7 @@ class ActionCorrectionInterface(QWidget):
         self.viewport.set_fov(value);self.official_viewport.set_fov(value)
 
     def _comparison_toggled(self,checked):
+        if self.continuous.active:return
         self.pause();self.official_panel.setVisible(checked)
         if checked:
             self._original_error=None
@@ -361,6 +365,7 @@ class ActionCorrectionInterface(QWidget):
         return id(self.session),index,model.profile_id,self.session.options.game_path
 
     def _ensure_original(self):
+        if self.continuous.active:return
         key=self._comparison_key()
         if (not self.compare_check.isChecked() or key is None or self.suspended or self._busy or self._original_pending
                 or self._original_key==key or self._original_error and self._original_error[0]==key):return
@@ -414,6 +419,7 @@ class ActionCorrectionInterface(QWidget):
         return self._original_asset.model.timeline(index) if index is not None else None
 
     def _refresh_original(self):
+        if self.continuous.active:return
         if not self.compare_check.isChecked() or self._original_key!=self._comparison_key() or self._original_asset is None:return
         from ..action_compare import sample_sequence_frame
         asset=self._original_asset;index=self._official_sequence()
@@ -492,6 +498,7 @@ class ActionCorrectionInterface(QWidget):
         self._update_controls()
 
     def swap_sequences(self,first,second,*,timing_slots=None):
+        if self.continuous.active:return
         if self._busy or not self.session or self.suspended:return
         self.pause()
         model_index=self._model_index
@@ -595,12 +602,14 @@ class ActionCorrectionInterface(QWidget):
         return self._frame*timeline.duration/span if span else 0.
 
     def _playback_end(self):
+        if self.continuous.active:return self.continuous.playback.duration
         timeline=self.current_timeline();end=timeline.duration if timeline else 0.
         official=self._official_clock()
         if official is not None:end=max(end,official.duration)
         return end
 
     def _frame_step_seconds(self):
+        if self.continuous.active:return self.continuous.step_seconds()
         timeline=self.current_timeline()
         if timeline and timeline.duration>0 and timeline.frame_count>1:
             return timeline.duration/(timeline.frame_count-1)
@@ -611,6 +620,8 @@ class ActionCorrectionInterface(QWidget):
         return 1/30
 
     def _sync_playback_slider(self):
+        if self.continuous.active:
+            self.continuous.sync_slider();return
         step=self._frame_step_seconds();extent=self._playback_end()
         maximum=max(0,math.ceil(extent/step-1e-8))
         position=self._elapsed_seconds
@@ -628,6 +639,7 @@ class ActionCorrectionInterface(QWidget):
             self.session.source_index(model_index,action.index),rate_scale=self.effective_fps/action.fps)
 
     def set_loaded(self,payload):
+        self.continuous.exit(refresh=False)
         previous=(self._model_index,self.sequence_box.currentData(),self._frame,self._elapsed_seconds)
         same=self.session is payload[0]
         self.pause();self.session,self._previews,self._materials=payload[:3]
@@ -659,6 +671,7 @@ class ActionCorrectionInterface(QWidget):
 
     def suspend_preview(self):
         """Retain metadata/drafts, retire GL on GUI, defer CPU destruction."""
+        self.continuous.exit(refresh=False)
         self.commit_fps_edit();self.pause()
         owners,loaders=self.audio.detach_source()
         owners.extend((self._previews,self._materials,self._arms_asset,
@@ -684,6 +697,7 @@ class ActionCorrectionInterface(QWidget):
 
     def clear_loaded(self):
         """A failed request for another result cannot expose the previous result."""
+        self.continuous.exit(refresh=False)
         self.pause();self._loading_values=True
         self.viewport.setUpdatesEnabled(True);self.official_viewport.setUpdatesEnabled(True)
         self._suspended_cameras=None
@@ -705,6 +719,7 @@ class ActionCorrectionInterface(QWidget):
         self._loading_values=False;self._update_controls()
 
     def _model_changed(self,*_):
+        self.continuous.exit(refresh=False)
         if self._loading_values or not self.session or self.suspended:return
         self.pause();self._loading_values=True
         index=self._model_index
@@ -734,6 +749,7 @@ class ActionCorrectionInterface(QWidget):
 
     def _sequence_changed(self,*_):
         if self._loading_values or self.suspended:return
+        if self.continuous.active:return
         self.pause();action=self.current_action()
         self._frame=0.;self._elapsed_seconds=0.
         if action is None:
@@ -781,6 +797,7 @@ class ActionCorrectionInterface(QWidget):
         self._refresh_frame()
 
     def _fps_changed(self,value):
+        if self.continuous.active:return
         if self._loading_values or not self.current_action():return
         if self._loaded_models is not self.session.models:return
         self.audio.stop()
@@ -795,11 +812,16 @@ class ActionCorrectionInterface(QWidget):
 
     def _seek(self,value):
         if self._loading_values:return
+        if self.continuous.active:
+            self.continuous.seek(value)
+            self._last_tick=time.monotonic();self._refresh_frame();return
         self.audio.stop()
         self._elapsed_seconds=float(value)*self._frame_step_seconds()
         self._last_tick=time.monotonic();self._refresh_frame()
 
     def _step(self,offset):
+        if self.continuous.active:
+            self.pause();self.continuous.step(offset);return
         self.pause();self.frame_slider.setValue(self.frame_slider.value()+offset)
 
     def _refresh_preview_caption(self):
@@ -809,6 +831,8 @@ class ActionCorrectionInterface(QWidget):
         self.current_fps_label.setText(tr('FPS：{fps}',fps=fps_text(self.fps_input.value())) if action else tr('FPS：—'))
 
     def _refresh_frame(self):
+        if self.continuous.active:
+            self.continuous.refresh();return
         self._refresh_preview_caption()
         action=self.current_action()
         if action is None or self.suspended:return
@@ -843,6 +867,10 @@ class ActionCorrectionInterface(QWidget):
 
     def _play_pause(self):
         if self._timer.isActive():self.pause()
+        elif self.continuous.active:
+            if not self.loop_check.isChecked() and self._elapsed_seconds>=self._playback_end():
+                self._elapsed_seconds=0.;self._refresh_frame()
+            self._last_tick=time.monotonic();self._timer.start();self.play_button.setText(tr('暂停'))
         elif self.current_action() and self._playback_end()>0:
             if self.audio.enabled and self.audio.loading:return
             self.audio.stop()
@@ -852,6 +880,12 @@ class ActionCorrectionInterface(QWidget):
             self._last_tick=time.monotonic();self._timer.start();self.play_button.setText(tr('暂停'))
 
     def _tick(self):
+        if self.continuous.active:
+            if self._busy:self.pause();return
+            now=time.monotonic();self._elapsed_seconds+=max(now-self._last_tick,0.);self._last_tick=now
+            if not self.loop_check.isChecked() and self._elapsed_seconds>=self._playback_end():
+                self._elapsed_seconds=self._playback_end();self.pause()
+            self._refresh_frame();return
         action=self.current_action()
         if action is None or self._busy:self.pause();return
         timeline=self.current_timeline()
@@ -879,6 +913,7 @@ class ActionCorrectionInterface(QWidget):
         self.pause();self.back_requested.emit()
 
     def _confirm_save(self):
+        if self.continuous.active:return
         if self._busy or not self.session:return
         self.commit_fps_edit()
         if not self.session.changes:return
@@ -932,6 +967,7 @@ class ActionCorrectionInterface(QWidget):
         dirty=self.session is not None and (bool(self.session.changes) or available and self.fps_input.has_pending_text)
         self.save_button.setEnabled(not self._busy and not loading_arms and bool(dirty))
         self.cancel_button.setVisible(self._busy);self.cancel_button.setEnabled(self._busy)
+        self.continuous.update_controls(available)
 
     def _toggle_details(self):
         visible=self.details_text.isHidden()

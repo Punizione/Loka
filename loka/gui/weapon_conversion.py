@@ -295,7 +295,6 @@ class WeaponConversionInterface(ScrollArea):
         if error:
             self.invalidate_package()
             if isinstance(error,UnsupportedViewModelError):
-                self.log_card.append('[详情] '+error.reason)
                 self._show_unsupported_notice()
         elif package is not None:
             self.set_package(package)

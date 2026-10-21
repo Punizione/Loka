@@ -286,6 +286,15 @@ class PreviewModel:
                 raise ValueError('Animation frame span must be finite and nonnegative')
             frame = frame / span * max(0, self.frame_count(sequence_index)-1) if span else 0.
         local = self._evaluator.sample(sequence_index, frame)
+        return self._pose_from_local(local)
+
+    def sample_continuous(self, entries):
+        return self._pose_from_local(self._evaluator.sample_continuous(entries))
+
+    def sample_layered(self, main_entries, layers):
+        return self._pose_from_local(self._evaluator.sample_layered(main_entries, layers))
+
+    def _pose_from_local(self, local):
         world = world_matrices(self.data.theBones or [], local)
         skin = tuple(multiply(w, inverse) for w, inverse in zip(world, self._inverse_bind))
         attachments = {}

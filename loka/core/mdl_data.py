@@ -903,6 +903,8 @@ class SourceMdlFileData49:
         self.theProceduralBonesCommandIsUsed: bool = False
         self.theAnimBlockSizeNoStallOptionIsUsed: bool = False
         self.theBoneNameToBoneIndexMap: dict[str, int] = {}
+        self.theOriginalBoneNames: Optional[tuple[str, ...]] = None
+        self.theBoneNameRemap: dict[int, str] = {}
         self.theCorrectiveAnimationDescs: Optional[list[SourceMdlAnimationDesc49]] = None
         self.theSectionFrameCount: int = 0
         self.theSectionFrameMinFrameCount: int = 2000000

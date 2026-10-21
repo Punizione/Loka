@@ -169,7 +169,7 @@ def game_search_roots(game_path: str) -> list[Path]:
 
 
 def copy_include_dependencies(mdl_path: str, data: SourceMdlFileData49,
-                              output_path: str, game_path: str = "") -> list[str]:
+                              output_path: str, game_path: str = "", *, validate_only: bool = False) -> list[str]:
     """Preflight the complete include graph before copying any file."""
     source = Path(mdl_path).resolve()
     local_root = _models_root(source)
@@ -229,6 +229,8 @@ def copy_include_dependencies(mdl_path: str, data: SourceMdlFileData49,
         visiting.add(key)
         pending[key] = (rel, raw)
         dependency = read_reference_data(raw)
+        from .core.bone_names import validate_binary_include_bones
+        validate_binary_include_bones(data, raw)
         for suffix in _COMPANIONS:
             companion = str(PurePosixPath(rel).with_suffix(suffix))
             companion_source = locate(companion, provider)
@@ -241,6 +243,8 @@ def copy_include_dependencies(mdl_path: str, data: SourceMdlFileData49,
 
     for group in data.theModelGroups or []:
         visit(group.theFileName)
+    if validate_only:
+        return []
     output = Path(output_path).resolve() / "models"
     for rel, raw in pending.values():
         destination = output / rel

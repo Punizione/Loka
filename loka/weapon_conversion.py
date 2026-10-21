@@ -24,16 +24,15 @@ from .vpk_writer import write_vpk,write_vpk_set
 from .one_click import find_studiomdl,_fix_melee_layer_fadein
 from .core.constants import STUDIO_LOOPING
 from .process_limits import exception_text
-from .mdl_names import unsupported_name_reason
+from .mdl_names import has_unsupported_names
+from .model_status import UNSUPPORTED_MODEL_MESSAGE, UnsupportedModelError
 
 
-UNSUPPORTED_VIEW_MODEL_MESSAGE = '此版本不支持此类MOD。请自行联系原MOD作者'
+UNSUPPORTED_VIEW_MODEL_MESSAGE = UNSUPPORTED_MODEL_MESSAGE
 
 
-class UnsupportedViewModelError(ValueError):
-    def __init__(self, reason):
-        super().__init__(UNSUPPORTED_VIEW_MODEL_MESSAGE)
-        self.reason = reason
+class UnsupportedViewModelError(UnsupportedModelError):
+    pass
 
 
 def _read_conversion_header(raw, path, *, view_model):
@@ -41,12 +40,10 @@ def _read_conversion_header(raw, path, *, view_model):
         header = read_reference_data(raw)
     except ValueError as error:
         if view_model and str(error) == 'include 依赖不是受支持的 Source MDL':
-            version = int.from_bytes(raw[4:8], 'little') if len(raw) >= 8 else '未知'
-            raise UnsupportedViewModelError(f'{path}: MDL version {version}；{error}') from error
+            raise UnsupportedViewModelError() from None
         raise
-    reason = unsupported_name_reason(raw, header)
-    if reason:
-        raise UnsupportedViewModelError(f'{path}: {reason}')
+    if has_unsupported_names(raw, header):
+        raise UnsupportedViewModelError()
     return header
 
 
@@ -279,7 +276,7 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
     try:
         inspection = inspect_weapon_package(options.input_path)
     except UnsupportedViewModelError as error:
-        detail(error.reason)
+        detail(str(error))
         return PreprocessResult(error=str(error),unsupported_view_model=True)
     primary=inspection.resolve_view_model(options.source_pistol_mode).lower()
     world=inspection.resolve_world_model(options.source_pistol_mode)
@@ -349,6 +346,8 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
             dec = MdlDecompiler(_decompile_options(options))
             outcome = dec.decompile(str(path), str(destination), progress=detail)
             if not outcome.success:
+                if UNSUPPORTED_MODEL_MESSAGE in outcome.errors:
+                    raise UnsupportedModelError()
                 raise ValueError(f'{rel} 反编译失败: ' + '; '.join(outcome.errors))
             result.warnings.extend(outcome.warnings)
             for recovery in outcome.vtx_recoveries:
@@ -616,6 +615,9 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
     except InterruptedError as error:
         result.cancelled = True
         result.error = '\n'.join([str(error),*getattr(error,'__notes__',())])
+    except UnsupportedModelError:
+        result.unsupported_view_model = True
+        result.error = UNSUPPORTED_MODEL_MESSAGE
     except Exception as error:
         result.error = '\n'.join([exception_text(error),*getattr(error,'__notes__',())])
     finally:
@@ -643,7 +645,7 @@ def convert_weapon_package(options:ConversionOptions,*,on_stage=None,on_detail=N
         check()
         try:inspect_weapon_package(options.input_path)
         except UnsupportedViewModelError as error:
-            detail(error.reason)
+            detail(str(error))
             return PreprocessResult(error=str(error),unsupported_view_model=True)
         except MemoryError:
             raise
@@ -685,6 +687,8 @@ def convert_weapon_package(options:ConversionOptions,*,on_stage=None,on_detail=N
         result.package_sha256=package.sha256;result.published=True;result.success=True
     except InterruptedError as error:
         result.cancelled=True;result.error='\n'.join([str(error),*getattr(error,'__notes__',())])
+    except UnsupportedModelError:
+        result.unsupported_view_model=True;result.error=UNSUPPORTED_MODEL_MESSAGE
     except Exception as error:
         result.error='\n'.join([exception_text(error),*getattr(error,'__notes__',())])
     finally:

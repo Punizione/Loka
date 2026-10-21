@@ -246,6 +246,15 @@ class CompositePreviewModel:
 
     def sample(self, sequence_index, frame, *, frame_span=None):
         primary = self.weapon.sample(sequence_index, frame, frame_span=frame_span)
+        return self._merge_pose(primary)
+
+    def sample_continuous(self, entries):
+        return self._merge_pose(self.weapon.sample_continuous(entries))
+
+    def sample_layered(self, main_entries, layers):
+        return self._merge_pose(self.weapon.sample_layered(main_entries, layers))
+
+    def _merge_pose(self, primary):
         if len(primary.bone_world_matrices) != self._bone_offset:
             raise ValueError('武器骨骼世界矩阵不完整，无法合并手臂。')
         bones = self.arms.data.theBones or []
