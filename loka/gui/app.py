@@ -57,6 +57,7 @@ from qfluentwidgets import (
     FluentIcon,
     FluentWindow,
     InfoBar,
+    IconWidget,
     InfoBarPosition,
     InfoBadge,
     IndeterminateProgressBar,
@@ -93,6 +94,8 @@ from .weapon_conversion import WeaponConversionInterface,IK_HANDLING_LABELS
 from .startup_artwork import BACKGROUND_PIDS, PREVIEW_CHOICES, StartupArtwork, select_startup_artwork
 from .artwork_layout import ArtworkLayout, ArtworkLayoutStore
 from .update_check import UpdateCheckController
+from .ffmpeg_install import FFmpegInstallController
+from .settings_layout import SettingsGroup,SettingsPathCard
 from .status_badges import active_badges
 
 #: "自动匹配" choice in the Subtract tab's idle selector (uses name matching).
@@ -141,10 +144,6 @@ _NAV_EXPAND_WIDTH = 200
 def classify_dropped_path(path: str) -> str:
     """Return ``"folder"``, ``"mdl"`` or ``"other"`` for a dropped path.
 
-    Previously lived in ``loka.gui.dnd``, the Tk-era drag-and-drop module
-    whose top-level ``import tkinter`` dragged the whole Tcl/Tk runtime into the
-    frozen executable.  Qt delivers drops itself, so only this pure-``os``
-    classifier was still needed.
     """
     if os.path.isdir(path):
         return "folder"
@@ -181,6 +180,8 @@ class GuiConfig(QConfig):
 
     game_path = ConfigItem("ToolPaths", "GamePath", "")
     studiomdl_path = ConfigItem("ToolPaths", "StudiomdlPath", "")
+    ffmpeg_configured = ConfigItem("FFmpeg", "Configured", False, _BoolValidator(False))
+    ffmpeg_detail = ConfigItem("FFmpeg", "Detail", "")
     #: Advanced mode reveals the three specialized pages and detail options.
     advanced = ConfigItem("General", "Advanced", False)
     language = ConfigItem("General", "Language", "zh_CN", OptionsValidator(["zh_CN", "en_US"]))
@@ -197,7 +198,7 @@ class GuiConfig(QConfig):
     conversion_audio_logic = ConfigItem("WeaponConversion", "AudioLogic", "frequency",
                                        OptionsValidator(["frequency", "balanced", "complete"]))
     conversion_ik_rule_handling = ConfigItem("WeaponConversion", "IkRuleHandling", "delete",
-                                            OptionsValidator(["delete","default","usesource"]))
+                                            OptionsValidator(["delete","default","compatible","usesource"]))
     # Loading legacy "auto" values corrects them to the first explicit choice.
     conversion_source_pistol_mode = ConfigItem("WeaponConversion", "SourcePistolMode", "single",
                                                OptionsValidator(["single","dual"]))
@@ -470,7 +471,7 @@ class HomeInterface(ScrollArea):
 
 
 class SettingsInterface(ScrollArea):
-    """Nav item 2: tool paths used by the one-click pipeline."""
+    """Tool configuration, optional FFmpeg installation and shared networking."""
 
     check_update_requested = Signal(str)
 
@@ -478,11 +479,11 @@ class SettingsInterface(ScrollArea):
         super().__init__(parent)
         self.scrollWidget = QWidget(self)
         layout = _vbox(self.scrollWidget)
-        layout.addWidget(SubtitleLabel(tr('设置'), self))
 
-        group = SettingCardGroup(tr('工具路径'), self)
+        self.tools_group = SettingsGroup(tr('工具配置'), self.scrollWidget)
+        group = self.tools_group
 
-        self.game_card = PushSettingCard(
+        self.game_card = SettingsPathCard(
             tr('浏览'),
             FluentIcon.GLOBE,
             tr('游戏路径'),
@@ -491,7 +492,7 @@ class SettingsInterface(ScrollArea):
         )
         self.game_card.clicked.connect(self._browse_game)
 
-        self.compiler_card = PushSettingCard(
+        self.compiler_card = SettingsPathCard(
             tr('浏览'),
             FluentIcon.APPLICATION,
             tr('studiomdl.exe / 第三方编译器路径'),
@@ -500,7 +501,7 @@ class SettingsInterface(ScrollArea):
         )
         self.compiler_card.clicked.connect(self._browse_compiler)
 
-        self.find_card = PushSettingCard(
+        self.find_card = SettingsPathCard(
             tr('自动查找'),
             FluentIcon.SEARCH,
             tr('从游戏路径查找编译器'),
@@ -521,46 +522,71 @@ class SettingsInterface(ScrollArea):
         group.addSettingCard(self.find_card)
         group.addSettingCard(self.advanced_card)
         layout.addWidget(group)
+        self.find_card.setToolTip(tr('填游戏路径时 兼容ADS处理会自动查找其中的 studiomdl.exe（bin 下）；也可直接指定兼容的模型编译器。设置会自动保存。'))
 
-        language_row = QHBoxLayout()
-        language_row.addWidget(BodyLabel(tr("语言"), self))
-        self.language_box = ComboBox(self)
-        self.language_box.addItem("中文", userData="zh_CN")
-        self.language_box.addItem("English", userData="en_US")
-        self.language_box.setCurrentIndex(0 if CFG.get(CFG.language) == "zh_CN" else 1)
-        self.language_box.currentIndexChanged.connect(self._language_changed)
-        language_row.addWidget(self.language_box, 1)
-        layout.addLayout(language_row)
+        ffmpeg_card,ffmpeg_layout=self._section_card(group)
+        self.ffmpeg_card=ffmpeg_card
+        ffmpeg_row=QHBoxLayout()
+        self.ffmpeg_icon=IconWidget(FluentIcon.MUSIC,ffmpeg_card)
+        self.ffmpeg_icon.setFixedSize(16,16)
+        ffmpeg_row.addWidget(self.ffmpeg_icon);ffmpeg_row.addSpacing(8)
+        self.ffmpeg_status=BodyLabel('',ffmpeg_card)
+        self.ffmpeg_status.setTextFormat(Qt.PlainText)
+        self._set_ffmpeg_status(CFG.get(CFG.ffmpeg_configured),CFG.get(CFG.ffmpeg_detail),persist=False)
+        ffmpeg_row.addWidget(self.ffmpeg_status,1)
+        self.ffmpeg_progress=ProgressBar(ffmpeg_card);self.ffmpeg_progress.setRange(0,100)
+        self.ffmpeg_progress.setFixedWidth(140);self.ffmpeg_progress.hide()
+        ffmpeg_row.addWidget(self.ffmpeg_progress,0,Qt.AlignVCenter)
+        self.ffmpeg_install_button=PushButton(tr('检测/安装'),ffmpeg_card)
+        self.ffmpeg_cancel_button=PushButton(tr('取消'),ffmpeg_card)
+        self.ffmpeg_cancel_button.hide()
+        ffmpeg_row.addWidget(self.ffmpeg_install_button);ffmpeg_row.addWidget(self.ffmpeg_cancel_button)
+        ffmpeg_layout.addLayout(ffmpeg_row)
+        self.ffmpeg_install_button.setToolTip(tr('先检测已有 FFmpeg，未找到时安装到当前用户目录并配置用户 PATH；下载与检查更新共用代理。'))
+        self._ffmpeg_install=FFmpegInstallController(self)
+        self.ffmpeg_install_button.clicked.connect(lambda:self._ffmpeg_install.start(self.update_proxy_url()))
+        self.ffmpeg_cancel_button.clicked.connect(self._ffmpeg_install.cancel)
+        self._ffmpeg_install.busy_changed.connect(self._ffmpeg_busy)
+        self._ffmpeg_install.progress_changed.connect(self._ffmpeg_progress_changed)
+        self._ffmpeg_install.completed.connect(self._ffmpeg_completed)
 
-        hint = CaptionLabel(
-            tr('填游戏路径时 兼容ADS处理会自动查找其中的 studiomdl.exe（bin 下）；也可直接指定兼容的模型编译器。设置会自动保存。'),
-            self,
-        )
-        hint.setWordWrap(True)
-        layout.addWidget(hint)
-
+        self.network_group=SettingsGroup(tr('更新与网络'),self.scrollWidget)
+        network_card,network_layout=self._section_card(self.network_group)
+        self.network_card=network_card
         update_row = QHBoxLayout()
-        update_row.addWidget(BodyLabel(tr('更新'), self))
-        self.check_update_button = PushButton(tr('检查更新'), self)
+        update_row.addWidget(BodyLabel(tr('当前版本：{version}',version=__version__),network_card),1)
+        self.check_update_button = PushButton(tr('检查更新'), network_card)
         self.check_update_button.clicked.connect(
             lambda: self.check_update_requested.emit(self.update_proxy_url()))
         update_row.addWidget(self.check_update_button)
-        update_row.addStretch(1)
-        layout.addLayout(update_row)
-
-        proxy_row = QHBoxLayout()
-        self.update_proxy_check = CheckBox(tr('使用代理检查更新'), self)
+        network_layout.addLayout(update_row)
+        self.update_proxy_check = CheckBox(tr('使用代理（检查更新与 FFmpeg 下载）'), network_card)
         self.update_proxy_check.setChecked(CFG.get(CFG.update_use_proxy))
-        proxy_row.addWidget(self.update_proxy_check)
-        self.update_proxy_edit = LineEdit(self)
+        network_layout.addWidget(self.update_proxy_check)
+        self.update_proxy_edit = LineEdit(network_card)
         self.update_proxy_edit.setPlaceholderText(tr('http://127.0.0.1:7890 或 socks5://127.0.0.1:1080'))
         self.update_proxy_edit.setText(CFG.get(CFG.update_proxy_url))
         self.update_proxy_edit.setEnabled(self.update_proxy_check.isChecked())
         self.update_proxy_check.toggled.connect(self.update_proxy_edit.setEnabled)
         self.update_proxy_check.toggled.connect(lambda enabled: CFG.set(CFG.update_use_proxy, enabled))
         self.update_proxy_edit.textChanged.connect(lambda text: CFG.set(CFG.update_proxy_url, text))
-        proxy_row.addWidget(self.update_proxy_edit, 1)
-        layout.addLayout(proxy_row)
+        network_layout.addWidget(self.update_proxy_edit)
+
+        preferences_card,preferences_layout=self._section_card(group)
+        language_row = QHBoxLayout()
+        self.language_icon=IconWidget(FluentIcon.LANGUAGE,preferences_card)
+        self.language_icon.setFixedSize(16,16)
+        language_row.addWidget(self.language_icon);language_row.addSpacing(8)
+        language_row.addWidget(BodyLabel(tr("语言"), preferences_card),1)
+        self.language_box = ComboBox(preferences_card)
+        self.language_box.addItem("中文", userData="zh_CN")
+        self.language_box.addItem("English", userData="en_US")
+        self.language_box.setCurrentIndex(0 if CFG.get(CFG.language) == "zh_CN" else 1)
+        self.language_box.currentIndexChanged.connect(self._language_changed)
+        self.language_box.setMinimumWidth(160);self.language_box.setMaximumWidth(220)
+        language_row.addWidget(self.language_box)
+        preferences_layout.addLayout(language_row)
+        layout.addWidget(self.network_group)
 
         self.update_link = BodyLabel(
             tr('<a href="https://github.com/Punizione/Loka/releases">[更新链接]</a> 随缘更新'),
@@ -583,6 +609,50 @@ class SettingsInterface(ScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setObjectName("settingsInterface")
         self.enableTransparentBackground()
+
+    def _section_card(self,group):
+        card=CardWidget(group);box=QVBoxLayout(card)
+        box.setContentsMargins(16,12,16,12);box.setSpacing(8)
+        group.addSettingCard(card)
+        return card,box
+
+    def _ffmpeg_busy(self,busy):
+        self.ffmpeg_install_button.setEnabled(not busy)
+        self.ffmpeg_cancel_button.setVisible(busy)
+        self.ffmpeg_progress.setVisible(busy)
+        if busy:
+            self.ffmpeg_progress.setValue(0)
+            self._set_ffmpeg_status(False,persist=False)
+
+    def _set_ffmpeg_status(self,configured,detail='',*,persist=True):
+        detail=str(detail or '')
+        self.ffmpeg_status.setText(tr('FFmpeg：{state}',state=tr('已配置') if configured else tr('未知')))
+        self.ffmpeg_status.setToolTip(detail)
+        if persist:
+            CFG.set(CFG.ffmpeg_configured,bool(configured),save=False)
+            CFG.set(CFG.ffmpeg_detail,detail,save=False)
+            CFG.save()
+
+    def _ffmpeg_progress_changed(self,phase,done,total):
+        messages={'detect':'正在检测 FFmpeg…','metadata':'正在获取 FFmpeg 下载信息…','verify':'正在校验 FFmpeg…','configure':'正在配置 FFmpeg 环境变量…'}
+        if phase=='download':
+            self.ffmpeg_progress.setValue(round(100*done/total) if total else 0)
+            message=tr('正在下载 FFmpeg：{done} / {total} MiB',done=f'{done/1048576:.1f}',total=f'{total/1048576:.1f}' if total else '?')
+        else:message=tr(messages.get(phase,'正在安装 FFmpeg…'))
+        self.ffmpeg_status.setToolTip(message)
+        self.ffmpeg_progress.setToolTip(message)
+
+    def _ffmpeg_completed(self,outcome):
+        if isinstance(outcome,InterruptedError):
+            self._set_ffmpeg_status(CFG.get(CFG.ffmpeg_configured),CFG.get(CFG.ffmpeg_detail),persist=False);return
+        if isinstance(outcome,Exception):
+            message=exception_text(outcome)
+            self._set_ffmpeg_status(False,display_text(message))
+            self._toast(tr('FFmpeg 安装失败：{error}',error=message),'error');return
+        self._set_ffmpeg_status(True,str(outcome.executable)+'\n'+outcome.version)
+        if outcome.reused:
+            self._toast(tr('已安装，无需重复安装'),'info');return
+        self._toast(tr('FFmpeg 已安装并配置，当前 Loka 可立即使用。'),'success')
 
     def update_proxy_url(self) -> str:
         return self.update_proxy_edit.text().strip() if self.update_proxy_check.isChecked() else ''
@@ -684,6 +754,10 @@ class OneClickInterface(ScrollArea):
         ik_row.addWidget(BodyLabel(tr('IK 处理 (ikrule):'), options_card))
         self.ik_box = ComboBox(options_card)
         for value, label in IK_HANDLING_LABELS.items():
+            # Binary curve writeback belongs to weapon conversion's staged
+            # compiler; standalone decompile/one-click only exports QC rules.
+            if value == 'compatible':
+                continue
             self.ik_box.addItem(tr(label), userData=value)
         self.ik_box.setMinimumWidth(140)
         ik_row.addWidget(self.ik_box, 1)
@@ -1382,6 +1456,8 @@ class MainWindow(FluentWindow):
         self.home_page.artwork_layout_confirmed.connect(self._confirm_artwork_layout)
         self.home_page.artwork_preview_changed.connect(self._switch_artwork_preview)
         self.settings_page = SettingsInterface(self)
+        self._close_after_ffmpeg=False
+        self.settings_page._ffmpeg_install.completed.connect(self._finish_ffmpeg_close)
         self.one_click_page = OneClickInterface(self)
         self.decompile_page = DecompileInterface(self)
         self.subtract_page = SubtractInterface(self)
@@ -1792,7 +1868,8 @@ class MainWindow(FluentWindow):
                                     audio_logic=page.audio_logic_box.currentData(),ik_rule_handling=page.ik_box.currentData(),
                                     melee_layer_fadein_fix=page.fadein_check.isChecked(),source_pistol_mode=page.source_pistol_mode(),
                                     fps_match=bool(CFG.get(CFG.advanced) and page.fps_check.isChecked()),
-                                    exclude_inspect_fps=bool(CFG.get(CFG.advanced) and page.inspect_fps_check.isChecked()))
+                                    exclude_inspect_fps=bool(CFG.get(CFG.advanced) and page.inspect_fps_check.isChecked()),
+                                    reload_loop_count=page.reload_loop_box.value())
         page.log_card.clear();page.begin_conversion(options)
 
         def work():
@@ -2051,6 +2128,11 @@ class MainWindow(FluentWindow):
             self.switchTo(page);page._confirm_save()
         return False
 
+    def _finish_ffmpeg_close(self,_outcome):
+        if self._close_after_ffmpeg:
+            self._close_after_ffmpeg=False
+            QTimer.singleShot(0,self.close)
+
     def closeEvent(self,event):
         if self._update_check.active:
             event.ignore();return
@@ -2058,6 +2140,14 @@ class MainWindow(FluentWindow):
             self.action_correction_page.log_card.append(tr('请先等待当前动作任务完成，或取消任务后再关闭。'))
             event.ignore();return
         if not self._leave_correction_draft():event.ignore();return
+        if self.settings_page._ffmpeg_install.active:
+            self._close_after_ffmpeg=True
+            self.settings_page._ffmpeg_install.cancel()
+            self.switchTo(self.settings_page)
+            self.settings_page.ffmpeg_status.setToolTip(tr('正在取消 FFmpeg 安装，完成清理后关闭…'))
+            self.settings_page.ensureWidgetVisible(self.settings_page.ffmpeg_status)
+            event.ignore();return
+        self.settings_page._ffmpeg_install.cancel()
         if self.action_correction_page is not None:
             self.action_correction_page.pause()
             self.action_correction_page.audio.close()

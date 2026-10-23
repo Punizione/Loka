@@ -53,6 +53,7 @@ class CorrectionModel:
     actions: tuple
     swap_actions: tuple = ()
     timing_indexes: tuple = ()
+    sequence_slots: tuple = ()
 
 
 @dataclass(frozen=True)
@@ -62,6 +63,7 @@ class FpsChange:
     action: object
     old_fps: float
     new_fps: float
+    removed: bool = False
 
 
 class CorrectionSession:
@@ -75,6 +77,7 @@ class CorrectionSession:
         self.models = ()
         self.updates = {}
         self.assignments = {}
+        self.removed_sequences = set()
         self.timing_overrides = {}
         self._preview_models = {}
         self.fingerprints = {}
@@ -200,7 +203,10 @@ class CorrectionSession:
             actions=tuple(with_timing_reference(a,profile,timings[a.index]) if a.index in timings else a for a in actions)
             swap_actions=tuple(with_timing_reference(a,profile,timings[a.index]) if a.index in timings else a for a in swap_actions)
             if set(timings)-{a.index for a in swap_actions}:raise ValueError('计时参考绑定到无 Activity 的槽位。')
-            models.append(CorrectionModel(profile, qc, model, actions,swap_actions,tuple(sorted(timings.items()))))
+            from .action_rules import _QcDocument
+            from .action_removal import qc_slots
+            models.append(CorrectionModel(profile, qc, model, actions,swap_actions,tuple(sorted(timings.items())),
+                                          qc_slots(_QcDocument(qc),indexes)))
         self.models = tuple(models)
 
     def baseline_action(self, model_index, sequence_index, *, all_slots=False):
@@ -244,6 +250,8 @@ class CorrectionSession:
 
     def swap_sequences(self,model_index,first,second,*,preview=None,timing_slots=None):
         from .action_swaps import validate_swap_pair
+        if (model_index,first) in self.removed_sequences or (model_index,second) in self.removed_sequences:
+            raise ValueError('已剔除的槽位不能参与调换，请先恢复该槽位。')
         if first==second:raise ValueError('请选择两个不同的动作顺位。')
         a=self.action(model_index,first,all_slots=True)
         b=self.action(model_index,second,all_slots=True)
@@ -268,6 +276,10 @@ class CorrectionSession:
                 from .action_preview import PreviewModel
                 if model_index not in self._preview_models:
                     self._preview_models[model_index]=PreviewModel.load(self.models[model_index].model_path)
+                    from .action_reload_preview import configure_session_reload_preview
+                    configure_session_reload_preview(self,model_index,self._preview_models[model_index])
+                    from .action_qc_preview import configure_session_qc_preview
+                    configure_session_qc_preview(self,model_index,self._preview_models[model_index])
                 preview=self._preview_models[model_index]
             for destination,donor in ((a,b),(b,a)):
                 if destination.index not in durations:continue
@@ -295,6 +307,7 @@ class CorrectionSession:
         return self._set_fps(model_index,sequence_index,fps)
 
     def _set_fps(self, model_index, sequence_index, fps, *,all_slots=False):
+        if (model_index,sequence_index) in self.removed_sequences:raise ValueError('已剔除的槽位不能修改 FPS。')
         action = self.action(model_index, sequence_index,all_slots=all_slots)
         if isinstance(fps, bool):raise ValueError('FPS 必须是有限正数。')
         try:rate = float(fps)
@@ -309,13 +322,20 @@ class CorrectionSession:
     @property
     def changes(self):
         keys=set(self.updates)|set(self.assignments)|set(self.timing_overrides)
-        return tuple(FpsChange(i,self.models[i],self.action(i,index,all_slots=True),
+        edits=tuple(FpsChange(i,self.models[i],self.action(i,index,all_slots=True),
                               self.baseline_action(i,index,all_slots=True).fps,round_fps(self.effective_fps(i,index)))
-                     for i,index in sorted(keys))
+                     for i,index in sorted(keys-self.removed_sequences))
+        return edits+tuple(FpsChange(i,self.models[i],self.models[i].sequence_slots[index],0,0,True)
+                           for i,index in sorted(self.removed_sequences))
+
+    def set_removals(self,model_index,indices):
+        from .action_removal import stage_removals
+        stage_removals(self,model_index,indices)
 
     def discard(self):
         self.updates.clear()
         self.assignments.clear()
+        self.removed_sequences.clear()
         self.timing_overrides.clear()
 
     def save(self, **kwargs):

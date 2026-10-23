@@ -28,7 +28,7 @@ __all__ = [
 
 #: Signature of the parser's ``StreamWriter.WriteLine(String)``.  Both writers take
 #: such a callable so that they can be driven by a :class:`TextWriter` or by any
-#: callable that collects lines (for example a test double).
+#: callable that collects output lines.
 WriteLine = Callable[[str], None]
 
 #: Symbols produced by the ``en-US`` ``NumberFormatInfo`` for non-finite values.

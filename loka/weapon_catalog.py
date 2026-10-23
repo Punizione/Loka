@@ -62,13 +62,13 @@ def allowed_targets(source_id: str) -> tuple[Weapon, ...]:
     source_family=target_family_id(source_id)
     return tuple(w for w in TARGET_WEAPONS if target_family_id(w.id)!=source_family
                  and w.category==source.category
-                 and ((source_family in SHOTGUN_IDS)==(target_family_id(w.id) in SHOTGUN_IDS)))
+                 and (source_family in SHOTGUN_IDS or target_family_id(w.id) not in SHOTGUN_IDS))
 
 
 def validate_target(source_id: str, target_id: str) -> None:
     get_weapon(target_id)
     if not any(w.id==target_id for w in allowed_targets(source_id)):
-        raise ValueError('目标不能与来源相同；枪械和近战分别互转；霰弹枪只与其他霰弹枪互转')
+        raise ValueError('目标不能与来源相同；枪械和近战分别互转；非霰弹枪不能转为霰弹枪')
 
 
 def get_weapon(id: str) -> Weapon:

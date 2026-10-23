@@ -1476,7 +1476,6 @@ def transform_phy_vertex(
         if collision_data_count == 1:
             # FROM: collisionmodel.cpp ConvertToWorldSpace()
             if (mdl_file_data.flags & STUDIOHDR_FLAGS_STATIC_PROP) > 0:
-                # TEST: Works for props_vehicles that use $staticprop.
                 a_vector.x = 1 / 0.0254 * vertex.z
                 a_vector.y = 1 / 0.0254 * -vertex.x
                 a_vector.z = 1 / 0.0254 * -vertex.y
@@ -1498,7 +1497,6 @@ def transform_phy_vertex(
                     a_bone.poseToBoneColumn3,
                 )
             else:
-                # TEST: Works for w_minigun.
                 a_vector.x = 1 / 0.0254 * vertex.x
                 a_vector.y = 1 / 0.0254 * -vertex.y
                 a_vector.z = 1 / 0.0254 * -vertex.z

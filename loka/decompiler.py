@@ -87,6 +87,7 @@ class DecompileOptions:
     #: How ``ikrule`` lines inside ``$animation``/``$sequence`` blocks are written:
     #: "default" keeps the parser's output, "delete" drops every ikrule line, and
     #: "usesource" rewrites touch ikrules to ``ikrule "<chain>" usesource``.
+    #: "compatible" preserves rules for optional original-curve writeback during weapon conversion.
     ik_rule_handling: str = "default"
 
     #: Subtract correction: reuse a real looping idle animation as the delta

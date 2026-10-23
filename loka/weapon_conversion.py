@@ -105,6 +105,7 @@ class ConversionOptions:
     source_pistol_mode: str = 'single'
     fps_match: bool = False
     exclude_inspect_fps: bool = False
+    reload_loop_count: int = 1
 
 
 @dataclass
@@ -154,14 +155,16 @@ def _decompile_options(options):
     # requires a real base for touch-IK references in the default IK mode.
     return DecompileOptions(game_path=options.game_path,preserve_animation_semantics=True,
                             subtract_correction=True,
-                            validate_ik_errors=options.ik_rule_handling!='default',
+                            validate_ik_errors=options.ik_rule_handling not in ('default','compatible'),
                             ik_rule_handling=options.ik_rule_handling,resolve_world_physics_includes=True)
 
 
 def _validate_processing_options(options):
+    if type(options.reload_loop_count) is not int or not 0<=options.reload_loop_count<=999:
+        raise ValueError('换弹 Loop 次数必须为 0–999 的整数')
     if options.source_pistol_mode not in ('single','dual'):raise ValueError('手枪模型选择无效（仅支持 single/dual）: '+str(options.source_pistol_mode))
     if options.audio_logic not in ('frequency','balanced','complete'):raise ValueError('音频处理逻辑无效: '+str(options.audio_logic))
-    if options.ik_rule_handling not in ('default','delete','usesource'):raise ValueError('IK 处理方式无效: '+str(options.ik_rule_handling))
+    if options.ik_rule_handling not in ('default','compatible','delete','usesource'):raise ValueError('IK 处理方式无效: '+str(options.ik_rule_handling))
 
 
 def _apply_processing_options(qcs,options,log):
@@ -386,7 +389,7 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
             check_cancel()
             data=dec.mdl_file_data
             model_semantics[rel]=capture_animation_semantics(data,ik_rule_handling=options.ik_rule_handling,
-                validate_ik_errors=options.ik_rule_handling!='default')
+                validate_ik_errors=options.ik_rule_handling not in ('default','compatible'))
             if kind!='v':continue
             animations=data.theAnimationDescs or [];sources=[]
             dependencies=sequence_dependencies(qc_sources[rel].read_text(encoding='utf-8-sig'))
@@ -420,7 +423,8 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
         reports=[];plans={}
         for target_profile in target_profiles:
             plan=plan_sequences(effective.values(),source_profile,target_profile,keep_ads=options.keep_ads,
-                                fps_match=options.fps_match,exclude_inspect_fps=options.exclude_inspect_fps)
+                                fps_match=options.fps_match,exclude_inspect_fps=options.exclude_inspect_fps,
+                                reload_loop_count=options.reload_loop_count)
             problems=validate_sequence_layout(plan.sequences,target_profile)
             if problems:raise ValueError('sequence 计划校验失败: '+'; '.join(problems))
             plans[target_profile]=plan
@@ -437,6 +441,7 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
         report_path=work/'v_dec/sequence_plan.json'
         report_path.write_text(json.dumps({'source_view_model':primary,'source_world_model':world,'source_pistol_mode':options.source_pistol_mode,'source_profile':source_profile,'keep_ads':options.keep_ads,
                                          'fps_match':options.fps_match,'exclude_inspect_fps':options.exclude_inspect_fps,
+                                         'reload_loop_count':options.reload_loop_count,
                                          'targets':reports},ensure_ascii=False,indent=2),encoding='utf-8')
         result.sequence_plan_files.append(str(report_path))
         detail(f'已生成 sequence 顺序和时长计划: {report_path}')
@@ -481,6 +486,19 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
                 for row in plan.sequences:
                     if row.source is None:continue
                     origin=deepcopy(original_semantics[row.source.name])
+                    if row.reload_parts:
+                        # A new concatenated timeline has new IK intervals/curves.
+                        # Validate its compiled QC frame layout without attempting
+                        # to restore a curve belonging to an original short clip.
+                        origin={'delta_post':0,'references':[{'delta':False,'ik':[],
+                            'frames':row.source.frame_count}],'ik_guard':True,
+                            'ik_error_guard':False,'allow_auto_ik':False}
+                        from .weapon_reload import reload_windows
+                        span=row.source.frame_count-1
+                        origin['reload_layers']=[{'name':name,'start':start/span,'end':end/span}
+                            for name,start,end,_,_ in reload_windows(row)]
+                        parts=' + '.join(part.name for part in row.reload_parts)
+                        detail(f'拼接换弹 {row.name}：{parts}；{row.source.frame_count} 帧，适配目标时长。')
                     if row.source_reference_index is not None:
                         index=row.source_reference_index
                         if isinstance(index,bool) or not isinstance(index,int) or not 0<=index<len(origin['references']):

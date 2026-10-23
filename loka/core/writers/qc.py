@@ -2605,11 +2605,13 @@ class QcFile49:
         * ``"delete"`` drops every ``ikrule`` line (the $ikchain commands and
           ``iklock`` options are untouched).
         * ``"usesource"`` rewrites every *touch* ikrule to
-          ``ikrule "<chain>" usesource``; other ikrule types (footstep,
+          ``ikrule "<chain>" touch "<bone>" usesource``; other ikrule types (footstep,
           release, attachment, unlatch) keep the parser's output.
+        * ``"compatible"`` retains the decoded table for optional source-curve
+          restoration. Only this mode suppresses compiler-added IK releases.
         """
         ik_rule_handling = self.theSettings.decompile_ik_rule_handling
-        if (ik_rule_handling == "default" and
+        if (ik_rule_handling == "compatible" and
                 _get(self.theSettings.options,"preserve_animation_semantics",False)):
             # Emit only the decoded table. Otherwise studiomdl inserts release
             # rules for unmentioned chains, including authored empty tables.
@@ -2624,7 +2626,10 @@ class QcFile49:
 
                 ik_type = _get(an_ik_rule, "type", 0)
                 if ik_rule_handling == "usesource" and ik_type == 1:  # IK_SELF
-                    self._emit(_TAB + 'ikrule "' + chain_name + '" usesource')
+                    bone = _get(an_ik_rule, "bone", -1)
+                    bones = self._bones()
+                    target = _get(bones[bone], "theName", "") if 0 <= bone < len(bones) else ""
+                    self._emit(_TAB + 'ikrule "' + chain_name + '" touch "' + target + '" usesource')
                     continue
 
                 line = _TAB + "ikrule "

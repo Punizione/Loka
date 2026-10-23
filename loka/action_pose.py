@@ -183,6 +183,9 @@ class PoseEvaluator:
         self.bones = data.theBones or []
         self.sequences = data.theSequenceDescs or []
         self.animations = data.theAnimationDescs or []
+        self.reload_previews = {}
+        self.qc_bases = {}
+        self._sequence_indexes = {id(s):i for i,s in enumerate(self.sequences)}
         self.bind = tuple((vec(b.position), euler(b.rotation)) for b in self.bones)
         self.zero = tuple(((0., 0., 0.), IDENTITY_Q) for _ in self.bones)
         owner=weakref.ref(self)
@@ -414,15 +417,29 @@ class PoseEvaluator:
         cycle = max(0., min(1., frame/length))
         if s.flags & 1 and (frame < 0 or frame > length):
             cycle = (frame/length) % 1.
-        base = self._delta_base(s) if s.flags & 4 else self.bind
+        playback=self._playback_sequence(index,cycle)
+        base = self._delta_base(playback) if playback.flags & 4 else self.bind
         pose = self._accumulate(base, index, cycle, 1., ())
         return self._apply_ik(pose)
+
+    def _playback_sequence(self,index,cycle):
+        """A recorded dispatch timeline inherits only the active stage's base."""
+        sequence=self.checked_sequence(index)
+        for stage in self.reload_previews.get(index,()):
+            if stage.start<=cycle<stage.end:
+                from types import SimpleNamespace
+                child=self.sequences[stage.sequence_index]
+                return SimpleNamespace(flags=child.flags,theActivityName=stage.source_activity)
+        return sequence
 
     def _delta_base(self, s, selected=None):
         if selected is not None:
             index, cycle = selected
             self.warn('Delta sequences use the preceding selected absolute idle; gameplay layer weights may differ.')
             return self._accumulate(self.bind, index, cycle, 1., ())
+        declared=self.qc_bases.get(self._sequence_indexes.get(id(s)))
+        if declared is not None:
+            return self._decode(*declared)
         base = self.bind
         if s.flags & 4:
             from .core.subtract_correction import _is_real_idle_activity
@@ -472,10 +489,11 @@ class PoseEvaluator:
                 raise ValueError('Invalid continuous pose cycle/weight')
             if ordinal:
                 self._ik_requests = [(grid, c, w*(1-weight)) for grid, c, w in self._ik_requests if w*(1-weight) > 0]
-            if sequence.flags & 4:
+            playback=self._playback_sequence(index,cycle)
+            if playback.flags & 4:
                 outgoing_requests = self._ik_requests
                 self._ik_requests = []
-                base = self._delta_base(sequence, selected)
+                base = self._delta_base(playback, selected)
                 base_requests = [(grid, c, w*weight) for grid, c, w in self._ik_requests if w*weight > 0]
                 # An explicitly reused idle is the same dependency on both
                 # sides of this blend. Merge its influence instead of applying
@@ -546,8 +564,7 @@ class PoseEvaluator:
     @staticmethod
     def _ik_window(rule):
         start, peak, tail, end = rule.influenceStart, rule.influencePeak, rule.influenceTail, rule.influenceEnd
-        # Compiled Source normally extends end beyond 1. Also accept legacy
-        # reader fixtures whose trailing limits are folded back into [0, 1].
+        # Normalize cyclic influence intervals before interpolation.
         if start > end:
             if peak < start: peak += 1
             if tail < start: tail += 1

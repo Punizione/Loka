@@ -66,10 +66,8 @@ def _stored_euler_to_quaternion(rotation: SourceVector) -> SourceQuaternion:
     ``QuaternionSMAngles`` converts them with ``AngleQuaternion`` after the
     engine's cyclic ``RadianEuler`` -> ``QAngle`` remapping, so the
     ``EulerAnglesToQuaternion`` (pitch, yaw, roll) arguments are taken from the
-    stored slots in ``(y, z, x)`` order.  Verified against real compiler output:
-    with this mapping ``delta = base^-1 * full`` reproduces the stored delta
-    triples to < 0.01 degrees on every bone of the regression models (any other
-    slot mapping / conversion pair misses by tens of degrees).
+    stored slots in ``(y, z, x)`` order, with relative rotations composed as
+    ``delta = base^-1 * full``.
     """
     return euler_angles_to_quaternion(
         SourceVector(rotation.y, rotation.z, rotation.x)
@@ -761,8 +759,6 @@ def write_skeleton_section_for_animation(
     # VB: (anAnimationDesc.theName = "" OrElse anAnimationDesc.theName(0) = "@")
     #     AndAlso anAnimationDesc.theAnimIsLinkedToSequence
     #     AndAlso (anAnimationDesc.theLinkedSequences(0) Is theSequenceDescs(0))
-    # ``AndAlso`` short-circuits, and the linked-sequence fields are only ever set
-    # by the unported ReadSequenceDescs, so this stays False for the whole corpus.
     this_is_for_first_sequence = False
     name = an_animation_desc.theName
     if (name == "" or name[0] == "@") and an_animation_desc.theAnimIsLinkedToSequence:
@@ -817,9 +813,7 @@ def write_skeleton_section_for_animation(
                     a_frame_line.position = SourceVector()
                     a_frame_line.rotation = SourceVector()
 
-                    # NOTE: The ZERO path works for L4D2 v_huntingrifle,
-                    #       v_snip_awp, v_snip_scout; the BONE path works for L4D2
-                    #       common_male_carexit.  The DELTA test picks between them.
+                    # Relative animation positions start from zero.
                     if (an_animation_desc.flags & SourceMdlAnimationDesc49.STUDIO_DELTA) > 0:
                         a_frame_line.position.x = 0
                         a_frame_line.position.y = 0

@@ -98,17 +98,17 @@ def _validate_payload(item,frames):
     return scale_bytes+struct.pack('<6h',*offsets)+body
 
 
-def _internal(data,animation):
+def _internal(data,animation,*,require_delta=True):
     if data.version!=49:_fail('unsupported MDL version')
     if animation.animBlock or animation.animblockIkRuleOffset:_fail('external animation data')
-    if not animation.flags&4:_fail('reference is not DELTA')
+    if require_delta and not animation.flags&4:_fail('reference is not DELTA')
     if not math.isfinite(animation.fps) or animation.fps<=0:_fail('invalid FPS')
     if animation.ikRuleCount!=len(animation.theIkRules or []):_fail('incomplete rule table')
 
 
-def capture_touch_curves(data,animation):
+def capture_touch_curves(data,animation,*,require_delta=True):
     """Capture serialized facts only for a descriptor proven by full poses."""
-    _internal(data,animation)
+    _internal(data,animation,require_delta=require_delta)
     rules=[];seen=set();spans=[]
     size=data.fileSize
     for ordinal,rule in enumerate(animation.theIkRules or []):
@@ -156,14 +156,15 @@ def _read_model(path):
     return dec.mdl_file_data
 
 
-def _plan(data,origins,qc=None):
+def _plan(data,origins,qc=None,*,require_delta=True):
+    from ..weapon_compile import _authored_ik_rule_indexes
     planned=None
     if qc is not None:
         from ..weapon_compile import _validated_qc_references
         planned=_validated_qc_references(data,qc)
     sequences={s.theName:s for s in data.theSequenceDescs or []}
     if len(sequences)!=len(data.theSequenceDescs or []):_fail('duplicate target sequence')
-    destinations={};sources={};users={}
+    destinations={};sources={};users={};rule_maps={}
     for name,origin in origins.items():
         sequence=sequences.get(name)
         if sequence is None:_fail('missing target sequence '+name)
@@ -174,9 +175,9 @@ def _plan(data,origins,qc=None):
             payload=reference.get('touch_curves') if origin['ik_guard'] else None
             users.setdefault(index,[]).append(payload)
             if payload is None:continue
-            animation=data.theAnimationDescs[index];_internal(data,animation)
+            animation=data.theAnimationDescs[index];_internal(data,animation,require_delta=require_delta)
             # Replacement is not a repair mechanism for malformed native data.
-            capture_touch_curves(data,animation)
+            capture_touch_curves(data,animation,require_delta=require_delta)
             if payload.get('version')!=1 or payload['frames']!=animation.frameCount or payload['delta']!=bool(animation.flags&4):
                 _fail('reference frames/FPS/DELTA mismatch')
             if not math.isfinite(payload['fps']) or payload['fps']<=0:_fail('invalid source FPS')
@@ -186,7 +187,13 @@ def _plan(data,origins,qc=None):
                 if reference_plan['descriptor']!=index or reference_plan['frames']!=payload['frames']:
                     _fail('planned reference mismatch')
             if payload['skeleton']!=_skeleton(data):_fail('skeleton mismatch')
-            if payload['rule_count']!=len(animation.theIkRules):_fail('rule count mismatch')
+            current_rules=[{'type':rule.type,'chain':data.theIkChains[rule.chain].theName}
+                           for rule in animation.theIkRules]
+            rule_indexes=_authored_ik_rule_indexes(reference['ik'],current_rules,
+                allow_auto_ik=origin.get('allow_auto_ik',False))
+            if payload['rule_count']!=len(rule_indexes):_fail('rule count mismatch')
+            if index in rule_maps and rule_maps[index]!=rule_indexes:_fail('shared rule mapping conflict')
+            rule_maps[index]=rule_indexes
             source=tuple(payload['source'])
             if source in sources:
                 previous_index,previous_payload=sources[source]
@@ -202,10 +209,11 @@ def _plan(data,origins,qc=None):
     plan=[]
     for index,payload in destinations.items():
         animation=data.theAnimationDescs[index]
-        ordinals=[i for i,r in enumerate(animation.theIkRules) if r.type==1]
+        rule_indexes=rule_maps[index]
+        ordinals=[i for i,j in enumerate(rule_indexes) if animation.theIkRules[j].type==1]
         if ordinals!=[r['ordinal'] for r in payload['rules']]:_fail('rule ordering mismatch')
         for item in payload['rules']:
-            rule=animation.theIkRules[item['ordinal']]
+            rule=animation.theIkRules[rule_indexes[item['ordinal']]]
             if any(item[k]!=v for k,v in _identity(data,rule).items()):_fail('rule linkage/order mismatch')
             if rule.ikErrorOffset or rule.compressedIkErrorOffset<=0 or rule.theCompressedIkError is None:_fail('missing/legacy target curve')
             if item['start']!=rule.ikErrorIndexStart:_fail('error start mismatch')
@@ -217,7 +225,7 @@ def _plan(data,origins,qc=None):
     return plan
 
 
-def preserve_compiled_touch_curves(target_mdl,origins,*,staging_root,qc=None):
+def preserve_compiled_touch_curves(target_mdl,origins,*,staging_root,qc=None,require_delta=True):
     """Append, reparse and validate before atomic replacement of private MDL."""
     if not origins or not any(o['ik_guard'] and any('touch_curves' in r for r in o['references']) for o in origins.values()):return []
     target=Path(target_mdl);root=Path(staging_root).resolve()
@@ -226,7 +234,7 @@ def preserve_compiled_touch_curves(target_mdl,origins,*,staging_root,qc=None):
     original=target.read_bytes()
     if len(original)<80 or len(original)>2147483647 or original[:4]!=b'IDST' or struct.unpack_from('<i',original,4)[0]!=49 or struct.unpack_from('<i',original,76)[0]!=len(original):
         _fail('unsupported MDL header/size')
-    data=_read_model(target);plan=_plan(data,origins,qc);candidate=bytearray(original);patches=set();receipts=[]
+    data=_read_model(target);plan=_plan(data,origins,qc,require_delta=require_delta);candidate=bytearray(original);patches=set();receipts=[]
     for index,item,rule,blob in plan:
         offset=rule.theOffsetStart;end=rule.theOffsetEnd
         if not 80<=offset<end<=len(original) or end-offset!=152:_fail('rule offset out of bounds')
@@ -240,15 +248,17 @@ def preserve_compiled_touch_curves(target_mdl,origins,*,staging_root,qc=None):
         pointer=_integer(position-offset,1,2147483647,'rule-relative offset')
         if position+len(blob)>2147483647:_fail('MDL size overflow')
         candidate.extend(blob);struct.pack_into('<i',candidate,field,pointer)
-        receipts.append({'descriptor':index,'rule':item['ordinal'],'rule_offset':offset,'payload_offset':position,'bytes':len(blob),'frames':data.theAnimationDescs[index].frameCount})
+        ordinal=data.theAnimationDescs[index].theIkRules.index(rule)
+        receipts.append({'descriptor':index,'rule':ordinal,'rule_offset':offset,'payload_offset':position,'bytes':len(blob),'frames':data.theAnimationDescs[index].frameCount})
     struct.pack_into('<i',candidate,76,len(candidate))
     fd,temporary=tempfile.mkstemp(prefix='.curve_verify_',suffix='.mdl',dir=target.parent)
     try:
         with os.fdopen(fd,'wb') as handle:handle.write(candidate);handle.flush();os.fsync(handle.fileno())
         restored=_read_model(temporary)
-        for index,item,rule,blob in _plan(restored,origins,qc):
-            actual=capture_touch_curves(restored,restored.theAnimationDescs[index])
-            found=next(x for x in actual['rules'] if x['ordinal']==item['ordinal'])
+        for index,item,rule,blob in _plan(restored,origins,qc,require_delta=require_delta):
+            actual=capture_touch_curves(restored,restored.theAnimationDescs[index],require_delta=require_delta)
+            ordinal=restored.theAnimationDescs[index].theIkRules.index(rule)
+            found=next(x for x in actual['rules'] if x['ordinal']==ordinal)
             if found['scale_bits']!=item['scale_bits'] or found['channels']!=item['channels']:_fail('exact curve readback mismatch')
         from ..weapon_compile import validate_animation_semantics
         validate_animation_semantics(restored,origins)

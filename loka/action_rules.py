@@ -338,6 +338,13 @@ def _official_slot(command, activity, index, profile, explicit):
     return next((s for s in profile.slots if s.name.lower() == command.name.lower() and s.activity == activity), None)
 
 
+def _authored_empty_reload(activity,profile_id):
+    # Necola's EmptyReloadController replaces the ordinary visible reload on
+    # magazine weapons; it does not make their timer or shotgun stages playable.
+    expected='ACT_VM_RELOAD_EMPTY_SNIPER_LAYER' if profile_id=='hunting_rifle' else 'ACT_VM_RELOAD_EMPTY_LAYER'
+    return profile_id not in MELEE_IDS|SHOTGUN_IDS and activity==expected
+
+
 def _playback_role(activity, profile_id, slot):
     if activity not in _rules()['activities']:
         return None
@@ -361,6 +368,8 @@ def _playback_role(activity, profile_id, slot):
         return 'playback_timer'
     if 'playback' in roles:
         return 'playback'
+    if _authored_empty_reload(activity,profile_id):
+        return 'conditional_playback'
     return None
 
 
@@ -378,6 +387,9 @@ def _timing(activity, profile, slot, loop):
         return None, None, None, '循环动作：一轮播放长度；无已确认固定结束计时'
     normalized = _timing_activity(activity, profile)
     candidates = [slot] if slot is not None else [s for s in profile.slots if _timing_activity(s.activity, profile) == normalized and not s.unused]
+    empty_fallback=slot is None and not candidates and _authored_empty_reload(activity,profile.id)
+    if empty_fallback:
+        candidates=[s for s in profile.slots if _timing_activity(s.activity,profile)=='ACT_VM_RELOAD' and not s.unused]
     timers = []
     for candidate in candidates:
         timer_index = _rules()['profiles'][profile.id][candidate.index]['timer_index']
@@ -387,7 +399,8 @@ def _timing(activity, profile, slot, loop):
         if not timer.loop and not timer.flexible and timer.end_frame and timer.fps:
             timers.append((timer.end_frame / timer.fps, timer.end_frame + 1, timer.fps))
     if timers and len(set(timers)) == 1:
-        note = '目标普通动作的已确认计时限制（非官方 ADS/MIXED 动画）' if activity.startswith(('MIXED_', 'ACT_PRIMARY_', 'ACT_SECONDARY_', 'ACT_TERTIARY_', 'ACT_FOURTH_')) else '官方实际计时槽（零起始 End Frame / FPS）'
+        note = ('作者额外空仓换弹：沿用目标普通换弹的已确认计时限制' if empty_fallback else
+                '目标普通动作的已确认计时限制（非官方 ADS/MIXED 动画）' if activity.startswith(('MIXED_', 'ACT_PRIMARY_', 'ACT_SECONDARY_', 'ACT_TERTIARY_', 'ACT_FOURTH_')) else '官方实际计时槽（零起始 End Frame / FPS）')
         return (*timers[0], note)
     if not candidates:
         return None, None, None, '无官方对应项；依赖 Necola 的实际调用路径'

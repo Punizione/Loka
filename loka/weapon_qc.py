@@ -5,7 +5,7 @@ import math
 import shutil
 
 from .weapon_catalog import get_weapon
-from .weapon_sequences import get_profile, validate_sequence_layout, _classify, _timer_slot
+from .weapon_sequences import get_profile, validate_sequence_layout, _classify, _timer_slot, target_timing_slot
 from .vpk import safe_archive_path
 from .weapon_ads import remove_ads_layers,is_ads_or_mixed_activity
 from .fps_values import round_fps, fps_text, round_qc_fps, scaled_fps
@@ -73,11 +73,8 @@ def _patch(text,changes):
 
 
 def _quote(value):
-    # The stock melee model uses this label,
-    # and the configured compiler roundtrips it verbatim inside quotes. Keep the exception
-    # narrow: arbitrary obfuscated backtick names remain rejected.
-    stock_tick='attack_03_`layer'
-    tick_allowed=value==stock_tick or (value.replace('\\','/').split('/')[-1]==stock_tick+'.smd')
+    allowed_label='attack_03_`layer'
+    tick_allowed=value==allowed_label or (value.replace('\\','/').split('/')[-1]==allowed_label+'.smd')
     if any(c in value for c in '\r\n\x00"') or ('`' in value and not tick_allowed):
         raise ValueError(f'QC 名称/引用无效: {value!r}')
     return '"'+value+'"'
@@ -418,7 +415,7 @@ def _validate_include_bones(documents):
                     raise ValueError(f'include 骨骼与主模型不兼容: {name} / {resource}')
 
 
-def _write_output(output_dir,name,text,documents,placeholder=None):
+def _write_output(output_dir,name,text,documents,placeholder=None,generated_resources=None):
     output_dir=Path(output_dir).resolve()
     if output_dir.exists():raise FileExistsError(f'转换源输出目录已存在: {output_dir}')
     # Resolve and validate everything before the first write; originals remain read-only.
@@ -428,6 +425,8 @@ def _write_output(output_dir,name,text,documents,placeholder=None):
             target=output_dir/relative;target.parent.mkdir(parents=True,exist_ok=True)
             shutil.copy2(source,target)
     if placeholder is not None:(output_dir/'loka_placeholder.smd').write_text(placeholder,encoding='utf-8')
+    for relative,payload in (generated_resources or {}).items():
+        (output_dir/relative).write_text(payload,encoding='utf-8')
     result=output_dir/name
     result.write_text(text,encoding='utf-8')
     return result
@@ -498,7 +497,7 @@ def validate_converted_qc(text,plan,target_id,*,origin_expectations=None):
 
 def _timing_reference(row,profile):
     if row.preserve_source_fps:return None
-    if row.official_index is not None:slot=profile.slots[row.official_index]
+    if row.official_index is not None:slot=target_timing_slot(profile,profile.slots[row.official_index])
     else:
         activity=row.activity or row.inferred_source_activity or ''
         if not activity:return None
@@ -526,7 +525,7 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
     def normalize_activity(value):
         return value.upper().replace('_SNIPER','').replace('ACT_VM_SHOOT','ACT_VM_PRIMARYATTACK')
     for row in plan.sequences:
-        if row.source:
+        if row.source and not row.reload_helper:
             key=row.source.name.lower()
             original=normalize_activity(row.source.activity or row.inferred_source_activity or '')
             matched=(profile.slots[row.official_index].activity if row.official_index is not None else row.activity)
@@ -534,8 +533,13 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
             if key not in sequence_map or score>map_scores[key]:
                 sequence_map[key]=row.name;map_scores[key]=score
     records=[];demands={};variants={}
+    generated_resources={}
     for index,row in enumerate(plan.sequences):
         slot=profile.slots[row.official_index] if row.official_index is not None else None
+        if row.reload_parts:
+            from .weapon_reload import materialize_reload
+            records.append(materialize_reload(row,index,sources,profile,variants,generated_resources))
+            continue
         if row.source is None:
             records.append(dict(text='$sequence '+_quote(row.name)+' {\n\t"loka_placeholder.smd"\n}\n',
                 fps=row.fps,write_fps=True,refs=[dict(name='loka_placeholder.smd',fps=row.fps,frames=1)],
@@ -558,7 +562,9 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
         if not source_refs:raise ValueError('QC sequence 没有动画引用')
         if any(k in opts for k in ('frames','numframes')) and any(r.value.lower() in doc.animations for r in source_refs):
             raise ValueError('sequence 上的裁帧与命名动画组合需进一步核对，不能丢弃原约束')
-        text=doc.rebase(doc.symbols(_rename(command.text,row.name),sequence_map));refs=_leading_refs(text)
+        local_map={**sequence_map,**dict(row.source_sequence_map)}
+        text=doc.rebase(doc.symbols(_rename(command.text,row.name),local_map));refs=_leading_refs(text)
+        if row.reload_helper:text=_options(_drop_events(text),{'hidden':True})
         bindings=[];reference=_timing_reference(row,profile)
         first_named=doc.animations.get(source_refs[0].value.lower())
         source_rate=opts.get('fps',_read_options(first_named.text).get('fps',30.0) if first_named else 30.0)
@@ -603,7 +609,7 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
         source_layer=row.source_layer if row.source_layer is not None else source_activity.upper().endswith('_LAYER')
         if slot and _timer_slot(slot,profile) and (source_layer or row.source_visible is True):text=_drop_events(text)
         records.append(dict(text=text,fps=common,write_fps=write_fps,
-            refs=bindings,options={k:v for k,v in opts.items() if k!='fps'},events=_event_values(text)))
+            refs=bindings,options={k:v for k,v in _read_options(text).items() if k!='fps'},events=_event_values(text)))
     names={};named_text={}
     for doc in documents:
         for key,command in doc.animations.items():
@@ -645,6 +651,11 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
         if row.source is None:values['loop']=record['options'].get('loop')
         text=_options(text,values);sequences.append(text)
         origin_expectations.append({k:record[k] for k in ('fps','refs','options','events')})
+    if any(row.reload_parts for row in plan.sequences):
+        bones={name for doc in documents for path in doc.resources.values()
+               if path.suffix.lower()=='.smd' for name in _nodes(path)}
+        bones.update(_tokens(c.text)[1].value for doc in documents for c in doc.commands if c.kind=='definebone')
+        header.append('$weightlist "loka_reload_zero_weights" {\n'+''.join(_quote(bone)+' 0\n' for bone in sorted(bones))+'}\n')
     animations=list(named_text.values())+list(variants.values())
     placeholder=None
     if any(row.placeholder for row in plan.sequences):
@@ -658,7 +669,7 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
     text=round_qc_fps(text)
     validate_converted_qc(text,plan,target_id,origin_expectations=origin_expectations)
     _validate_include_bones(documents)
-    return _write_output(output_dir,Path(model).stem+'.qc',text,documents,placeholder)
+    return _write_output(output_dir,Path(model).stem+'.qc',text,documents,placeholder,generated_resources)
 
 
 def rewrite_worldmodel_qc(source_qc,target_modelname,output_dir):

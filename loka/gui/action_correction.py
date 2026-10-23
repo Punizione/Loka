@@ -42,6 +42,11 @@ def choose_model_profile(parent,model_path):
 def confirmation_text(session):
     lines = []
     for change in session.changes:
+        if change.removed:
+            lines.append(tr('{profile}  剔除额外槽位 {name}[顺位：{index}]（当前内容来自原顺位 {source}）',
+                profile=change.model.profile_id,name=change.action.name,index=change.action.index,
+                source=session.source_index(change.model_index,change.action.index)))
+            continue
         kind = tr('官方') if change.action.official_index is not None else tr('额外')
         source=session.source_index(change.model_index,change.action.index)
         if source!=change.action.index:
@@ -191,6 +196,7 @@ class ActionCorrectionInterface(QWidget):
         self.remove_arms_button=PushButton(tr('移除手臂'),self)
         self.arms_label=CaptionLabel(tr('未挂载额外手臂'),self)
         self.swap_button=PushButton(tr('序列调换'),self)
+        self.removal_button=PushButton(tr('序列剔除'),self)
         for widget in (self.model_switch_button,self.arms_button,self.remove_arms_button,self.arms_label):tools.addWidget(widget)
         tools.addStretch();tools.addWidget(self.compare_check);grid.addLayout(tools,1,0,1,4)
         layout.addLayout(grid)
@@ -237,7 +243,7 @@ class ActionCorrectionInterface(QWidget):
         playback.addStretch()
         self.cancel_button=PushButton(tr('取消任务'),self)
         self.cancel_button.setVisible(False)
-        playback.addWidget(self.swap_button);playback.addWidget(self.cancel_button)
+        playback.addWidget(self.swap_button);playback.addWidget(self.removal_button);playback.addWidget(self.cancel_button)
         layout.addLayout(playback)
         self.sequence_controls=QWidget(self)
         sequence_layout=QGridLayout(self.sequence_controls);sequence_layout.setContentsMargins(0,0,0,0)
@@ -281,6 +287,7 @@ class ActionCorrectionInterface(QWidget):
         self.arms_button.clicked.connect(self._choose_arms)
         self.remove_arms_button.clicked.connect(self._remove_arms)
         self.swap_button.clicked.connect(self._choose_swap)
+        self.removal_button.clicked.connect(self._choose_removal)
         self.swap_list_button.clicked.connect(self._show_swap_comparison)
         self.arms_loaded.connect(self._accept_arms)
         self.arms_failed.connect(self._fail_arms)
@@ -518,7 +525,8 @@ class ActionCorrectionInterface(QWidget):
         if self._busy or not self.session:return
         from ..action_swaps import validate_swap_pair
         model_index=self._model_index;model=self.session.models[model_index]
-        actions=model.swap_actions or model.actions
+        actions=tuple(a for a in model.swap_actions or model.actions
+                      if (model_index,a.index) not in self.session.removed_sequences)
         if len(actions)<2:return
         box=ActionFormDialog(tr('序列调换'),self,width=740);layout=box.viewLayout
         description=BodyLabel(tr('相同 Activity 交换整套动作；近战 SHOOT_LAYER 与三方向 HIT 可互换。目标有官方计时则匹配时长，无计时则保留换入动作 FPS。'),box)
@@ -585,6 +593,20 @@ class ActionCorrectionInterface(QWidget):
             return True
         first.currentIndexChanged.connect(fill_second);second.currentIndexChanged.connect(refresh_times)
         box.validate_callback=apply;fill_second();box.exec()
+
+    def set_removed_sequences(self,indices):
+        if self._busy or not self.session or self.continuous.active:return
+        self.commit_fps_edit();self.pause()
+        self.session.set_removals(self._model_index,indices)
+        self._model_changed()
+
+    def _choose_removal(self):
+        if self._busy or not self.session or self.continuous.active:return
+        from .action_removal import SequenceRemovalDialog
+        self.commit_fps_edit();self.pause()
+        box=SequenceRemovalDialog(self)
+        try:box.exec()
+        finally:box.deleteLater()
 
     @property
     def effective_fps(self):
@@ -741,7 +763,9 @@ class ActionCorrectionInterface(QWidget):
             self._original_error=(self._comparison_key(),asset) if isinstance(asset,str) else None
             self.official_viewport.set_model(None,())
         self.sequence_box.clear()
-        for action in self.session.models[index].actions:self.sequence_box.addItem(sequence_option_text(action),userData=action.index)
+        for action in self.session.models[index].actions:
+            if (index,action.index) not in self.session.removed_sequences:
+                self.sequence_box.addItem(sequence_option_text(action),userData=action.index)
         self._warnings=list(self._previews[index].warnings)
         self._apply_render_model()
         self._loading_values=False;self._sequence_changed()
@@ -829,6 +853,14 @@ class ActionCorrectionInterface(QWidget):
         caption=tr('当前 V 模 · $sequence {name}',name=action.name) if action else tr('当前 V 模 · 未选择动作')
         self.current_label.setText(caption);self.current_label.setToolTip(caption)
         self.current_fps_label.setText(tr('FPS：{fps}',fps=fps_text(self.fps_input.value())) if action else tr('FPS：—'))
+        note=tr('预览动作速度不一定完全匹配游戏内动作速度，仅供参考。')
+        if action is not None and not self.continuous.active:
+            from ..weapon_ads import is_ads_or_mixed_activity
+            activity=action.activity.upper()
+            if (is_ads_or_mixed_activity(activity)
+                    and activity.partition('_VM_')[2] in ('IDLE_TO_LOWERED','LOWERED_TO_IDLE')):
+                note+='\n'+tr('当前仅预览单个序列。ADS 进入/退出的游戏效果还依赖运行时的 idle 状态切换及淡入淡出，单独播放时可能静止。')
+        self.preview_note_label.setText(note)
 
     def _refresh_frame(self):
         if self.continuous.active:
@@ -921,7 +953,7 @@ class ActionCorrectionInterface(QWidget):
         box=ActionFormDialog(tr('确认保存动作矫正'),self,confirm_text=tr('保存'),width=700)
         content=BodyLabel(tr('以下动作改动将先在暂存目录反编译并执行 Subtract 修正，再导出编译模型及必要伴随文件：')
                     if getattr(self.session,'standalone',False) else
-                    tr('以下动作调换和 FPS 改动将覆盖本次转模的成品 QC 和 VPK：'),box.widget)
+                    tr('以下序列调换、剔除和 FPS 改动将覆盖本次转模的成品 QC 和 VPK：'),box.widget)
         content.setWordWrap(True);box.viewLayout.addWidget(content)
         details=TextEdit(box.widget);details.setReadOnly(True);details.setPlainText(confirmation_text(self.session))
         details.setMaximumHeight(240);box.viewLayout.addWidget(details)
@@ -963,6 +995,9 @@ class ActionCorrectionInterface(QWidget):
                                         and 0<=self._model_index<len(self.session.models)
                                         and bool(self.session.models[self._model_index].swap_actions
                                                  or self.session.models[self._model_index].actions))
+        self.removal_button.setEnabled(not self._busy and not loading_arms and self.session is not None
+            and self._loaded_models is self.session.models
+            and any(s.removable for s in self.session.models[self._model_index].sequence_slots))
         self.back_button.setEnabled(not self._busy)
         dirty=self.session is not None and (bool(self.session.changes) or available and self.fps_input.has_pending_text)
         self.save_button.setEnabled(not self._busy and not loading_arms and bool(dirty))

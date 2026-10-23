@@ -103,12 +103,12 @@ def _socks5_connect(address: tuple[str, int], proxy: Proxy, timeout: float) -> s
         raise
 
 
-def _https_connection(proxy: Proxy | None, timeout: float) -> http.client.HTTPSConnection:
+def _https_connection(proxy: Proxy | None, timeout: float, *, host: str = _API_HOST) -> http.client.HTTPSConnection:
     if proxy is not None and proxy.scheme == 'http':
         connection = http.client.HTTPSConnection(proxy.host, proxy.port, timeout=timeout)
-        connection.set_tunnel(_API_HOST, 443)
+        connection.set_tunnel(host, 443)
     else:
-        connection = http.client.HTTPSConnection(_API_HOST, timeout=timeout)
+        connection = http.client.HTTPSConnection(host, timeout=timeout)
         if proxy is not None:
             connection._create_connection = lambda address, timeout, source_address=None: _socks5_connect(
                 address, proxy, timeout)

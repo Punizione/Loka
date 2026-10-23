@@ -182,6 +182,18 @@ class PreviewModel:
         if text not in self.warnings:
             self.warnings.append(text)
 
+    def set_reload_previews(self,rows,origins):
+        from .action_reload_preview import build_reload_previews
+        self._evaluator.reload_previews=build_reload_previews(self.data,rows,origins,self._warn)
+
+    def set_qc_preview_bases(self,qc_path):
+        from .action_qc_preview import build_qc_preview_bases
+        self._evaluator.qc_bases={}
+        try:
+            self._evaluator.qc_bases=build_qc_preview_bases(self.data,qc_path,self._warn)
+        except (OSError,ValueError,TypeError,AttributeError) as error:
+            self._warn('QC transition base is unavailable; keeping existing playback: '+str(error))
+
     @classmethod
     def load(cls, model_path):
         path = Path(model_path).resolve(strict=True)

@@ -72,6 +72,7 @@ class SequenceSwapComparisonDialog(ActionFormDialog):
             rate=session.effective_fps(model_index,original.index)
             changed=source.index!=original.index
             state=tr('已调换') if changed else tr('FPS 改动') if round_fps(rate)!=round_fps(original.fps) else tr('未改动')
+            if (model_index,original.index) in getattr(session,'removed_sequences',()):state=tr('已剔除');changed=True
             texts=(str(original.index),original.activity,
                    original.name+' · '+fps_text(original.fps)+' FPS',
                    source.name+' · '+fps_text(rate)+' FPS',state)

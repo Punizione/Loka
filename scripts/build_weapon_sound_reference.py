@@ -21,9 +21,7 @@ PREFIXES={
 }
 OWNERS={p.lower():key for key,aliases in PREFIXES.items() for p in aliases}
 
-# All Sounds rows 390-392 mislabel these hit variants as Shovel.Miss.
-# Verified against update/pak01_dir.vpk:scripts/game_sounds_weapons.txt:
-# ImpactFlesh owns flesh1-4; Miss owns swing_miss1-2. Preserve the workbook.
+# Normalize event ownership against the game's sound definitions.
 EVENT_PATH_CORRECTIONS={
     ('shovel.miss',f'sound/weapons/shovel/shovel_impact_flesh{i}.wav'):'Shovel.ImpactFlesh'
     for i in (2,3,4)

@@ -5,6 +5,12 @@ Numbered placeholders match rendered Python f-string fields.
 """
 
 MESSAGES = {
+    '剔除 sequence 顺位无效。': 'Invalid sequence removal slot.',
+    '不能剔除官方动作槽位：{0}': 'Official animation slots cannot be removed: {0}',
+    '不能剔除未声明明确 Activity 的序列：{0}': 'Sequences without an explicit Activity cannot be removed: {0}',
+    '待剔除序列仍被保留内容引用：{0}': 'A sequence selected for removal is still referenced by retained content: {0}',
+    '已剔除的槽位不能参与调换，请先恢复该槽位。': 'Removed slots cannot be swapped. Restore the slot first.',
+    '已剔除的槽位不能修改 FPS。': 'The FPS of removed slots cannot be changed.',
     '手臂预览载入已取消。': 'Arm preview loading canceled.',
     '请先设置有效的求生之路 2 游戏目录，再选择官方手臂。': 'Set a valid Left 4 Dead 2 game directory before selecting official arms.',
     '自选手臂需要已编译的 .mdl 文件及配套 VVD/VTX。': 'Custom arms require a compiled .mdl file and matching VVD/VTX files.',
@@ -46,6 +52,7 @@ MESSAGES = {
     '循环动作：一轮播放长度；无已确认固定结束计时': 'Looping animation: duration of one cycle; no confirmed fixed end time',
     '目标普通动作的已确认计时限制（非官方 ADS/MIXED 动画）': 'Confirmed timing limit of the target regular animation (not an official ADS/MIXED animation)',
     '官方实际计时槽（零起始 End Frame / FPS）': 'Official actual timing slot (zero-based End Frame / FPS)',
+    '作者额外空仓换弹：沿用目标普通换弹的已确认计时限制': 'Custom empty reload: uses the confirmed timing limit of the target regular reload',
     '无官方对应项；依赖 Necola 的实际调用路径': "No official counterpart; depends on Necola's actual call path",
     '；Activity 权重为 0，依赖引擎回退或显式调用，不视为禁用': '; Activity weight is 0; relies on engine fallback or explicit calls and is not considered disabled',
     'QC 指令缺少参数': 'QC directive is missing arguments',
@@ -205,7 +212,7 @@ MESSAGES = {
     '// A：ADS1 MIXED → 常态 MIXED（退出 ADS 保持 MIXED，Necola SetStateWithTransition 主选）': '// A: ADS1 MIXED -> regular MIXED (keep MIXED when leaving ADS; Necola SetStateWithTransition primary choice)',
     '// B：常态 MIXED → ADS1 MIXED（necola_ads_back Case 7 主选）': '// B: regular MIXED -> ADS1 MIXED (necola_ads_back Case 7 primary choice)',
     '// C：常态（非 MIXED）→ ADS1 MIXED（necola_ads_back Case 2 主选）': '// C: regular (non-MIXED) -> ADS1 MIXED (necola_ads_back Case 2 primary choice)',
-    'BodyGroup 兼容: 已补充 3 个 MIXED 过渡序列（Necola mode B 视觉回退收口）。': 'BodyGroup compatibility: added 3 MIXED transition sequences (Necola mode B visual fallback handling).',
+    'BodyGroup 兼容: 已补充 3 个 MIXED 过渡序列。': 'BodyGroup compatibility: added 3 MIXED transition sequences.',
     'BodyGroup 兼容: 模型的 bodygroup 数量少于 3 个，未添加 mixed 事件。': 'BodyGroup compatibility: the model has fewer than 3 bodygroups; no mixed events added.',
     'BodyGroup 兼容: 没有找到包含 mixed_ 开头 SMD 的 bodygroup，未添加事件。': 'BodyGroup compatibility: no bodygroup containing SMD files starting with mixed_ found; no events added.',
     'MIXED_ACT_PRIMARY_VM_IDLE 已存在': 'MIXED_ACT_PRIMARY_VM_IDLE already exists',
@@ -777,7 +784,7 @@ MESSAGES = {
     'W PHY 回填骨骼映射改变': 'Worldmodel PHY replacement bone mapping changed',
     'W PHY 回填绑定坐标改变': 'Worldmodel PHY replacement bind coordinates changed',
     '切出': 'Deploy',
-    '非播放对照槽；实际计时性另查武器 Y/N 表，不列': 'Non-playback comparison slot; check the weapon Y/N table separately for actual timing; not listed',
+    '非播放对照槽；计时规则按武器配置确定，不列': 'Non-playback comparison slot; timing follows the weapon profile; not listed',
     '播放；列出，官方计时来源按武器规则选择': 'Playable and listed; official timing source selected by weapon rules',
     '近战切出播放；可取消时间另由游戏控制': 'Playable melee deploy; cancel timing is controlled separately by the game',
     '末发开火': 'Last-round fire',
@@ -1221,7 +1228,45 @@ MESSAGES = {
 }
 
 
+MESSAGES['单步源采样保留：已回写 {0} 条 IK 曲线；跳过 {1} 项，沿用编译结果。'] = (
+    'Single-step source sampling preservation: restored {0} curves; skipped {1} items, keeping native compiler output.')
+
 # Fields carrying diagnostics, identified from their source producers.
+MESSAGES.update({
+    '目标不能与来源相同；枪械和近战分别互转；非霰弹枪不能转为霰弹枪': 'Source and target must differ. Firearms and melee weapons convert within their categories. Non-shotguns cannot convert to shotguns.',
+    '换弹 Loop 次数必须为非负整数': 'Reload loop repetitions must be a nonnegative integer.',
+    '换弹 Loop 次数必须为 0–999 的整数': 'Reload loop repetitions must be an integer from 0 to 999.',
+    '拼接换弹缺少 {0}：{1}': 'Reload composition is missing {0}: {1}',
+    '拼接换弹 {0} 的 {1} 复用 {2}。': 'Reload {0} reuses {2} for {1}.',
+    '拼接换弹帧数过多，请减少 Loop 次数：{0}': 'The composed reload has too many frames. Reduce loop repetitions: {0}',
+    '拼接换弹缺少附加层：{0}': 'Reload composition is missing an animation layer: {0}',
+    '拼接换弹动画路径越界': 'Reload animation path is outside its source directory.',
+    '拼接换弹 {0}：{1}；{2} 帧，适配目标时长。': 'Composed reload {0}: {1}; {2} frames, adapted to target duration.',
+    '当前机器未找到合适的FFmpeg处理库，请在设置页安装配置': 'No suitable FFmpeg executable was found. Install and configure FFmpeg on the Settings page.',
+    'FFmpeg 自动安装需要 Windows 当前用户目录。': 'Automatic FFmpeg installation requires a Windows user profile.',
+    'FFmpeg 下载地址不受支持。': 'Unsupported FFmpeg download URL.',
+    'FFmpeg 下载服务器返回了无效跳转。': 'The FFmpeg download server returned an invalid redirect.',
+    'FFmpeg 下载服务器暂不可用，请稍后重试。': 'The FFmpeg download server is unavailable. Please retry later.',
+    'FFmpeg 下载服务器跳转次数过多。': 'The FFmpeg download server returned too many redirects.',
+    'FFmpeg 校验信息无效。': 'Invalid FFmpeg checksum information.',
+    'FFmpeg 校验地址未指向明确的 Essentials 版本。': 'The FFmpeg checksum URL does not identify a specific Essentials build.',
+    'FFmpeg 下载文件大小不受支持。': 'Unsupported FFmpeg download size.',
+    'FFmpeg 下载超时，请检查网络或代理设置。': 'FFmpeg download timed out. Check the network or proxy settings.',
+    'FFmpeg 下载文件不完整，请重试。': 'The FFmpeg download is incomplete. Please retry.',
+    'FFmpeg 安装包包含不安全的路径。': 'The FFmpeg package contains an unsafe path.',
+    'FFmpeg 安装包包含重复文件。': 'The FFmpeg package contains duplicate files.',
+    'FFmpeg 安装包未包含唯一的 ffmpeg.exe。': 'The FFmpeg package must contain exactly one ffmpeg.exe.',
+    'FFmpeg 可执行文件大小不受支持。': 'Unsupported FFmpeg executable size.',
+    'FFmpeg 安装包文件大小不受支持。': 'Unsupported FFmpeg package file size.',
+    '下载的 FFmpeg 无法正常运行。': 'The downloaded FFmpeg executable could not run.',
+    '下载的 FFmpeg 未通过音频处理验证。': 'The downloaded FFmpeg failed its audio processing check.',
+    '用户 PATH 格式无效，无法自动配置。': 'The user PATH has an invalid format and could not be configured.',
+    '用户 PATH 过长，无法自动配置。': 'The user PATH is too long to configure automatically.',
+    '代理地址无效，请检查更新与网络设置。': 'Invalid proxy URL. Check Updates and network settings.',
+    'FFmpeg 下载文件 SHA256 校验失败，请重试。': 'FFmpeg download SHA256 verification failed. Please retry.',
+    'FFmpeg 下载或配置失败：{error}': 'FFmpeg download or configuration failed: {error}',
+})
+
 LOCALIZED_FIELDS = {'    警告: 反编译报告错误: {0}': ('0',),
  '    错误: {0}': ('0',),
  'FPS匹配 {0}: {1}，回退原换算规则。': ('1',),

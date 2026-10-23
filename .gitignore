@@ -20,6 +20,9 @@ env/
 .eggs/
 
 # Local environment and editor settings
+/loka_config.json
+/gui_config.json
+/config/
 .env
 .env.*
 !.env.example

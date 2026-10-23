@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "source": "docs/ACTION_CORRECTION_ACTIVITY_MAP_2026-10-19.md; docs/ACTION_CORRECTION_PROPOSAL_2026-10-19.md actual timing Y/N table",
+  "source": "L4D2 animation Activities and weapon timing profiles.",
   "activities": {
     "ACT_VM_DEPLOY": {
       "display_name": "切出",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_DEPLOY_LAYER": {
       "display_name": "切出",
@@ -12,7 +12,7 @@
     },
     "ACT_VM_DEPLOY_SNIPER": {
       "display_name": "切出",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_DEPLOY_SNIPER_LAYER": {
       "display_name": "切出",
@@ -36,7 +36,7 @@
     },
     "ACT_VM_HELPINGHAND_EXTEND": {
       "display_name": "援助手伸出",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_HELPINGHAND_EXTEND_LAYER": {
       "display_name": "援助手伸出",
@@ -44,7 +44,7 @@
     },
     "ACT_VM_HELPINGHAND_EXTEND_SNIPER": {
       "display_name": "援助手伸出",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_HELPINGHAND_EXTEND_SNIPER_LAYER": {
       "display_name": "援助手伸出",
@@ -52,7 +52,7 @@
     },
     "ACT_VM_HELPINGHAND_LOOP": {
       "display_name": "援助手保持",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_HELPINGHAND_LOOP_LAYER": {
       "display_name": "援助手保持",
@@ -60,7 +60,7 @@
     },
     "ACT_VM_HELPINGHAND_LOOP_SNIPER": {
       "display_name": "援助手保持",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_HELPINGHAND_LOOP_SNIPER_LAYER": {
       "display_name": "援助手保持",
@@ -68,7 +68,7 @@
     },
     "ACT_VM_HELPINGHAND_RETRACT": {
       "display_name": "援助手收回",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_HELPINGHAND_RETRACT_LAYER": {
       "display_name": "援助手收回",
@@ -76,7 +76,7 @@
     },
     "ACT_VM_HELPINGHAND_RETRACT_SNIPER": {
       "display_name": "援助手收回",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_HELPINGHAND_RETRACT_SNIPER_LAYER": {
       "display_name": "援助手收回",
@@ -116,7 +116,7 @@
     },
     "ACT_VM_ITEMPICKUP_EXTEND": {
       "display_name": "拾取手伸出",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_ITEMPICKUP_EXTEND_LAYER": {
       "display_name": "拾取手伸出",
@@ -124,7 +124,7 @@
     },
     "ACT_VM_ITEMPICKUP_EXTEND_SNIPER": {
       "display_name": "拾取手伸出",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_ITEMPICKUP_EXTEND_SNIPER_LAYER": {
       "display_name": "拾取手伸出",
@@ -132,7 +132,7 @@
     },
     "ACT_VM_ITEMPICKUP_LOOP": {
       "display_name": "拾取手保持",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_ITEMPICKUP_LOOP_LAYER": {
       "display_name": "拾取手保持",
@@ -140,7 +140,7 @@
     },
     "ACT_VM_ITEMPICKUP_LOOP_SNIPER": {
       "display_name": "拾取手保持",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_ITEMPICKUP_LOOP_SNIPER_LAYER": {
       "display_name": "拾取手保持",
@@ -148,7 +148,7 @@
     },
     "ACT_VM_ITEMPICKUP_RETRACT": {
       "display_name": "拾取手收回",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_ITEMPICKUP_RETRACT_LAYER": {
       "display_name": "拾取手收回",
@@ -156,7 +156,7 @@
     },
     "ACT_VM_ITEMPICKUP_RETRACT_SNIPER": {
       "display_name": "拾取手收回",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_ITEMPICKUP_RETRACT_SNIPER_LAYER": {
       "display_name": "拾取手收回",
@@ -164,7 +164,7 @@
     },
     "ACT_VM_MELEE": {
       "display_name": "推击",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_MELEE_LAYER": {
       "display_name": "推击",
@@ -172,7 +172,7 @@
     },
     "ACT_VM_MELEE_SNIPER": {
       "display_name": "推击",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_MELEE_SNIPER_LAYER": {
       "display_name": "推击",
@@ -204,7 +204,7 @@
     },
     "ACT_VM_PRIMARYATTACK": {
       "display_name": "开火／近战主攻击",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_PRIMARYATTACK_LAYER": {
       "display_name": "开火／近战主攻击",
@@ -212,11 +212,11 @@
     },
     "ACT_VM_PRIMARYATTACK_SNIPER": {
       "display_name": "开火／近战主攻击",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_RELOAD": {
       "display_name": "换弹／霰弹枪换弹起始",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_RELOAD_CLIPOUT_SNIPER": {
       "display_name": "换弹出匣（未使用）",
@@ -228,7 +228,7 @@
     },
     "ACT_VM_RELOAD_EMPTY": {
       "display_name": "空仓换弹",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_RELOAD_EMPTY_CLIPIN_SNIPER": {
       "display_name": "空仓换弹入匣（未使用）",
@@ -260,7 +260,7 @@
     },
     "ACT_VM_RELOAD_END": {
       "display_name": "换弹结束",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_RELOAD_END_LAYER": {
       "display_name": "换弹结束",
@@ -272,7 +272,7 @@
     },
     "ACT_VM_RELOAD_LOOP": {
       "display_name": "逐发装填",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_RELOAD_LOOP_LAYER": {
       "display_name": "逐发装填",
@@ -280,7 +280,7 @@
     },
     "ACT_VM_RELOAD_SNIPER": {
       "display_name": "换弹／霰弹枪换弹起始",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_RELOAD_SNIPER_LAYER": {
       "display_name": "换弹／霰弹枪换弹起始",
@@ -288,7 +288,7 @@
     },
     "ACT_VM_SECONDARYATTACK": {
       "display_name": "左手开火／近战推击",
-      "condition": "非播放对照槽；实际计时性另查武器 Y/N 表，不列"
+      "condition": "非播放对照槽；计时规则按武器配置确定，不列"
     },
     "ACT_VM_SECONDARYATTACK_LAYER": {
       "display_name": "左手开火／近战推击",

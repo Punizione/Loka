@@ -13,8 +13,7 @@ from ..vvd import SourceVvdFileData04
 
 __all__ = ["SmdFile49", "DEFAULT_PRODUCT_NAME"]
 
-#: What the parser prints as "// Created by <name> <version>".  Substituted so the
-#: differential tests can normalise the first line of every reference file.
+#: Application identity written to exported SMD headers.
 DEFAULT_PRODUCT_NAME = f"Loka {__version__}"
 
 

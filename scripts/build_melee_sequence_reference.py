@@ -1,10 +1,5 @@
-"""Append local melee facts after validating supplied QC against game MDLs.
-
-Prepare python_out/weapon_melee_reference with the supplied Melee/*.qc files
-and game_sequences.json (original MDL SHA256, names, Activities and animation
-metadata). No raw QC or Valve model is distributed with the application.
-"""
-import csv,json,sys
+"""Build melee sequence metadata from supplied QC and model reference data."""
+import argparse,csv,json,sys
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -58,19 +53,23 @@ def build(reference_dir):
 
 
 if __name__=='__main__':
-    reference=Path(sys.argv[1]) if len(sys.argv)>1 else ROOT/'python_out/weapon_melee_reference'
-    profiles=build(reference);output=ROOT/'loka/data/weapon_sequences.json'
+    parser=argparse.ArgumentParser(description='Update melee sequence metadata from supplied references')
+    parser.add_argument('reference',type=Path,help='Directory containing QC files and game_sequences.json')
+    parser.add_argument('--output',type=Path,default=ROOT/'loka/data/weapon_sequences.json')
+    parser.add_argument('--csv',type=Path,help='Optional CSV reference to update')
+    args=parser.parse_args()
+    profiles=build(args.reference);output=args.output
     data=json.loads(output.read_text(encoding='utf-8'));data['profiles'].update(profiles)
     data.pop('sources',None)
     output.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    csv_path=ROOT/'docs/WEAPON_SEQUENCE_REFERENCE.csv'
-    with csv_path.open(encoding='utf-8-sig',newline='') as handle:
-        reader=csv.DictReader(handle);fields=reader.fieldnames;rows=list(reader)
-    profile_field='weapon' if 'weapon' in fields else 'profile'
-    rows=[row for row in rows if row[profile_field] not in profiles]
-    for identifier,profile in profiles.items():
-        for sequence in profile['sequences']:
-            rows.append({field:identifier if field==profile_field else sequence.get(field,'') for field in fields})
-    with csv_path.open('w',encoding='utf-8',newline='') as handle:
-        writer=csv.DictWriter(handle,fieldnames=fields);writer.writeheader();writer.writerows(rows)
+    if args.csv is not None:
+        with args.csv.open(encoding='utf-8-sig',newline='') as handle:
+            reader=csv.DictReader(handle);fields=reader.fieldnames;rows=list(reader)
+        profile_field='weapon' if 'weapon' in fields else 'profile'
+        rows=[row for row in rows if row[profile_field] not in profiles]
+        for identifier,profile in profiles.items():
+            for sequence in profile['sequences']:
+                rows.append({field:identifier if field==profile_field else sequence.get(field,'') for field in fields})
+        with args.csv.open('w',encoding='utf-8',newline='') as handle:
+            writer=csv.DictWriter(handle,fieldnames=fields);writer.writeheader();writer.writerows(rows)
     print('melee profiles',len(profiles),'slots',sum(len(p['sequences']) for p in profiles.values()))

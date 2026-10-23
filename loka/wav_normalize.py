@@ -2,8 +2,9 @@
 from dataclasses import dataclass
 from pathlib import Path
 from uuid import UUID
-import hashlib,os,shutil,struct,subprocess,tempfile,threading,time
+import errno,hashlib,os,struct,subprocess,tempfile,threading,time
 from .weapon_audio_metadata import WaveMetadata,PCM_WIDTHS,validate_target
+from .ffmpeg_setup import find_ffmpeg, UNAVAILABLE_MESSAGE
 
 
 class UnsupportedWaveFormatError(ValueError):
@@ -230,15 +231,21 @@ def _prepare_wave(data):
 
 
 def _decode(data,codec,channels,rate,limit,ffmpeg_path,cancelled,*,_short_retry=False,_details=None):
-    executable=shutil.which(ffmpeg_path or 'ffmpeg')
-    if not executable:raise FileNotFoundError('FFmpeg executable unavailable: '+str(ffmpeg_path))
+    executable=find_ffmpeg(ffmpeg_path)
+    if not executable:raise FileNotFoundError(UNAVAILABLE_MESSAGE)
     raw_format='u8' if codec=='pcm_u8' else 's16le'
     kept=bytearray();total=[0];errors=[];stderr=bytearray()
     with tempfile.TemporaryDirectory(prefix='loka_audio_') as folder:
         source=Path(folder)/'source.wav';source.write_bytes(data)
         command=[executable,'-hide_banner','-v','error','-nostdin','-i',str(source),'-map','0:a:0','-acodec',codec,'-ac',str(channels),'-ar',str(rate),'-f',raw_format,'pipe:1']
         flags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0
-        process=subprocess.Popen(command,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,creationflags=flags)
+        try:
+            process=subprocess.Popen(command,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,creationflags=flags)
+        except OSError as error:
+            if (isinstance(error,(FileNotFoundError,PermissionError)) or error.errno in (errno.ENOEXEC,errno.ENOENT,errno.EACCES)
+                    or getattr(error,'winerror',None) in (126,193,216)):
+                raise FileNotFoundError(UNAVAILABLE_MESSAGE) from error
+            raise
         def read(handle,output):
             try:
                 with handle:

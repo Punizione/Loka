@@ -4,8 +4,7 @@ L4D2 viewmodels switch parts (e.g. a scope) through the
 ``AE_CL_BODYGROUP_SET_VALUE`` event: the engine sets one *bodygroup* to one of
 its *models* (identified by the model's index inside the bodygroup) when the
 event fires.  A "mixed" model keeps two weapon states (mixed on/off × scope
-on/off) as bodygroup entries.  Following the reference QC
-(``testcase/models/v_models/dec/v_rifle_true.qc``), the decompiler finds the
+on/off) as bodygroup entries. The decompiler finds the
 bodygroup whose SMD (model) names start with ``mixed_``, matches the four
 ``ACT_VM/ACT_PRIMARY_VM MIXED_ON/MIXED_OFF`` activities plus the two ads
 correction transitions (``ACT_PRIMARY_VM_IDLE_TO_LOWERED`` /
@@ -40,10 +39,7 @@ __all__ = [
 #: The engine event that sets a bodygroup entry at runtime.
 AE_CL_BODYGROUP_SET_VALUE = "AE_CL_BODYGROUP_SET_VALUE"
 
-#: The activities the feature wires bodygroup events into: the four MIXED
-#: activities plus the two ads transition sequences (ads_in/ads_out also carry
-#: bodygroup events in the reference QC -- testcase/models/v_models/dec/
-#: v_rifle_true.qc, the authoritative standard for this feature).
+#: Activities receiving frame-zero bodygroup events.
 MIXED_ACTIVITIES: tuple[str, ...] = (
     "ACT_VM_MIXED_OFF",
     "ACT_VM_MIXED_ON",
@@ -53,8 +49,7 @@ MIXED_ACTIVITIES: tuple[str, ...] = (
     "ACT_PRIMARY_VM_LOWERED_TO_IDLE",
 )
 
-#: Canonical entry names used by the automatic matching (from the reference QC
-#: v_rifle_true.qc; the loose fallback strips suffixes like ``_50``/``_30``).
+#: Canonical entry names used by automatic matching.
 #: Events fire at frame 0 for every activity.
 DEFAULT_MIXED_SMD_NAMES: dict[str, str] = {
     "ACT_VM_MIXED_OFF": "mixed_off_scope_off",
@@ -66,9 +61,7 @@ DEFAULT_MIXED_SMD_NAMES: dict[str, str] = {
 }
 
 
-#: Names of the three "Necola mode B" transition sequences appended by
-#: :func:`append_mixed_transition_sequences` (reference:
-#: testcase/models2/dec/v_rifle.qc, the manually supplemented standard).
+#: Names assigned to generated mixed-state transition sequences.
 MIXED_SUPPLEMENT_SEQUENCE_NAMES: tuple[str, ...] = (
     "ads_mixed_lowered_to_mixed_idle",
     "mixed_lowered_to_next",
@@ -82,16 +75,16 @@ _MIXED_SUPPLEMENT_ACTIVITIES: dict[str, str] = {
     "idle_to_mixed_idle": "ACT_PRIMARY_VM_IDLE_TO_MIXED_IDLE",
 }
 
-#: comment header above each supplement sequence (reference v_rifle.qc).
+#: Headers for generated transition sequences.
 _MIXED_SUPPLEMENT_COMMENTS: dict[str, tuple[str, ...]] = {
     "ads_mixed_lowered_to_mixed_idle": (
-        "// A：ADS1 MIXED → 常态 MIXED（退出 ADS 保持 MIXED，Necola SetStateWithTransition 主选）",
+        "// MIXED transition",
     ),
     "mixed_lowered_to_next": (
-        "// B：常态 MIXED → ADS1 MIXED（necola_ads_back Case 7 主选）",
+        "// MIXED transition",
     ),
     "idle_to_mixed_idle": (
-        "// C：常态（非 MIXED）→ ADS1 MIXED（necola_ads_back Case 2 主选）",
+        "// MIXED transition",
     ),
 }
 
@@ -266,8 +259,7 @@ def apply_bodygroup_event_setup(mdl_file_data: Any, options: Any) -> list[str]:
             )
             continue
 
-        # The reference QC (v_rifle_true.qc) fires every bodygroup event at
-        # frame 0, including the MIXED_ON sequences.
+        # Apply the bodygroup selection at the sequence's first frame.
         for a_sequence_desc in matched:
             setattr(
                 a_sequence_desc,
@@ -293,11 +285,10 @@ def _clone_supplement_block(
 ) -> str:
     """Clone one $sequence block, repointing activity / delta / event.
 
-    Mirrors the manually supplemented reference QC
-    (testcase/models2/dec/v_rifle.qc): keep the source body (smd, fadein/
-    fadeout, fps, ikrules) and only swap the sequence + activity names, force
+    Keep the source body (smd, fadein/fadeout, fps, ikrules), update the
+    sequence and activity names, and write
     ``delta`` + ``subtract "a_idle_1" 0`` + one mixed-value bodygroup event
-    (reference order: activity / delta / subtract / event / fadein), and drop
+    in activity / delta / subtract / event / fadein order. Drop
     every pre-existing delta/subtract/bodygroup-event line.  Line-based on
     purpose: the writer emits CRLF and the caller's text must round-trip
     byte-stable.
@@ -332,12 +323,12 @@ def _clone_supplement_block(
 
 
 def append_mixed_transition_sequences(qc_text: str) -> tuple[str, list[str]]:
-    """Append the three "Necola mode B" MIXED transition sequences to a QC.
+    """Append missing mixed-state transition sequences to a QC.
 
     Fires only when the QC declares ``ACT_PRIMARY_VM_MIXED_ON`` +
     ``ACT_PRIMARY_VM_MIXED_OFF`` without any ``MIXED_ACT_PRIMARY_VM_IDLE``
     **and** ``ACT_VM_MIXED_ON`` + ``ACT_VM_MIXED_OFF`` without any
-    ``MIXED_ACT_VM_IDLE`` (per the user's supplement rule).  The new
+    ``MIXED_ACT_VM_IDLE``. The new
     sequences reuse the existing ads transition SMDs and write the mixed
     bodygroup value taken from the ``ACT_VM_MIXED_ON`` sequence's
     ``AE_CL_BODYGROUP_SET_VALUE`` event.  Returns ``(new_text, notes)``;
@@ -449,6 +440,6 @@ def append_mixed_transition_sequences(qc_text: str) -> tuple[str, list[str]]:
         new_text = qc_text + insertion
 
     notes.append(
-        "BodyGroup 兼容: 已补充 3 个 MIXED 过渡序列（Necola mode B 视觉回退收口）。"
+        "BodyGroup 兼容: 已补充 3 个 MIXED 过渡序列。"
     )
     return new_text, notes

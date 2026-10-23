@@ -46,10 +46,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--raw-port", action="store_true",
                         help="disable L4D2 viewmodel library repair and include packaging")
     parser.add_argument(
-        "--ik-handling", choices=("default", "delete", "usesource"),
+        "--ik-handling", choices=("default", "compatible", "delete", "usesource"),
         default="default", metavar="MODE",
         help="how to write ikrule options in $animation/$sequence blocks: "
-        "default (preserve IK rules), delete (drop all ikrule lines), "
+        "default (preserve IK rules), compatible (rules for optional source-curve writeback during weapon conversion), "
+        "delete (drop all ikrule lines), "
         "usesource (rewrite touch ikrules to 'ikrule \"<chain>\" usesource')",
     )
     parser.add_argument(

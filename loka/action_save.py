@@ -172,6 +172,7 @@ def save_session(session, *, cancelled=None, on_log=None):
         if not changes:return None
         from .action_rules import retime_qc,load_actions,_QcDocument
         from .action_swaps import permute_qc
+        from .action_removal import prune_sequences,qc_slots
         from .fps_values import round_qc_fps
         work, output, source = session.work_dir, session.output_path, session.input_path
         stage = Path(tempfile.mkdtemp(prefix='.loka_action_stage_', dir=work))
@@ -181,11 +182,14 @@ def save_session(session, *, cancelled=None, on_log=None):
             log('准备动作矫正副本')
             shutil.copytree(session.pack_dir, stage/'pack')
             by_model = {}
-            for change in changes:by_model.setdefault(change.model_index,{})[change.action.index] = change.new_fps
+            for change in changes:
+                updates=by_model.setdefault(change.model_index,{})
+                if not change.removed:updates[change.action.index]=change.new_fps
             qc_paths, retired = [], []
             original_qcs = {}
             staged_actions = {}
             staged_timings = {}
+            staged_slots = {}
             for model_index, updates in by_model.items():
                 check()
                 model = session.models[model_index]
@@ -195,9 +199,14 @@ def save_session(session, *, cancelled=None, on_log=None):
                 assignments={destination:donor for (i,destination),donor in session.assignments.items() if i==model_index}
                 staged_qc.write_text(permute_qc(model.qc_path,assignments,model.profile_id),encoding='utf-8',newline='\n')
                 staged_qc.write_text(round_qc_fps(retime_qc(staged_qc,updates)), encoding='utf-8',newline='\n')
-                indexes={action.index:action.official_index for action in model.swap_actions or model.actions}
-                timings={a.index:session.timing_index(model_index,a.index) for a in model.swap_actions or model.actions
-                         if session.timing_index(model_index,a.index) is not None}
+                removed={index for i,index in session.removed_sequences if i==model_index}
+                indexes={slot.index:slot.official_index for slot in model.sequence_slots}
+                text,mapping=prune_sequences(staged_qc.read_text(encoding='utf-8'),removed,indexes)
+                staged_qc.write_text(text,encoding='utf-8',newline='\n')
+                indexes={mapping[i]:official for i,official in indexes.items() if i in mapping}
+                staged_slots[model_index]=qc_slots(_QcDocument(staged_qc),indexes)
+                timings={mapping[a.index]:session.timing_index(model_index,a.index) for a in model.swap_actions or model.actions
+                         if a.index in mapping and session.timing_index(model_index,a.index) is not None}
                 staged_timings[model_index]=tuple(sorted(timings.items()))
                 staged_actions[model_index]=tuple(tuple(with_timing_reference(a,model.profile_id,timings[a.index])
                                                        if a.index in timings else a for a in actions)
@@ -224,6 +233,8 @@ def save_session(session, *, cancelled=None, on_log=None):
                         if i==model_index:
                             next_origins[str(model.qc_path)][document.sequences[destination].name]=deepcopy(
                                 original[document.sequences[donor].name])
+                    for i,index in session.removed_sequences:
+                        if i==model_index:next_origins[str(model.qc_path)].pop(document.sequences[index].name,None)
                 origins = {staged:next_origins[original] for staged,original in original_qcs.items()}
             log('编译并验证修改后的 V 模')
             compiled = compile_and_fill(stage/'pack',qc_paths,session.options.compiler_path,
@@ -275,6 +286,7 @@ def save_session(session, *, cancelled=None, on_log=None):
                         target['sequences'][destination]['action_correction_source_index']=donor
                         changed=True
                     for change in changes:
+                        if change.removed:continue
                         if target['target_profile']!=change.model.profile_id:continue
                         row=target['sequences'][change.action.index]
                         row['fps']=change.new_fps
@@ -287,11 +299,13 @@ def save_session(session, *, cancelled=None, on_log=None):
                     for model_index in by_model:
                         model=session.models[model_index]
                         if target['target_profile']!=model.profile_id:continue
+                        removed={index for i,index in session.removed_sequences if i==model_index}
+                        target['sequences']=[row for index,row in enumerate(target['sequences']) if index not in removed]
                         document=_QcDocument(next(Path(staged) for staged,original in original_qcs.items()
                                                   if Path(original)==model.qc_path))
                         for index,row in enumerate(target['sequences']):
                             row['fps']=document.references(document.sequences[index])[0].fps
-                            timing=session.timing_index(model_index,index)
+                            timing=dict(staged_timings[model_index]).get(index)
                             if timing is not None:row['action_correction_timing_index']=timing
                         changed=True
                 if changed:
@@ -301,7 +315,7 @@ def save_session(session, *, cancelled=None, on_log=None):
                     replacements[original_plan]=staged_plan
             audit = [dict(model=c.model.profile_id,index=c.action.index,name=c.action.name,
                           activity=c.action.activity,old_fps=c.old_fps,new_fps=c.new_fps,
-                          source_index=session.source_index(c.model_index,c.action.index)) for c in changes]
+                          source_index=session.source_index(c.model_index,c.action.index),removed=c.removed) for c in changes]
             state_path = stage/'action_correction_state.json'
             previous = work/'action_correction_state.json'
             history = json.loads(previous.read_text(encoding='utf-8')).get('history',[]) if previous.is_file() else []
@@ -313,7 +327,7 @@ def save_session(session, *, cancelled=None, on_log=None):
             # All fallible decoding, validation and hashing happens before commit.
             # Once published, accepting the new immutable records requires no disk reads.
             next_models=tuple(replace(model,actions=staged_actions[index][0],swap_actions=staged_actions[index][1],
-                                      timing_indexes=staged_timings[index])
+                                      timing_indexes=staged_timings[index],sequence_slots=staged_slots[index])
                               if index in staged_actions else model for index,model in enumerate(session.models))
             next_fingerprints=dict(session.fingerprints)
             for destination,staged in replacements.items():
@@ -332,6 +346,7 @@ def save_session(session, *, cancelled=None, on_log=None):
             session._inventory=set(next_fingerprints)
             session.updates.clear()
             session.assignments.clear()
+            session.removed_sequences.clear()
             session.timing_overrides.clear()
             session._preview_models.clear()
             try:log('动作矫正已保存；恢复备份: '+str(journal.parent))

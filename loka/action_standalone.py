@@ -218,6 +218,7 @@ class StandaloneCorrectionSession(CorrectionSession):
         session.pack_dir = _pack_root(model)
         session.updates = {}
         session.assignments = {}
+        session.removed_sequences = set()
         session.timing_overrides = {}
         session._preview_models = {}
         session._original_model = model
@@ -250,8 +251,9 @@ class StandaloneCorrectionSession(CorrectionSession):
             timed = lambda values: tuple(with_timing_reference(a, profile_id, timings[a.index])
                                          if a.index in timings else a for a in values)
             actions, swaps = timed(actions), timed(swaps)
+        from .action_removal import compiled_slots
         session.models = (CorrectionModel(profile_id, None, model, actions, swaps,
-                                         tuple(sorted(timings.items()))),)
+                                         tuple(sorted(timings.items())),compiled_slots(preview.data,profile_id)),)
         session._preview_models[0] = preview
         session.check_unchanged()
         return session
@@ -452,8 +454,15 @@ def _save(session, *, output_dir=None, cancelled=None, on_log=None):
         for destination, donor in assignments.items():
             origins[document.sequences[destination].name] = deepcopy(before_origins[document.sequences[donor].name])
         qc.write_text(permute_qc(qc, assignments, session.models[0].profile_id), encoding='utf-8', newline='\n')
-        updates = {change.action.index:change.new_fps for change in session.changes}
+        updates = {change.action.index:change.new_fps for change in session.changes if not change.removed}
         qc.write_text(round_qc_fps(retime_qc(qc, updates)), encoding='utf-8', newline='\n')
+        from .action_removal import prune_sequences,compiled_slots
+        removed={index for i,index in session.removed_sequences if i==0}
+        for index in removed:origins.pop(document.sequences[index].name,None)
+        text,mapping=prune_sequences(qc.read_text(encoding='utf-8'),removed,
+                                     {s.index:s.official_index for s in session.models[0].sequence_slots})
+        qc.write_text(text,encoding='utf-8',newline='\n')
+        old_indexes={new:old for old,new in mapping.items()}
         log('编译并验证动作来源、事件、材质及伴随文件')
         compile_and_fill(pack, [qc], compiler, game_path=session.options.game_path,
             semantic_origins={str(qc.resolve()):origins}, cancelled=cancelled, on_log=log)
@@ -462,8 +471,9 @@ def _save(session, *, output_dir=None, cancelled=None, on_log=None):
         # QC validation alone cannot detect an exporter dropping source facts.
         # Check published payloads against the originally loaded descriptors too.
         for index, after in enumerate(data.theSequenceDescs or []):
-            identity = original.data.theSequenceDescs[index]
-            donor = original.data.theSequenceDescs[assignments.get(index, index)]
+            old_index=old_indexes[index]
+            identity = original.data.theSequenceDescs[old_index]
+            donor = original.data.theSequenceDescs[assignments.get(old_index, old_index)]
             if after.theName != identity.theName or after.theActivityName != identity.theActivityName:
                 raise ValueError('编译动作身份与原始 MDL 槽位不符: '+identity.theName)
             before_events, after_events = donor.theEvents or [], after.theEvents or []
@@ -481,7 +491,8 @@ def _save(session, *, output_dir=None, cancelled=None, on_log=None):
         if [g.theFileName.replace('\\', '/').lower() for g in data.theModelGroups or []] != original_groups:
             raise ValueError('编译 include 依赖改变，拒绝发布。')
         actions, swaps = _compiled_actions(data, session.models[0].profile_id)
-        timings = {a.index:session.timing_index(0, a.index) for a in swaps if session.timing_index(0, a.index) is not None}
+        timings = {a.index:session.timing_index(0,old_indexes[a.index]) for a in swaps
+                   if session.timing_index(0,old_indexes[a.index]) is not None}
         timed = lambda values: tuple(with_timing_reference(a, session.models[0].profile_id, timings[a.index])
                                     if a.index in timings else a for a in values)
         actions, swaps = timed(actions), timed(swaps)
@@ -496,7 +507,7 @@ def _save(session, *, output_dir=None, cancelled=None, on_log=None):
         relative_model = model.relative_to(pack)
         next_model = output/relative_model
         next_models = (CorrectionModel(session.models[0].profile_id, None, next_model,
-                                      actions, swaps, tuple(sorted(timings.items()))),)
+                                      actions, swaps, tuple(sorted(timings.items())),compiled_slots(data,session.models[0].profile_id)),)
         # All decoding and hashing completes before the directory swap.
         PreviewModel.load(published/relative_model)
         next_fingerprints = {output/p.relative_to(published):fingerprint(p)

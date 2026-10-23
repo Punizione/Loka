@@ -35,6 +35,10 @@ def load_preview_assets(session, *, cancelled=None, reload_models=False):
         if model is None:
             model=PreviewModel.load(item.model_path)
             session._preview_models[index]=model
+        from .action_reload_preview import configure_session_reload_preview
+        configure_session_reload_preview(session,index,model)
+        from .action_qc_preview import configure_session_qc_preview
+        configure_session_qc_preview(session,index,model)
         cache={};bound=[]
         for mesh in model.meshes:
             check()

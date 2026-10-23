@@ -8,7 +8,7 @@ from .core.mdl_file import SourceMdlFile49
 from .core.reader import BinaryReader
 from .vpk import VpkArchive
 
-# Read from this machine's base/DLC/update VPK directories, 2026-10-03.
+# Standard L4D2 viewmodel paths.
 # Animation libraries (anim_v_*, anims_v_*) are intentionally not engine entrypoints.
 VIEWMODEL_PATHS = frozenset("""
 v_models/v_adrenaline.mdl v_models/v_autoshotgun.mdl v_models/v_bile_flask.mdl
@@ -190,7 +190,7 @@ def copy_include_dependencies(mdl_path: str, data: SourceMdlFileData49,
             if local_root:
                 candidates.append(local_root / rel)
             else:
-                # A flat mod sample is still authoritative over installed game content.
+            # Local model files take precedence over installed game content.
                 declared_parent = PurePosixPath(model_relative_path(data.theModelName)).parent
                 if str(PurePosixPath(rel).parent).lower() == str(declared_parent).lower():
                     candidates.append(source.parent / PurePosixPath(rel).name)

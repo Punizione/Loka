@@ -48,7 +48,8 @@ class ContinuousSelectionDialog(ActionFormDialog):
         options = [_sequence_option(page, i, sequence) for i, sequence in enumerate(sequences)]
         if not page.continuous.active:
             current = page.sequence_box.currentData()
-            idles = [i for i, s in enumerate(sequences) if is_idle_sequence(s, profile)]
+            idles = [i for i, s in enumerate(sequences) if is_idle_sequence(s, profile)
+                     and (page._model_index,i) not in page.session.removed_sequences]
             idle = current if current in idles else next(iter(idles), None)
             overlay = current if current is not None and current != idle else None
             shove = overlay is not None and is_shove_sequence(sequences[overlay], profile)
@@ -79,6 +80,7 @@ class ContinuousSelectionDialog(ActionFormDialog):
                 box.setMinimumWidth(0)
                 box.addItem(tr('不播放'), userData=None)
                 for index, sequence in enumerate(sequences):
+                    if (page._model_index,index) in page.session.removed_sequences:continue
                     if lane == 0 and not is_idle_sequence(sequence, profile):continue
                     if lane == 2 and not is_shove_sequence(sequence, profile):continue
                     box.addItem(options[index], userData=index)
@@ -262,6 +264,7 @@ class ContinuousPreview:
 
     def refresh(self):
         p = self.page
+        p._refresh_preview_caption()
         # Arm mounting can replace the render wrapper while preserving clips.
         if self.playback.model is not p.viewport.model:
             from ..action_playback import LayeredPlayback
@@ -309,7 +312,7 @@ class ContinuousPreview:
         self.edit_button.setEnabled(enabled)
         self.exit_button.setEnabled(not p._busy)
         if self.active:
-            for widget in (p.sequence_box, p.fps_input, p.swap_button, p.save_button,
+            for widget in (p.sequence_box, p.fps_input, p.swap_button, p.removal_button, p.save_button,
                            p.compare_check, p.sound_check, p.model_switch_button):
                 widget.setEnabled(False)
             for widget in (p.frame_slider, p.play_button, p.previous_button, p.next_button,

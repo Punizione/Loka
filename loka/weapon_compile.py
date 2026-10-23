@@ -224,7 +224,7 @@ def capture_animation_semantics(data,*,ik_rule_handling='default',validate_ik_er
             if _sample_origins and sequence.theName in _sample_origins:
                 source_refs=_sample_origins[sequence.theName]['references']
                 if ref_slot<len(source_refs):source_ref=source_refs[ref_slot]
-            if ik_rule_handling=='default':
+            if ik_rule_handling in ('default','compatible'):
                 for rule_slot,rule in enumerate(animation.theIkRules or []):
                     item={'type':rule.type,'chain':data.theIkChains[rule.chain].theName,
                           'bone':data.theBones[rule.bone].theName if rule.type==1 and rule.bone>=0 else None,
@@ -238,13 +238,32 @@ def capture_animation_semantics(data,*,ik_rule_handling='default',validate_ik_er
                         item['samples']=_ik_samples(animation,rule,samples)
                     rules.append(item)
             reference={'delta':bool(animation.flags&4),'ik':rules,'frames':animation.frameCount}
+            if ik_rule_handling=='compatible' and any(rule.type==1 for rule in animation.theIkRules or []):
+                from .core.ik_compatible_preservation import capture_compatible_touch_curve
+                payload,reason=capture_compatible_touch_curve(data,animation)
+                if payload is not None:reference['touch_curves']=payload
+                if reason:reference['touch_curve_skip_reason']=reason
             if ik_rule_handling=='default' and check_errors and getattr(animation,'thePreserveSourceTouchCurves',False):
                 from .core.ik_curve_preservation import capture_touch_curves
                 reference['touch_curves']=capture_touch_curves(data,animation)
             refs.append(reference)
-        origins[sequence.theName]={'delta_post':sequence.flags&20,'references':refs,'ik_guard':ik_rule_handling=='default',
-                                  'ik_error_guard':check_errors}
+        origins[sequence.theName]={'delta_post':sequence.flags&20,'references':refs,
+                                  'ik_guard':ik_rule_handling in ('default','compatible'),
+                                  'ik_error_guard':check_errors,'allow_auto_ik':ik_rule_handling=='default'}
+        if ik_rule_handling=='compatible':origins[sequence.theName]['ik_curve_policy']='compatible'
     return origins
+
+
+def _authored_ik_rule_indexes(before,after,*,allow_auto_ik=False,context='IK'):
+    """Map authored rule ordinals across native releases on unmentioned chains."""
+    if not allow_auto_ik:return list(range(len(after)))
+    mentioned={rule['chain'] for rule in before};automatic=set();kept=[]
+    for index,rule in enumerate(after):
+        if rule['type']==4 and rule['chain'] not in mentioned:
+            if rule['chain'] in automatic:raise ValueError(context+' duplicate auto IK release')
+            automatic.add(rule['chain'])
+        else:kept.append(index)
+    return kept
 
 
 def validate_animation_semantics(data,origins):
@@ -252,14 +271,28 @@ def validate_animation_semantics(data,origins):
     for name,origin in origins.items():
         context='编译动画来源语义不符: '+name
         current=actual.get(name)
+        if 'reload_layers' in origin:
+            sequence=next(s for s in data.theSequenceDescs if s.theName==name)
+            layers=sequence.theAutoLayers or []
+            if len(layers)!=len(origin['reload_layers']):raise ValueError(context+' reload layer count')
+            if any(abs(w)>1e-6 for w in sequence.theBoneWeights or []):raise ValueError(context+' reload timeline weights')
+            for layer,expected in zip(layers,origin['reload_layers']):
+                target=data.theSequenceDescs[layer.iSequence].theName
+                if target!=expected['name'] or layer.flags!=0:raise ValueError(context+' reload layer target')
+                if any(abs(getattr(layer,key)-expected[value])>1e-5 for key,value in
+                       (('start','start'),('peak','start'),('tail','end'),('end','end'))):
+                    raise ValueError(context+' reload layer phase')
         if current is None or current['delta_post']!=origin['delta_post']:raise ValueError(context+' DELTA/POST')
         if len(current['references'])!=len(origin['references']):raise ValueError(context+' references')
         for before,after in zip(origin['references'],current['references']):
             if before['delta']!=after['delta']:raise ValueError(context+' reference DELTA')
             if before['frames']!=after['frames']:raise ValueError(context+' reference frames')
             if not origin['ik_guard']:continue
-            if len(before['ik'])!=len(after['ik']):raise ValueError(context+' IK count')
-            for x,y in zip(before['ik'],after['ik']):
+            indexes=_authored_ik_rule_indexes(before['ik'],after['ik'],
+                allow_auto_ik=origin.get('allow_auto_ik',False),context=context)
+            after_rules=[after['ik'][i] for i in indexes]
+            if len(before['ik'])!=len(after_rules):raise ValueError(context+' IK count')
+            for x,y in zip(before['ik'],after_rules):
                 if any(x[k]!=y[k] for k in ('type','chain','bone','slot')):raise ValueError(context+' IK linkage')
                 if not origin.get('ik_error_guard',True):continue
                 # QC emits rounded authored frame indices for phase ranges.
@@ -445,8 +478,15 @@ def compile_and_fill(pack_dir,qc_paths,compiler_path,*,game_path='',retired_mode
         section_repairs=repair_compiled_animation_sections(model,staging_root=stage)
         if section_repairs and on_log:on_log('已修复编译模型的动作分段偏移: '+str(len(section_repairs))+' 项\n')
         origins=None if semantic_origins is None else semantic_origins[str(qc)]
-        from .core.ik_curve_preservation import preserve_compiled_touch_curves
-        restoration=preserve_compiled_touch_curves(model,origins,staging_root=stage,qc=qc)
+        curve_skips=[]
+        if origins and any(o.get('ik_curve_policy')=='compatible' for o in origins.values()):
+            from .core.ik_compatible_preservation import preserve_compatible_touch_curves
+            restoration,curve_skips=preserve_compatible_touch_curves(model,origins,staging_root=stage,qc=qc)
+            if on_log:
+                on_log('单步源采样保留：已回写 '+str(len(restoration))+' 条 IK 曲线；跳过 '+str(len(curve_skips))+' 项，沿用编译结果。\n')
+        else:
+            from .core.ik_curve_preservation import preserve_compiled_touch_curves
+            restoration=preserve_compiled_touch_curves(model,origins,staging_root=stage,qc=qc)
         try:
             data,verification=validate_compiled_model(model,qc,keep_ads=keep_ads,bindings=bindings,
                 semantic_origins=origins,compiler_path=compiler)
@@ -459,6 +499,7 @@ def compile_and_fill(pack_dir,qc_paths,compiler_path,*,game_path='',retired_mode
         world_physics=validate_compiled_world_physics(model,qc)
         if world_physics:verification['world_physics']=world_physics
         if restoration:verification['touch_curve_restoration']=restoration
+        if curve_skips:verification['touch_curve_skips']=curve_skips
         if section_repairs:verification['animation_section_repairs']=section_repairs
         for file in model.parent.iterdir():
             if file.is_file() and file.name.lower() in {model.stem.lower()+s for s in output_suffixes}:

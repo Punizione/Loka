@@ -322,7 +322,7 @@ def _validate(data,repair,*,quote_candidates=True,available_resources=frozenset(
                         if witness in available_resources and next_key:
                             change(last.end,between.decode('ascii'),'','join_texture_path',
                                    '/'.join((*context,key.value)),witness_resource=witness)
-                    # A specific same-line explanatory note can lack its //.
+                    # Recognize unmarked inline explanatory notes.
                     # Preserve the note bytes; never consume an arbitrary key,
                     # a quoted value, or a subsequent line as commentary.
                     note=re.fullmatch(r'(?:这是|此为|这里是)(?:原|原始的?|原来的)?(\$[A-Za-z_][A-Za-z_0-9]*)',token.value)

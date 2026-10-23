@@ -398,8 +398,6 @@ class SourceVtaFile49:
         for i in range(len(the_vert_anims)):
             a_vert_anim = the_vert_anims[i]
 
-            # TODO (VB lines 224-227): decompiling teen angst zoey (39 shape keys)
-            # yields 55 shape keys; the extras are probably flexpair related.
             vertex_index = a_vert_anim.index + body_and_mesh_vertex_index_start
             a_vertex = self._vertex_at(vertex_index)
 

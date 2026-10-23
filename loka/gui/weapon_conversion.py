@@ -6,15 +6,15 @@ from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout, QGridLayout
 from qfluentwidgets import (BodyLabel, CaptionLabel, CardWidget, CheckBox, ComboBox,
                            IndeterminateProgressBar, LineEdit, PrimaryPushButton,
                            PushButton, ProgressBar, ScrollArea, SubtitleLabel, TextEdit,
-                           InfoBar, InfoBarPosition)
+                           InfoBar, InfoBarPosition, SpinBox)
 
-from ..weapon_catalog import TARGET_WEAPONS, allowed_targets
+from ..weapon_catalog import TARGET_WEAPONS, allowed_targets, SHOTGUN_IDS
 from ..i18n import tr, display_text
 from ..weapon_conversion import (PackageInspection, plan_output, UnsupportedViewModelError,
                                  UNSUPPORTED_VIEW_MODEL_MESSAGE)
 
 
-IK_HANDLING_LABELS={"default":"默认","delete":"删除","usesource":"使用源动画 (UseSource)"}
+IK_HANDLING_LABELS={"default":"默认","compatible":"单步源采样保留","delete":"删除","usesource":"使用源动画 (UseSource)"}
 
 
 class ConversionLogCard(CardWidget):
@@ -95,6 +95,12 @@ class WeaponConversionInterface(ScrollArea):
         fields.addWidget(BodyLabel(tr('目标武器'),card))
         self.target_box = ComboBox(card)
         fields.addWidget(self.target_box)
+        self.reload_loop_label=BodyLabel(tr('换弹 Loop 次数'),card)
+        self.reload_loop_box=SpinBox(card);self.reload_loop_box.setRange(0,999);self.reload_loop_box.setValue(1)
+        self.reload_loop_box.setToolTip(tr('霰弹枪转其他枪械时，换弹循环重复次数；0 表示仅拼接起始和结束。总时长继续适配目标武器。'))
+        fields.addWidget(self.reload_loop_label);fields.addWidget(self.reload_loop_box)
+        self.reload_loop_label.hide();self.reload_loop_box.hide()
+        self.reload_loop_box.valueChanged.connect(self.invalidate_correction)
         fields.addWidget(BodyLabel(tr('最终 VPK 名称（留空使用默认名称）'),card))
         self.output_edit = LineEdit(card)
         self.output_edit.setPlaceholderText(tr('例如 my_weapon_rifle.vpk'))
@@ -356,6 +362,8 @@ class WeaponConversionInterface(ScrollArea):
             except ValueError as error:
                 self.source_label.setText(display_text(str(error)));self.run_button.setEnabled(False);return
         target = self.target_box.currentData()
+        compose=bool(self.package and self.package.weapon.id in SHOTGUN_IDS and target and target not in SHOTGUN_IDS)
+        self.reload_loop_label.setVisible(compose);self.reload_loop_box.setVisible(compose)
         if self.package and target and self.scan_path()==self.package.path:
             try:
                 output = plan_output(self.package.path,target,self.output_edit.text())
@@ -375,7 +383,7 @@ class WeaponConversionInterface(ScrollArea):
 
     def set_busy(self, busy):
         self._busy = busy
-        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check,self.fps_check,self.inspect_fps_check):
+        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.reload_loop_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check,self.fps_check,self.inspect_fps_check):
             widget.setEnabled(not busy)
         self.keep_temp_check.setEnabled(not busy and bool(self._advanced()))
         self.fps_check.setEnabled(not busy and bool(self._advanced()))
@@ -467,4 +475,4 @@ class WeaponConversionInterface(ScrollArea):
 
     def _correction_identity(self):
         return (self._scan_generation,self.input_path(),self.target_box.currentData(),
-                self.output_edit.text(),self.source_pistol_mode())
+                self.output_edit.text(),self.source_pistol_mode(),self.reload_loop_box.value())

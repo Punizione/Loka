@@ -99,8 +99,7 @@ def resolve_idle_desc_for_item(
     ``selected_name`` (a user choice from the GUI) wins whenever a candidate of
     that exact name exists.  Otherwise the default name matching applies: items
     containing "ads" match a candidate whose name also contains "ads",
-    plain items match a plain idle.  ``prefer_plain`` (set for ads transition
-    sequences such as ads_in/ads_out, per the reference QC) overrides the
+    plain items match a plain idle. ``prefer_plain`` overrides the
     "ads" name signal so those items match a plain idle.  If the preferred
     group is empty the result is ``None``; automatic choices never silently
     cross between plain and ADS poses.
@@ -693,7 +692,7 @@ def apply_corrective_subtract_setup(mdl_file_data: Any, options: Any) -> list:
 
         if preserve and not _get(an_animation_desc,"flags",0)&STUDIO_DELTA:
             continue
-        required = preserve and getattr(options,"ik_rule_handling","default") == "default" and any(
+        required = preserve and getattr(options,"ik_rule_handling","default") in ("default","compatible") and any(
             _get(rule,"type",0)==1 for rule in (_get(an_animation_desc,"theIkRules",[]) or []))
 
         if required:
@@ -727,9 +726,7 @@ def apply_corrective_subtract_setup(mdl_file_data: Any, options: Any) -> list:
             # over the global idle selection; an unknown name falls back to the
             # automatic matching inside resolve_idle_desc_for_item.
             item_selected = per_item_bases.get(match_name.lstrip("@"), selected_name)
-            # Transition sequences (ads_in/ads_out: *IDLE_TO_LOWERED/*LOWERED_TO_IDLE)
-            # subtract against the plain idle, not the ads idle -- per the
-            # reference QC v_rifle_true.qc.
+            # Resolve the base preference for state-transition activities.
             activity = _get(a_sequence_desc, "theActivityName", "")
             prefer_plain = (
                 "IDLE_TO_LOWERED" in activity or "LOWERED_TO_IDLE" in activity

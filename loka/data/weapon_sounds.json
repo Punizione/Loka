@@ -1,0 +1,3511 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "pistol": {
+      "clipin": "pistol.clipin",
+      "cliplocked": "pistol.cliplocked",
+      "clipout": "pistol.clipout",
+      "deploy": "pistol.deploy",
+      "fire": "pistol.fire",
+      "helpinghandextend": "pistol.helpinghandextend",
+      "helpinghandretract": "pistol.helpinghandretract",
+      "itempickupextend": "pistol.itempickupextend",
+      "itempickupretract": "pistol.itempickupretract",
+      "slideback": "pistol.slideback",
+      "slideforward": "pistol.slideforward"
+    },
+    "dual_pistol": {
+      "clipin": "dualpistol.clipin",
+      "clipout": "dualpistol.clipout",
+      "deploy": "dualpistol.deploy",
+      "helpinghandextend": "dualpistol.helpinghandextend",
+      "helpinghandretract": "dualpistol.helpinghandretract",
+      "itempickupextend": "dualpistol.itempickupextend",
+      "itempickupretract": "dualpistol.itempickupretract",
+      "ready": "dualpistol.ready",
+      "slideback": "dualpistol.slideback",
+      "slideforward": "dualpistol.slideforward",
+      "cliplocked": "dualpistol.cliplocked",
+      "fire": "pistol.dualfire"
+    },
+    "pistol_magnum": {
+      "clipin": "magnum.clipin",
+      "cliplocked": "magnum.cliplocked",
+      "clipout": "magnum.clipout",
+      "deploy": "magnum.deploy",
+      "fire": "magnum.fire",
+      "helpinghandextend": "magnum.helpinghandextend",
+      "helpinghandretract": "magnum.helpinghandretract",
+      "itempickupextend": "magnum.itempickupextend",
+      "itempickupretract": "magnum.itempickupretract",
+      "slideback": "magnum.slideback",
+      "slideforward": "magnum.slideforward"
+    },
+    "smg": {
+      "clipin": "smg.clipin",
+      "cliplocked": "smg.cliplocked",
+      "clipout": "smg.clipout",
+      "deploy": "smg.deploy",
+      "fire": "smg.fire",
+      "fireincendiary": "smg.fireincendiary",
+      "fullautobutton": "smg.fullautobutton",
+      "helpinghandextend": "smg.helpinghandextend",
+      "helpinghandretract": "smg.helpinghandretract",
+      "itempickupextend": "smg.itempickupextend",
+      "itempickupretract": "smg.itempickupretract",
+      "slideback": "smg.slideback",
+      "slideforward": "smg.slideforward"
+    },
+    "smg_silenced": {
+      "clipin": "smg_silenced.clipin",
+      "cliplocked": "smg_silenced.cliplocked",
+      "clipout": "smg_silenced.clipout",
+      "deploy": "smg_silenced.deploy",
+      "fire": "smg_silenced.fire",
+      "fireincendiary": "smg_silenced.fireincendiary",
+      "fullautobutton": "smg_silenced.fullautobutton",
+      "helpinghandextend": "smg_silenced.helpinghandextend",
+      "helpinghandretract": "smg_silenced.helpinghandretract",
+      "itempickupextend": "smg_silenced.itempickupextend",
+      "itempickupretract": "smg_silenced.itempickupretract",
+      "slideback": "smg_silenced.slideback",
+      "slideforward": "smg_silenced.slideforward"
+    },
+    "smg_mp5": {
+      "clipin": "weapon_mp5navy.clipin",
+      "clipout": "weapon_mp5navy.clipout",
+      "deploy": "weapon_mp5navy.deploy",
+      "fireincendiary": "weapon_mp5navy.fireincendiary",
+      "fire": "weapon_mp5navy.single",
+      "slideback": "weapon_mp5navy.slideback"
+    },
+    "pumpshotgun": {
+      "deploy": "shotgun.deploy",
+      "fire": "shotgun.fire",
+      "fireincendiary": "shotgun.fireincendiary",
+      "helpinghandextend": "shotgun.helpinghandextend",
+      "helpinghandretract": "shotgun.helpinghandretract",
+      "itempickupextend": "shotgun.itempickupextend",
+      "itempickupretract": "shotgun.itempickupretract",
+      "loadshell": "shotgun.loadshell",
+      "pump": "shotgun.pump"
+    },
+    "shotgun_chrome": {
+      "deploy": "shotgun_chrome.deploy",
+      "fire": "shotgun_chrome.fire",
+      "fireincendiary": "shotgun_chrome.fireincendiary",
+      "loadshell": "shotgun_chrome.loadshell",
+      "pump": "shotgun_chrome.pump"
+    },
+    "autoshotgun": {
+      "boltback": "autoshotgun.boltback",
+      "boltforward": "autoshotgun.boltforward",
+      "deploy": "autoshotgun.deploy",
+      "fire": "autoshotgun.fire",
+      "fireincendiary": "autoshotgun.fireincendiary",
+      "helpinghandextend": "autoshotgun.helpinghandextend",
+      "helpinghandretract": "autoshotgun.helpinghandretract",
+      "itempickupextend": "autoshotgun.itempickupextend",
+      "itempickupretract": "autoshotgun.itempickupretract",
+      "loadshell": "autoshotgun.loadshell"
+    },
+    "shotgun_spas": {
+      "boltback": "autoshotgun_spas.boltback",
+      "boltforward": "autoshotgun_spas.boltforward",
+      "fire": "autoshotgun_spas.fire",
+      "fireincendiary": "autoshotgun_spas.fireincendiary",
+      "loadshell": "autoshotgun_spas.loadshell",
+      "pump": "autoshotgun_spas.pump",
+      "deploy": "autoshotgunspas.deploy"
+    },
+    "rifle": {
+      "clipin": "rifle.clipin",
+      "cliplocked": "rifle.cliplocked",
+      "clipout": "rifle.clipout",
+      "deploy": "rifle.deploy",
+      "fire": "rifle.fire",
+      "fireincendiary": "rifle.fireincendiary",
+      "fullautobutton": "rifle.fullautobutton",
+      "helpinghandextend": "rifle.helpinghandextend",
+      "helpinghandretract": "rifle.helpinghandretract",
+      "itempickupextend": "rifle.itempickupextend",
+      "itempickupretract": "rifle.itempickupretract",
+      "pushbutton": "rifle.pushbutton",
+      "slideback": "rifle.slideback",
+      "slideforward": "rifle.slideforward"
+    },
+    "rifle_ak47": {
+      "clipin": "ak47.clipin",
+      "cliplocked": "ak47.cliplocked",
+      "clipout": "ak47.clipout",
+      "deploy": "ak47.deploy",
+      "fire": "ak47.fire",
+      "fireincendiary": "ak47.fireincendiary",
+      "slideback": "ak47.slideback",
+      "slideforward": "ak47.slideforward",
+      "helpinghandextend": "ak47.helpinghandextend",
+      "helpinghandretract": "ak47.helpinghandretract",
+      "itempickupextend": "ak47.itempickupextend",
+      "itempickupretract": "ak47.itempickupretract"
+    },
+    "rifle_desert": {
+      "clipin": "rifle_desert.clipin",
+      "cliplocked": "rifle_desert.cliplocked",
+      "clipout": "rifle_desert.clipout",
+      "deploy": "rifle_desert.deploy",
+      "fire": "rifle_desert.fire",
+      "fireincendiary": "rifle_desert.fireincendiary",
+      "fullautobutton": "rifle_desert.fullautobutton",
+      "helpinghandextend": "rifle_desert.helpinghandextend",
+      "helpinghandretract": "rifle_desert.helpinghandretract",
+      "itempickupextend": "rifle_desert.itempickupextend",
+      "itempickupretract": "rifle_desert.itempickupretract",
+      "pushbutton": "rifle_desert.pushbutton",
+      "slideback": "rifle_desert.slideback",
+      "slideforward": "rifle_desert.slideforward"
+    },
+    "rifle_sg552": {
+      "boltpullback": "weapon_sg552.boltpullback",
+      "boltpullforward": "weapon_sg552.boltpullforward",
+      "clipin": "weapon_sg552.clipin",
+      "clipout": "weapon_sg552.clipout",
+      "deploy": "weapon_sg552.deploy",
+      "fireincendiary": "weapon_sg552.fireincendiary",
+      "fire": "weapon_sg552.single"
+    },
+    "hunting_rifle": {
+      "boltback": "huntingrifle.boltback",
+      "boltforward": "huntingrifle.boltforward",
+      "clipin": "huntingrifle.clipin",
+      "cliplocked": "huntingrifle.cliplocked",
+      "clipout": "huntingrifle.clipout",
+      "deploy": "huntingrifle.deploy",
+      "fire": "huntingrifle.fire",
+      "fireincendiary": "huntingrifle.fireincendiary",
+      "helpinghandextend": "huntingrifle.helpinghandextend",
+      "helpinghandretract": "huntingrifle.helpinghandretract",
+      "itempickupextend": "huntingrifle.itempickupextend",
+      "itempickupretract": "huntingrifle.itempickupretract",
+      "pushbutton": "huntingrifle.pushbutton",
+      "zoom": "huntingrifle.zoom"
+    },
+    "sniper_military": {
+      "boltback": "sniper_military.boltback",
+      "boltforward": "sniper_military.boltforward",
+      "clipin": "sniper_military.clipin",
+      "cliplocked": "sniper_military.cliplocked",
+      "clipout": "sniper_military.clipout",
+      "deploy": "sniper_military.deploy",
+      "fire": "sniper_military.fire",
+      "fireincendiary": "sniper_military.fireincendiary",
+      "helpinghandextend": "sniper_military.helpinghandextend",
+      "helpinghandretract": "sniper_military.helpinghandretract",
+      "itempickupretract": "sniper_military.itempickupretract",
+      "pushbutton": "sniper_military.pushbutton",
+      "zoom": "sniper_military.zoom",
+      "itempickupextend": "sniper__military.itempickupextend"
+    },
+    "sniper_awp": {
+      "bolt": "weapon_awp.bolt",
+      "boltforward": "weapon_awp.boltforward",
+      "clipin": "weapon_awp.clipin",
+      "clipout": "weapon_awp.clipout",
+      "deploy": "weapon_awp.deploy",
+      "fireincendiary": "weapon_awp.fireincendiary",
+      "fire": "weapon_awp.single"
+    },
+    "sniper_scout": {
+      "boltback": "weapon_scout.boltback",
+      "boltforward": "weapon_scout.boltforward",
+      "clipin": "weapon_scout.clipin",
+      "cliplocked": "weapon_scout.cliplocked",
+      "clipout": "weapon_scout.clipout",
+      "deploy": "weapon_scout.deploy",
+      "fireincendiary": "weapon_scout.fireincendiary",
+      "fire": "weapon_scout.single"
+    },
+    "rifle_m60": {
+      "clipin": "m60.clipin",
+      "cliplocked": "m60.cliplocked",
+      "clipout": "m60.clipout",
+      "deploy": "m60.deploy",
+      "fire": "m60.fire",
+      "fireincendiary": "m60.fireincendiary",
+      "slideback": "m60.slideback",
+      "slideforward": "m60.slideforward"
+    },
+    "grenade_launcher": {
+      "actionclosed": "grenadelauncher.actionclosed",
+      "deploy": "grenadelauncher.deploy",
+      "explode": "grenadelauncher.explode",
+      "fire": "grenadelauncher.fire",
+      "helpinghandextend": "grenadelauncher.helpinghandextend",
+      "helpinghandretract": "grenadelauncher.helpinghandretract",
+      "itempickupextend": "grenadelauncher.itempickupextend",
+      "itempickupretract": "grenadelauncher.itempickupretract",
+      "latchopen": "grenadelauncher.latchopen",
+      "shellin": "grenadelauncher.shellin",
+      "shellout": "grenadelauncher.shellout"
+    },
+    "baseball_bat": {
+      "break": "bat.break",
+      "deploy": "bat.deploy",
+      "helpinghandextend": "bat.helpinghandextend",
+      "helpinghandretract": "bat.helpinghandretract",
+      "impactflesh": "bat.impactflesh",
+      "impactworld": "bat.impactworld",
+      "itempickupextend": "bat.itempickupextend",
+      "itempickupretract": "bat.itempickupretract",
+      "miss": "bat.miss"
+    },
+    "cricket_bat": {
+      "deploy": "cricketbat.deploy",
+      "impactflesh": "cricketbat.impactflesh",
+      "impactworld": "cricketbat.impactworld",
+      "miss": "cricketbat.miss"
+    },
+    "crowbar": {
+      "deploy": "crowbar.deploy",
+      "impactflesh": "crowbar.impactflesh",
+      "impactworld": "crowbar.impactworld",
+      "miss": "crowbar.miss"
+    },
+    "electric_guitar": {
+      "break": "guitar.break",
+      "deploy": "guitar.deploy",
+      "helpinghandextend": "guitar.helpinghandextend",
+      "helpinghandretract": "guitar.helpinghandretract",
+      "impactflesh": "guitar.impactflesh",
+      "impactworld": "guitar.impactworld",
+      "itempickupextend": "guitar.itempickupextend",
+      "itempickupretract": "guitar.itempickupretract",
+      "miss": "guitar.miss"
+    },
+    "fireaxe": {
+      "break": "axe.break",
+      "deploy": "axe.deploy",
+      "helpinghandextend": "axe.helpinghandextend",
+      "helpinghandretract": "axe.helpinghandretract",
+      "impactflesh": "axe.impactflesh",
+      "impactworld": "axe.impactworld",
+      "itempickupextend": "axe.itempickupextend",
+      "itempickupretract": "axe.itempickupretract",
+      "miss": "axe.miss"
+    },
+    "frying_pan": {
+      "break": "pan.break",
+      "deploy": "pan.deploy",
+      "helpinghandextend": "pan.helpinghandextend",
+      "helpinghandretract": "pan.helpinghandretract",
+      "impactflesh": "pan.impactflesh",
+      "impactworld": "pan.impactworld",
+      "itempickupextend": "pan.itempickupextend",
+      "itempickupretract": "pan.itempickupretract",
+      "miss": "pan.miss"
+    },
+    "golfclub": {
+      "deploy": "golfclub.deploy",
+      "impactflesh": "golfclub.impactflesh",
+      "impactworld": "golfclub.impactworld",
+      "miss": "golfclub.miss"
+    },
+    "katana": {
+      "break": "katana.break",
+      "deploy": "katana.deploy",
+      "helpinghandextend": "katana.helpinghandextend",
+      "helpinghandretract": "katana.helpinghandretract",
+      "impactflesh": "katana.impactflesh",
+      "impactworld": "katana.impactworld",
+      "itempickupextend": "katana.itempickupextend",
+      "itempickupretract": "katana.itempickupretract",
+      "miss": "katana.miss"
+    },
+    "knife": {
+      "deploy": "weapon_knife.deploy",
+      "hit": "weapon_knife.hit",
+      "hitwall": "weapon_knife.hitwall",
+      "slash": "weapon_knife.slash",
+      "stab": "weapon_knife.stab",
+      "breaktongue": "knife.breaktongue",
+      "impactflesh": "knife.impactflesh",
+      "impactworld": "knife.impactworld",
+      "miss": "knife.miss",
+      "stabhunter": "knife.stabhunter"
+    },
+    "machete": {
+      "break": "machete.break",
+      "deploy": "machete.deploy",
+      "helpinghandextend": "machete.helpinghandextend",
+      "helpinghandretract": "machete.helpinghandretract",
+      "impactflesh": "machete.impactflesh",
+      "impactworld": "machete.impactworld",
+      "itempickupextend": "machete.itempickupextend",
+      "itempickupretract": "machete.itempickupretract",
+      "miss": "machete.miss"
+    },
+    "pitchfork": {
+      "deploy": "pitchfork.deploy",
+      "impactflesh": "pitchfork.impactflesh",
+      "impactworld": "pitchfork.impactworld",
+      "miss": "pitchfork.miss"
+    },
+    "shovel": {
+      "deploy": "shovel.deploy",
+      "impactflesh": "shovel.impactflesh",
+      "impactworld": "shovel.impactworld",
+      "miss": "shovel.miss"
+    },
+    "tonfa": {
+      "break": "tonfa.break",
+      "deploy": "tonfa.deploy",
+      "helpinghandextend": "tonfa.helpinghandextend",
+      "helpinghandretract": "tonfa.helpinghandretract",
+      "impactflesh": "tonfa.impactflesh",
+      "impactworld": "tonfa.impactworld",
+      "itempickupextend": "tonfa.itempickupextend",
+      "itempickupretract": "tonfa.itempickupretract",
+      "miss": "tonfa.miss"
+    }
+  },
+  "events": {
+    "50cal.fire": {
+      "name": "50cal.Fire",
+      "owner": null,
+      "action": "fire",
+      "paths": [
+        "sound/weapons/50cal/50cal_shoot.wav"
+      ]
+    },
+    "adrenaline.capoff": {
+      "name": "Adrenaline.CapOff",
+      "owner": null,
+      "action": "capoff",
+      "paths": [
+        "sound/weapons/adrenaline/adrenaline_cap_off.wav"
+      ]
+    },
+    "adrenaline.deploy": {
+      "name": "Adrenaline.Deploy",
+      "owner": null,
+      "action": "deploy",
+      "paths": [
+        "sound/common/wpn_hudoff.wav"
+      ]
+    },
+    "adrenaline.helpinghandextend": {
+      "name": "Adrenaline.HelpingHandExtend",
+      "owner": null,
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "adrenaline.helpinghandretract": {
+      "name": "Adrenaline.HelpingHandRetract",
+      "owner": null,
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "adrenaline.itempickupextend": {
+      "name": "Adrenaline.ItemPickupExtend",
+      "owner": null,
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "adrenaline.itempickupretract": {
+      "name": "Adrenaline.ItemPickupRetract",
+      "owner": null,
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "adrenaline.needlein": {
+      "name": "Adrenaline.NeedleIn",
+      "owner": null,
+      "action": "needlein",
+      "paths": [
+        "sound/weapons/adrenaline/adrenaline_needle_in.wav"
+      ]
+    },
+    "adrenaline.needleopen": {
+      "name": "Adrenaline.NeedleOpen",
+      "owner": null,
+      "action": "needleopen",
+      "paths": [
+        "sound/weapons/adrenaline/adrenaline_needle_open.wav"
+      ]
+    },
+    "ak47.clipin": {
+      "name": "AK47.ClipIn",
+      "owner": "rifle_ak47",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/rifle_ak47/gunother/rifle_clip_in_1.wav"
+      ]
+    },
+    "ak47.cliplocked": {
+      "name": "AK47.ClipLocked",
+      "owner": "rifle_ak47",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/rifle_ak47/gunother/rifle_clip_locked_1.wav"
+      ]
+    },
+    "ak47.clipout": {
+      "name": "AK47.ClipOut",
+      "owner": "rifle_ak47",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/rifle_ak47/gunother/rifle_clip_out_1.wav"
+      ]
+    },
+    "ak47.deploy": {
+      "name": "AK47.Deploy",
+      "owner": "rifle_ak47",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/rifle_ak47/gunother/rifle_deploy_1.wav"
+      ]
+    },
+    "ak47.fire": {
+      "name": "AK47.Fire",
+      "owner": "rifle_ak47",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/rifle_ak47/gunfire/rifle_fire_1.wav"
+      ]
+    },
+    "ak47.fireincendiary": {
+      "name": "AK47.FireIncendiary",
+      "owner": "rifle_ak47",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/rifle_ak47/gunfire/rifle_fire_1_incendiary.wav"
+      ]
+    },
+    "ak47.helpinghandextend": {
+      "name": "Ak47.HelpingHandExtend",
+      "owner": "rifle_ak47",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "ak47.helpinghandretract": {
+      "name": "Ak47.HelpingHandRetract",
+      "owner": "rifle_ak47",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "ak47.itempickupextend": {
+      "name": "Ak47.ItemPickupExtend",
+      "owner": "rifle_ak47",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "ak47.itempickupretract": {
+      "name": "Ak47.ItemPickupRetract",
+      "owner": "rifle_ak47",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "ak47.slideback": {
+      "name": "AK47.SlideBack",
+      "owner": "rifle_ak47",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/rifle_ak47/gunother/rifle_slideback.wav"
+      ]
+    },
+    "ak47.slideforward": {
+      "name": "AK47.SlideForward",
+      "owner": "rifle_ak47",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/rifle_ak47/gunother/rifle_slideforward.wav"
+      ]
+    },
+    "autoshotgun_spas.boltback": {
+      "name": "AutoShotgun_Spas.BoltBack",
+      "owner": "shotgun_spas",
+      "action": "boltback",
+      "paths": [
+        "sound/weapons/auto_shotgun_spas/gunother/autoshotgun_boltback.wav"
+      ]
+    },
+    "autoshotgun_spas.boltforward": {
+      "name": "AutoShotgun_Spas.BoltForward",
+      "owner": "shotgun_spas",
+      "action": "boltforward",
+      "paths": [
+        "sound/weapons/auto_shotgun_spas/gunother/autoshotgun_boltforward.wav"
+      ]
+    },
+    "autoshotgun_spas.fire": {
+      "name": "AutoShotgun_Spas.Fire",
+      "owner": "shotgun_spas",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/auto_shotgun_spas/gunfire/shotgun_fire_1.wav"
+      ]
+    },
+    "autoshotgun_spas.fireincendiary": {
+      "name": "AutoShotgun_Spas.FireIncendiary",
+      "owner": "shotgun_spas",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/auto_shotgun_spas/gunfire/shotgun_fire_1_incendiary.wav"
+      ]
+    },
+    "autoshotgun_spas.loadshell": {
+      "name": "AutoShotgun_Spas.LoadShell",
+      "owner": "shotgun_spas",
+      "action": "loadshell",
+      "paths": [
+        "sound/weapons/auto_shotgun_spas/gunother/auto_shotgun_load_shell_2.wav",
+        "sound/weapons/auto_shotgun_spas/gunother/auto_shotgun_load_shell_4.wav"
+      ]
+    },
+    "autoshotgun_spas.pump": {
+      "name": "AutoShotgun_Spas.Pump",
+      "owner": "shotgun_spas",
+      "action": "pump",
+      "paths": [
+        "sound/weapons/auto_shotgun_spas/gunother/autoshotgun_pump_1.wav"
+      ]
+    },
+    "autoshotgun.boltback": {
+      "name": "AutoShotgun.BoltBack",
+      "owner": "autoshotgun",
+      "action": "boltback",
+      "paths": [
+        "sound/weapons/auto_shotgun/gunother/autoshotgun_boltback.wav"
+      ]
+    },
+    "autoshotgun.boltforward": {
+      "name": "AutoShotgun.BoltForward",
+      "owner": "autoshotgun",
+      "action": "boltforward",
+      "paths": [
+        "sound/weapons/auto_shotgun/gunother/autoshotgun_boltforward.wav"
+      ]
+    },
+    "autoshotgun.deploy": {
+      "name": "AutoShotgun.Deploy",
+      "owner": "autoshotgun",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/auto_shotgun/gunother/autoshotgun_deploy_1.wav"
+      ]
+    },
+    "autoshotgun.fire": {
+      "name": "AutoShotgun.Fire",
+      "owner": "autoshotgun",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/auto_shotgun/gunfire/auto_shotgun_fire_1.wav"
+      ]
+    },
+    "autoshotgun.fireincendiary": {
+      "name": "AutoShotgun.FireIncendiary",
+      "owner": "autoshotgun",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/auto_shotgun/gunfire/auto_shotgun_fire_1_incendiary.wav"
+      ]
+    },
+    "autoshotgun.helpinghandextend": {
+      "name": "AutoShotgun.HelpingHandExtend",
+      "owner": "autoshotgun",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "autoshotgun.helpinghandretract": {
+      "name": "AutoShotgun.HelpingHandRetract",
+      "owner": "autoshotgun",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "autoshotgun.itempickupextend": {
+      "name": "AutoShotgun.ItemPickupExtend",
+      "owner": "autoshotgun",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "autoshotgun.itempickupretract": {
+      "name": "AutoShotgun.ItemPickupRetract",
+      "owner": "autoshotgun",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "autoshotgun.loadshell": {
+      "name": "AutoShotgun.LoadShell",
+      "owner": "autoshotgun",
+      "action": "loadshell",
+      "paths": [
+        "sound/weapons/auto_shotgun/gunother/auto_shotgun_load_shell_2.wav",
+        "sound/weapons/auto_shotgun/gunother/auto_shotgun_load_shell_4.wav"
+      ]
+    },
+    "autoshotgunspas.deploy": {
+      "name": "AutoShotgunSpas.Deploy",
+      "owner": "shotgun_spas",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/auto_shotgun_spas/gunother/autoshotgun_deploy_1.wav"
+      ]
+    },
+    "axe.break": {
+      "name": "Axe.Break",
+      "owner": "fireaxe",
+      "action": "break",
+      "paths": [
+        "sound/weapons/axe/axe_break.wav"
+      ]
+    },
+    "axe.deploy": {
+      "name": "Axe.Deploy",
+      "owner": "fireaxe",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/axe/axe_deploy_1.wav"
+      ]
+    },
+    "axe.helpinghandextend": {
+      "name": "Axe.HelpingHandExtend",
+      "owner": "fireaxe",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "axe.helpinghandretract": {
+      "name": "Axe.HelpingHandRetract",
+      "owner": "fireaxe",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "axe.impactflesh": {
+      "name": "Axe.ImpactFlesh",
+      "owner": "fireaxe",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/axe/axe_impact_flesh1.wav",
+        "sound/weapons/axe/axe_impact_flesh2.wav",
+        "sound/weapons/axe/axe_impact_flesh3.wav",
+        "sound/weapons/axe/melee_axe_01.wav",
+        "sound/weapons/axe/melee_axe_02.wav",
+        "sound/weapons/axe/melee_axe_03.wav"
+      ]
+    },
+    "axe.impactworld": {
+      "name": "Axe.ImpactWorld",
+      "owner": "fireaxe",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/axe/axe_impact_world1.wav",
+        "sound/weapons/axe/axe_impact_world2.wav"
+      ]
+    },
+    "axe.itempickupextend": {
+      "name": "Axe.ItemPickupExtend",
+      "owner": "fireaxe",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "axe.itempickupretract": {
+      "name": "Axe.ItemPickupRetract",
+      "owner": "fireaxe",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "axe.miss": {
+      "name": "Axe.Miss",
+      "owner": "fireaxe",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/axe/axe_swing_miss1.wav",
+        "sound/weapons/axe/axe_swing_miss2.wav"
+      ]
+    },
+    "basecombatweapon.weapondrop": {
+      "name": "BaseCombatWeapon.WeaponDrop",
+      "owner": null,
+      "action": "weapondrop",
+      "paths": [
+        "sound/physics/metal/weapon_impact_hard1.wav",
+        "sound/physics/metal/weapon_impact_hard2.wav",
+        "sound/physics/metal/weapon_impact_hard3.wav"
+      ]
+    },
+    "basecombatweapon.weaponmaterialize": {
+      "name": "BaseCombatWeapon.WeaponMaterialize",
+      "owner": null,
+      "action": "weaponmaterialize",
+      "paths": [
+        "sound/items/suitchargeok1.wav"
+      ]
+    },
+    "baseexplosioneffect.sound": {
+      "name": "BaseExplosionEffect.Sound",
+      "owner": null,
+      "action": "sound",
+      "paths": [
+        "sound/weapons/debris1.wav",
+        "sound/weapons/debris2.wav"
+      ]
+    },
+    "basegrenade.explode": {
+      "name": "BaseGrenade.Explode",
+      "owner": null,
+      "action": "explode",
+      "paths": [
+        "sound/weapons/hegrenade/explode3.wav"
+      ]
+    },
+    "bat.break": {
+      "name": "Bat.Break",
+      "owner": "baseball_bat",
+      "action": "break",
+      "paths": [
+        "sound/weapons/pan/pan_break.wav"
+      ]
+    },
+    "bat.deploy": {
+      "name": "Bat.Deploy",
+      "owner": "baseball_bat",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/bat/bat_deploy_1.wav"
+      ]
+    },
+    "bat.helpinghandextend": {
+      "name": "Bat.HelpingHandExtend",
+      "owner": "baseball_bat",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "bat.helpinghandretract": {
+      "name": "Bat.HelpingHandRetract",
+      "owner": "baseball_bat",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "bat.impactflesh": {
+      "name": "Bat.ImpactFlesh",
+      "owner": "baseball_bat",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/bat/melee_cricket_bat_01.wav",
+        "sound/weapons/bat/melee_cricket_bat_02.wav",
+        "sound/weapons/bat/melee_cricket_bat_03.wav"
+      ]
+    },
+    "bat.impactworld": {
+      "name": "Bat.ImpactWorld",
+      "owner": "baseball_bat",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/bat/bat_impact_world1.wav",
+        "sound/weapons/bat/bat_impact_world2.wav"
+      ]
+    },
+    "bat.itempickupextend": {
+      "name": "Bat.ItemPickupExtend",
+      "owner": "baseball_bat",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "bat.itempickupretract": {
+      "name": "Bat.ItemPickupRetract",
+      "owner": "baseball_bat",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "bat.miss": {
+      "name": "Bat.Miss",
+      "owner": "baseball_bat",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/bat/bat_swing_miss1.wav",
+        "sound/weapons/bat/bat_swing_miss2.wav"
+      ]
+    },
+    "bullets.defaultnearmiss": {
+      "name": "Bullets.DefaultNearmiss",
+      "owner": null,
+      "action": "defaultnearmiss",
+      "paths": [
+        "sound/weapons/fx/nearmiss/bulletltor08.wav",
+        "sound/weapons/fx/nearmiss/bulletltor10.wav",
+        "sound/weapons/fx/nearmiss/bulletltor11.wav",
+        "sound/weapons/fx/nearmiss/bulletltor13.wav",
+        "sound/weapons/fx/nearmiss/bulletltor14.wav"
+      ]
+    },
+    "cedajar.explode": {
+      "name": "CedaJar.Explode",
+      "owner": null,
+      "action": "explode",
+      "paths": [
+        "sound/weapons/ceda_jar/ceda_jar_explode.wav"
+      ]
+    },
+    "cedajar.helpinghandextend": {
+      "name": "CedaJar.HelpingHandExtend",
+      "owner": null,
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "cedajar.helpinghandretract": {
+      "name": "CedaJar.HelpingHandRetract",
+      "owner": null,
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "cedajar.itempickupextend": {
+      "name": "CedaJar.ItemPickupExtend",
+      "owner": null,
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "cedajar.itempickupretract": {
+      "name": "CedaJar.ItemPickupRetract",
+      "owner": null,
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "chainsaw.die": {
+      "name": "Chainsaw.Die",
+      "owner": null,
+      "action": "die",
+      "paths": [
+        "sound/weapons/chainsaw/chainsaw_die_01.wav"
+      ]
+    },
+    "chainsaw.fullthrottle": {
+      "name": "Chainsaw.FullThrottle",
+      "owner": null,
+      "action": "fullthrottle",
+      "paths": [
+        "sound/weapons/chainsaw/chainsaw_high_speed_lp_01.wav"
+      ]
+    },
+    "chainsaw.gore": {
+      "name": "Chainsaw.Gore",
+      "owner": null,
+      "action": "gore",
+      "paths": [
+        "sound/npc/infected/gore/melee/chainsaw_gore_01.wav",
+        "sound/npc/infected/gore/melee/chainsaw_gore_02.wav",
+        "sound/npc/infected/gore/melee/chainsaw_gore_03.wav",
+        "sound/npc/infected/gore/melee/chainsaw_gore_04.wav",
+        "sound/npc/infected/gore/melee/chainsaw_gore_05.wav",
+        "sound/npc/infected/gore/melee/chainsaw_gore_06.wav"
+      ]
+    },
+    "chainsaw.idle": {
+      "name": "Chainsaw.Idle",
+      "owner": null,
+      "action": "idle",
+      "paths": [
+        "sound/weapons/chainsaw/chainsaw_idle_lp_01.wav"
+      ]
+    },
+    "chainsaw.start": {
+      "name": "Chainsaw.Start",
+      "owner": null,
+      "action": "start",
+      "paths": [
+        "sound/weapons/chainsaw/chainsaw_start_01.wav",
+        "sound/weapons/chainsaw/chainsaw_start_02.wav"
+      ]
+    },
+    "chainsaw.stop": {
+      "name": "Chainsaw.Stop",
+      "owner": null,
+      "action": "stop",
+      "paths": [
+        "sound/weapons/chainsaw/chainsaw_die_01.wav"
+      ]
+    },
+    "cricketbat.deploy": {
+      "name": "CricketBat.Deploy",
+      "owner": "cricket_bat",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/cricketbat/cricket_bat_deploy_1.wav"
+      ]
+    },
+    "cricketbat.impactflesh": {
+      "name": "CricketBat.ImpactFlesh",
+      "owner": "cricket_bat",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/cricketbat/melee_cricket_bat_01.wav",
+        "sound/weapons/cricketbat/melee_cricket_bat_02.wav",
+        "sound/weapons/cricketbat/melee_cricket_bat_03.wav"
+      ]
+    },
+    "cricketbat.impactworld": {
+      "name": "CricketBat.ImpactWorld",
+      "owner": "cricket_bat",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/cricketbat/bat_impact_world1.wav",
+        "sound/weapons/cricketbat/bat_impact_world2.wav"
+      ]
+    },
+    "cricketbat.miss": {
+      "name": "CricketBat.Miss",
+      "owner": "cricket_bat",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/cricketbat/bat_swing_miss1.wav",
+        "sound/weapons/cricketbat/bat_swing_miss2.wav"
+      ]
+    },
+    "crowbar.deploy": {
+      "name": "Crowbar.Deploy",
+      "owner": "crowbar",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/crowbar/crowbar_deploy_1.wav"
+      ]
+    },
+    "crowbar.impactflesh": {
+      "name": "Crowbar.ImpactFlesh",
+      "owner": "crowbar",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/crowbar/crowbar_impact_flesh1.wav",
+        "sound/weapons/crowbar/crowbar_impact_flesh2.wav"
+      ]
+    },
+    "crowbar.impactworld": {
+      "name": "Crowbar.ImpactWorld",
+      "owner": "crowbar",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/crowbar/crowbar_impact_world1.wav",
+        "sound/weapons/crowbar/crowbar_impact_world2.wav"
+      ]
+    },
+    "crowbar.miss": {
+      "name": "Crowbar.Miss",
+      "owner": "crowbar",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/crowbar/crowbar_swing_miss1.wav",
+        "sound/weapons/crowbar/crowbar_swing_miss2.wav"
+      ]
+    },
+    "cs_default.zoom": {
+      "name": "CS_Default.Zoom",
+      "owner": null,
+      "action": "zoom",
+      "paths": [
+        "sound/weapons/awp/gunother/zoom.wav"
+      ]
+    },
+    "default.clipempty_pistol": {
+      "name": "Default.ClipEmpty_Pistol",
+      "owner": null,
+      "action": "clipempty_pistol",
+      "paths": [
+        "sound/weapons/clipempty_pistol.wav"
+      ]
+    },
+    "default.clipempty_rifle": {
+      "name": "Default.ClipEmpty_Rifle",
+      "owner": null,
+      "action": "clipempty_rifle",
+      "paths": [
+        "sound/weapons/clipempty_rifle.wav"
+      ]
+    },
+    "default.zoom": {
+      "name": "Default.Zoom",
+      "owner": null,
+      "action": "zoom",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunother/hunting_rifle_zoom.wav"
+      ]
+    },
+    "defibrillator.deploy": {
+      "name": "Defibrillator.Deploy",
+      "owner": null,
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/defibrillator/defibrillator_deploy_1.wav"
+      ]
+    },
+    "defibrillator.use": {
+      "name": "Defibrillator.Use",
+      "owner": null,
+      "action": "use",
+      "paths": [
+        "sound/weapons/defibrillator/defibrillator_use.wav"
+      ]
+    },
+    "defibrillator.usestart": {
+      "name": "Defibrillator.UseStart",
+      "owner": null,
+      "action": "usestart",
+      "paths": [
+        "sound/weapons/defibrillator/defibrillator_use_start.wav"
+      ]
+    },
+    "dualpistol.clipin": {
+      "name": "DualPistol.ClipIn",
+      "owner": "dual_pistol",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/dual_pistol/gunother/dualpistol_clip_in_1.wav"
+      ]
+    },
+    "dualpistol.cliplocked": {
+      "name": "Dualpistol.ClipLocked",
+      "owner": "dual_pistol",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_clip_locked_1.wav"
+      ]
+    },
+    "dualpistol.clipout": {
+      "name": "DualPistol.ClipOut",
+      "owner": "dual_pistol",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/dual_pistol/gunother/dualpistol_clip_out_1.wav"
+      ]
+    },
+    "dualpistol.deploy": {
+      "name": "DualPistol.Deploy",
+      "owner": "dual_pistol",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/dual_pistol/gunother/dualpistol_deploy_1.wav"
+      ]
+    },
+    "dualpistol.helpinghandextend": {
+      "name": "DualPistol.HelpingHandExtend",
+      "owner": "dual_pistol",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "dualpistol.helpinghandretract": {
+      "name": "DualPistol.HelpingHandRetract",
+      "owner": "dual_pistol",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "dualpistol.itempickupextend": {
+      "name": "DualPistol.ItemPickupExtend",
+      "owner": "dual_pistol",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "dualpistol.itempickupretract": {
+      "name": "DualPistol.ItemPickupRetract",
+      "owner": "dual_pistol",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "dualpistol.ready": {
+      "name": "DualPistol.Ready",
+      "owner": "dual_pistol",
+      "action": "ready",
+      "paths": [
+        "sound/weapons/dual_pistol/gunother/dualpistol_deploy_1.wav"
+      ]
+    },
+    "dualpistol.slideback": {
+      "name": "DualPistol.SlideBack",
+      "owner": "dual_pistol",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_slideback_1.wav"
+      ]
+    },
+    "dualpistol.slideforward": {
+      "name": "DualPistol.SlideForward",
+      "owner": "dual_pistol",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_slideforward_1.wav"
+      ]
+    },
+    "fireworkscrate.start": {
+      "name": "FireworksCrate.Start",
+      "owner": null,
+      "action": "start",
+      "paths": [
+        "sound/player/items/loud_firewerks_crate_explo_01.wav"
+      ]
+    },
+    "fireworkscrate.stop": {
+      "name": "FireworksCrate.Stop",
+      "owner": null,
+      "action": "stop",
+      "paths": [
+        "sound/common/null.wav"
+      ]
+    },
+    "fx_ricochetsound.ricochet": {
+      "name": "FX_RicochetSound.Ricochet",
+      "owner": null,
+      "action": "ricochet",
+      "paths": [
+        "sound/weapons/fx/rics/ric1.wav",
+        "sound/weapons/fx/rics/ric3.wav",
+        "sound/weapons/fx/rics/ric4.wav",
+        "sound/weapons/fx/rics/ric6.wav",
+        "sound/weapons/fx/rics/ric7.wav",
+        "sound/weapons/fx/rics/ric8.wav",
+        "sound/weapons/fx/rics/ric9.wav"
+      ]
+    },
+    "golfclub.deploy": {
+      "name": "GolfClub.Deploy",
+      "owner": "golfclub",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/golf_club/golf_club_deploy_1.wav"
+      ]
+    },
+    "golfclub.impactflesh": {
+      "name": "GolfClub.ImpactFlesh",
+      "owner": "golfclub",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/golf_club/wpn_golf_club_melee_01.wav",
+        "sound/weapons/golf_club/wpn_golf_club_melee_02.wav"
+      ]
+    },
+    "golfclub.impactworld": {
+      "name": "GolfClub.ImpactWorld",
+      "owner": "golfclub",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/golf_club/wpn_golf_club_impact_world1.wav",
+        "sound/weapons/golf_club/wpn_golf_club_impact_world2.wav"
+      ]
+    },
+    "golfclub.miss": {
+      "name": "GolfClub.Miss",
+      "owner": "golfclub",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/golf_club/wpn_golf_club_swing_miss1.wav",
+        "sound/weapons/golf_club/wpn_golf_club_swing_miss2.wav"
+      ]
+    },
+    "grenadelauncher.actionclosed": {
+      "name": "GrenadeLauncher.ActionClosed",
+      "owner": "grenade_launcher",
+      "action": "actionclosed",
+      "paths": [
+        "sound/weapons/grenade_launcher/grenadeother/grenade_launcher_actionclosed.wav"
+      ]
+    },
+    "grenadelauncher.deploy": {
+      "name": "GrenadeLauncher.Deploy",
+      "owner": "grenade_launcher",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/grenade_launcher/grenadeother/grenade_launcher_deploy_1.wav"
+      ]
+    },
+    "grenadelauncher.explode": {
+      "name": "GrenadeLauncher.Explode",
+      "owner": "grenade_launcher",
+      "action": "explode",
+      "paths": [
+        "sound/weapons/grenade_launcher/grenadefire/grenade_launcher_explode_2.wav"
+      ]
+    },
+    "grenadelauncher.fire": {
+      "name": "GrenadeLauncher.Fire",
+      "owner": "grenade_launcher",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/grenade_launcher/grenadefire/grenade_launcher_fire_1.wav"
+      ]
+    },
+    "grenadelauncher.helpinghandextend": {
+      "name": "GrenadeLauncher.HelpingHandExtend",
+      "owner": "grenade_launcher",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "grenadelauncher.helpinghandretract": {
+      "name": "GrenadeLauncher.HelpingHandRetract",
+      "owner": "grenade_launcher",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "grenadelauncher.itempickupextend": {
+      "name": "GrenadeLauncher.ItemPickupExtend",
+      "owner": "grenade_launcher",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "grenadelauncher.itempickupretract": {
+      "name": "GrenadeLauncher.ItemPickupRetract",
+      "owner": "grenade_launcher",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "grenadelauncher.latchopen": {
+      "name": "GrenadeLauncher.LatchOpen",
+      "owner": "grenade_launcher",
+      "action": "latchopen",
+      "paths": [
+        "sound/weapons/grenade_launcher/grenadeother/grenade_launcher_latchopen.wav"
+      ]
+    },
+    "grenadelauncher.shellin": {
+      "name": "GrenadeLauncher.ShellIn",
+      "owner": "grenade_launcher",
+      "action": "shellin",
+      "paths": [
+        "sound/weapons/grenade_launcher/grenadeother/grenade_launcher_shellin.wav"
+      ]
+    },
+    "grenadelauncher.shellout": {
+      "name": "GrenadeLauncher.ShellOut",
+      "owner": "grenade_launcher",
+      "action": "shellout",
+      "paths": [
+        "sound/weapons/grenade_launcher/grenadeother/grenade_launcher_shellout.wav"
+      ]
+    },
+    "guitar.break": {
+      "name": "Guitar.Break",
+      "owner": "electric_guitar",
+      "action": "break",
+      "paths": [
+        "sound/weapons/pan/pan_break.wav"
+      ]
+    },
+    "guitar.deploy": {
+      "name": "Guitar.Deploy",
+      "owner": "electric_guitar",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/guitar/guitar_deploy_1.wav"
+      ]
+    },
+    "guitar.helpinghandextend": {
+      "name": "Guitar.HelpingHandExtend",
+      "owner": "electric_guitar",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "guitar.helpinghandretract": {
+      "name": "Guitar.HelpingHandRetract",
+      "owner": "electric_guitar",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "guitar.impactflesh": {
+      "name": "Guitar.ImpactFlesh",
+      "owner": "electric_guitar",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/guitar/melee_guitar_01.wav",
+        "sound/weapons/guitar/melee_guitar_02.wav",
+        "sound/weapons/guitar/melee_guitar_03.wav",
+        "sound/weapons/guitar/melee_guitar_04.wav",
+        "sound/weapons/guitar/melee_guitar_05.wav",
+        "sound/weapons/guitar/melee_guitar_07.wav",
+        "sound/weapons/guitar/melee_guitar_08.wav",
+        "sound/weapons/guitar/melee_guitar_10.wav",
+        "sound/weapons/guitar/melee_guitar_11.wav",
+        "sound/weapons/guitar/melee_guitar_12.wav",
+        "sound/weapons/guitar/melee_guitar_13.wav",
+        "sound/weapons/guitar/melee_guitar_14.wav"
+      ]
+    },
+    "guitar.impactworld": {
+      "name": "Guitar.ImpactWorld",
+      "owner": "electric_guitar",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/guitar/guitar_hit_world_01.wav",
+        "sound/weapons/guitar/guitar_hit_world_02.wav",
+        "sound/weapons/guitar/guitar_hit_world_03.wav",
+        "sound/weapons/guitar/guitar_hit_world_04.wav",
+        "sound/weapons/guitar/guitar_hit_world_05.wav"
+      ]
+    },
+    "guitar.itempickupextend": {
+      "name": "Guitar.ItemPickupExtend",
+      "owner": "electric_guitar",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "guitar.itempickupretract": {
+      "name": "Guitar.ItemPickupRetract",
+      "owner": "electric_guitar",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "guitar.miss": {
+      "name": "Guitar.Miss",
+      "owner": "electric_guitar",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/guitar/guitar_swing_miss1.wav",
+        "sound/weapons/guitar/guitar_swing_miss2.wav"
+      ]
+    },
+    "hegrenade.bounce": {
+      "name": "HEGrenade.Bounce",
+      "owner": null,
+      "action": "bounce",
+      "paths": [
+        "sound/weapons/hegrenade/he_bounce-1.wav"
+      ]
+    },
+    "huntingrifle.boltback": {
+      "name": "HuntingRifle.Boltback",
+      "owner": "hunting_rifle",
+      "action": "boltback",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunother/hunting_rifle_boltback.wav"
+      ]
+    },
+    "huntingrifle.boltforward": {
+      "name": "HuntingRifle.BoltForward",
+      "owner": "hunting_rifle",
+      "action": "boltforward",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunother/hunting_rifle_boltforward.wav"
+      ]
+    },
+    "huntingrifle.clipin": {
+      "name": "HuntingRifle.ClipIn",
+      "owner": "hunting_rifle",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunother/hunting_rifle_clipin.wav"
+      ]
+    },
+    "huntingrifle.cliplocked": {
+      "name": "HuntingRifle.ClipLocked",
+      "owner": "hunting_rifle",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunother/hunting_rifle_cliplocked.wav"
+      ]
+    },
+    "huntingrifle.clipout": {
+      "name": "HuntingRifle.ClipOut",
+      "owner": "hunting_rifle",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunother/hunting_rifle_clipout.wav"
+      ]
+    },
+    "huntingrifle.deploy": {
+      "name": "HuntingRifle.Deploy",
+      "owner": "hunting_rifle",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunother/hunting_rifle_deploy_1.wav"
+      ]
+    },
+    "huntingrifle.fire": {
+      "name": "HuntingRifle.Fire",
+      "owner": "hunting_rifle",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunfire/hunting_rifle_fire_1.wav"
+      ]
+    },
+    "huntingrifle.fireincendiary": {
+      "name": "HuntingRifle.FireIncendiary",
+      "owner": "hunting_rifle",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunfire/hunting_rifle_fire_1_incendiary.wav"
+      ]
+    },
+    "huntingrifle.helpinghandextend": {
+      "name": "HuntingRifle.HelpingHandExtend",
+      "owner": "hunting_rifle",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "huntingrifle.helpinghandretract": {
+      "name": "HuntingRifle.HelpingHandRetract",
+      "owner": "hunting_rifle",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "huntingrifle.itempickupextend": {
+      "name": "HuntingRifle.ItemPickupExtend",
+      "owner": "hunting_rifle",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "huntingrifle.itempickupretract": {
+      "name": "HuntingRifle.ItemPickupRetract",
+      "owner": "hunting_rifle",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "huntingrifle.pushbutton": {
+      "name": "HuntingRifle.PushButton",
+      "owner": "hunting_rifle",
+      "action": "pushbutton",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunother/hunting_rifle_push_button_1.wav"
+      ]
+    },
+    "huntingrifle.zoom": {
+      "name": "HuntingRifle.Zoom",
+      "owner": "hunting_rifle",
+      "action": "zoom",
+      "paths": [
+        "sound/weapons/hunting_rifle/gunother/hunting_rifle_zoom.wav"
+      ]
+    },
+    "inferno.fadeout": {
+      "name": "Inferno.FadeOut",
+      "owner": null,
+      "action": "fadeout",
+      "paths": [
+        "sound/weapons/molotov/fire_loop_fadeout_01.wav"
+      ]
+    },
+    "inferno.fire.ignite": {
+      "name": "Inferno.Fire.Ignite",
+      "owner": null,
+      "action": "fire.ignite",
+      "paths": [
+        "sound/weapons/molotov/fire_ignite_1.wav",
+        "sound/weapons/molotov/fire_ignite_4.wav",
+        "sound/weapons/molotov/fire_ignite_5.wav"
+      ]
+    },
+    "inferno.loop": {
+      "name": "Inferno.Loop",
+      "owner": null,
+      "action": "loop",
+      "paths": [
+        "sound/weapons/molotov/fire_loop_1.wav"
+      ]
+    },
+    "inferno.start": {
+      "name": "Inferno.Start",
+      "owner": null,
+      "action": "start",
+      "paths": [
+        "sound/weapons/molotov/molotov_detonate_3.wav"
+      ]
+    },
+    "inferno.startsweeten": {
+      "name": "Inferno.StartSweeten",
+      "owner": null,
+      "action": "startsweeten",
+      "paths": [
+        "sound/weapons/molotov/molotov_detonate_swt_01.wav"
+      ]
+    },
+    "katana.break": {
+      "name": "Katana.Break",
+      "owner": "katana",
+      "action": "break",
+      "paths": [
+        "sound/weapons/pan/pan_break.wav"
+      ]
+    },
+    "katana.deploy": {
+      "name": "Katana.Deploy",
+      "owner": "katana",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/katana/katana_deploy_1.wav"
+      ]
+    },
+    "katana.helpinghandextend": {
+      "name": "Katana.HelpingHandExtend",
+      "owner": "katana",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "katana.helpinghandretract": {
+      "name": "Katana.HelpingHandRetract",
+      "owner": "katana",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "katana.impactflesh": {
+      "name": "Katana.ImpactFlesh",
+      "owner": "katana",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/katana/melee_katana_01.wav",
+        "sound/weapons/katana/melee_katana_02.wav",
+        "sound/weapons/katana/melee_katana_03.wav"
+      ]
+    },
+    "katana.impactworld": {
+      "name": "Katana.ImpactWorld",
+      "owner": "katana",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/katana/katana_impact_world1.wav",
+        "sound/weapons/katana/katana_impact_world2.wav"
+      ]
+    },
+    "katana.itempickupextend": {
+      "name": "Katana.ItemPickupExtend",
+      "owner": "katana",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "katana.itempickupretract": {
+      "name": "Katana.ItemPickupRetract",
+      "owner": "katana",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "katana.miss": {
+      "name": "Katana.Miss",
+      "owner": "katana",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/katana/katana_swing_miss1.wav",
+        "sound/weapons/katana/katana_swing_miss2.wav"
+      ]
+    },
+    "knife.breaktongue": {
+      "name": "Knife.BreakTongue",
+      "owner": "knife",
+      "action": "breaktongue",
+      "paths": [
+        "sound/weapons/knife/knife_hitwall1.wav"
+      ]
+    },
+    "knife.impactflesh": {
+      "name": "Knife.ImpactFlesh",
+      "owner": "knife",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/knife/melee_knife_01.wav",
+        "sound/weapons/knife/melee_knife_02.wav"
+      ]
+    },
+    "knife.impactworld": {
+      "name": "Knife.ImpactWorld",
+      "owner": "knife",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/knife/knife_impact_world1.wav",
+        "sound/weapons/knife/knife_impact_world2.wav"
+      ]
+    },
+    "knife.miss": {
+      "name": "Knife.Miss",
+      "owner": "knife",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/knife/knife_swing_miss1.wav",
+        "sound/weapons/knife/knife_swing_miss2.wav"
+      ]
+    },
+    "knife.stabhunter": {
+      "name": "Knife.StabHunter",
+      "owner": "knife",
+      "action": "stabhunter",
+      "paths": [
+        "sound/weapons/knife/knife_hitwall1.wav"
+      ]
+    },
+    "m60.clipin": {
+      "name": "M60.ClipIn",
+      "owner": "rifle_m60",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/machinegun_m60/gunother/rifle_clip_in_1.wav"
+      ]
+    },
+    "m60.cliplocked": {
+      "name": "M60.ClipLocked",
+      "owner": "rifle_m60",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/machinegun_m60/gunother/rifle_clip_locked_1.wav"
+      ]
+    },
+    "m60.clipout": {
+      "name": "M60.ClipOut",
+      "owner": "rifle_m60",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/machinegun_m60/gunother/rifle_clip_out_1.wav"
+      ]
+    },
+    "m60.deploy": {
+      "name": "M60.Deploy",
+      "owner": "rifle_m60",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/machinegun_m60/gunother/rifle_deploy_1.wav"
+      ]
+    },
+    "m60.fire": {
+      "name": "M60.Fire",
+      "owner": "rifle_m60",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/machinegun_m60/gunfire/machinegun_fire_1.wav"
+      ]
+    },
+    "m60.fireincendiary": {
+      "name": "M60.FireIncendiary",
+      "owner": "rifle_m60",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/machinegun_m60/gunfire/machinegun_fire_1_incendiary.wav"
+      ]
+    },
+    "m60.slideback": {
+      "name": "M60.SlideBack",
+      "owner": "rifle_m60",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/machinegun_m60/gunother/rifle_slideback.wav"
+      ]
+    },
+    "m60.slideforward": {
+      "name": "M60.SlideForward",
+      "owner": "rifle_m60",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/machinegun_m60/gunother/rifle_slideforward.wav"
+      ]
+    },
+    "machete.break": {
+      "name": "Machete.Break",
+      "owner": "machete",
+      "action": "break",
+      "paths": [
+        "sound/weapons/pan/pan_break.wav"
+      ]
+    },
+    "machete.deploy": {
+      "name": "Machete.Deploy",
+      "owner": "machete",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/machete/machete_deploy_1.wav"
+      ]
+    },
+    "machete.helpinghandextend": {
+      "name": "Machete.HelpingHandExtend",
+      "owner": "machete",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "machete.helpinghandretract": {
+      "name": "Machete.HelpingHandRetract",
+      "owner": "machete",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "machete.impactflesh": {
+      "name": "Machete.ImpactFlesh",
+      "owner": "machete",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/machete/machete_impact_flesh1.wav",
+        "sound/weapons/machete/machete_impact_flesh2.wav"
+      ]
+    },
+    "machete.impactworld": {
+      "name": "Machete.ImpactWorld",
+      "owner": "machete",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/machete/machete_impact_world1.wav",
+        "sound/weapons/machete/machete_impact_world2.wav"
+      ]
+    },
+    "machete.itempickupextend": {
+      "name": "Machete.ItemPickupExtend",
+      "owner": "machete",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "machete.itempickupretract": {
+      "name": "Machete.ItemPickupRetract",
+      "owner": "machete",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "machete.miss": {
+      "name": "Machete.Miss",
+      "owner": "machete",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/machete/machete_swing_miss1.wav",
+        "sound/weapons/machete/machete_swing_miss2.wav"
+      ]
+    },
+    "magnum.clipin": {
+      "name": "Magnum.ClipIn",
+      "owner": "pistol_magnum",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_clip_in_1.wav"
+      ]
+    },
+    "magnum.cliplocked": {
+      "name": "Magnum.ClipLocked",
+      "owner": "pistol_magnum",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_clip_locked_1.wav"
+      ]
+    },
+    "magnum.clipout": {
+      "name": "Magnum.ClipOut",
+      "owner": "pistol_magnum",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_clip_out_1.wav"
+      ]
+    },
+    "magnum.deploy": {
+      "name": "Magnum.Deploy",
+      "owner": "pistol_magnum",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_deploy_1.wav"
+      ]
+    },
+    "magnum.fire": {
+      "name": "Magnum.Fire",
+      "owner": "pistol_magnum",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/magnum/gunfire/magnum_shoot.wav"
+      ]
+    },
+    "magnum.helpinghandextend": {
+      "name": "Magnum.HelpingHandExtend",
+      "owner": "pistol_magnum",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "magnum.helpinghandretract": {
+      "name": "Magnum.HelpingHandRetract",
+      "owner": "pistol_magnum",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "magnum.itempickupextend": {
+      "name": "Magnum.ItemPickupExtend",
+      "owner": "pistol_magnum",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "magnum.itempickupretract": {
+      "name": "Magnum.ItemPickupRetract",
+      "owner": "pistol_magnum",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "magnum.slideback": {
+      "name": "Magnum.Slideback",
+      "owner": "pistol_magnum",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_slideback_1.wav"
+      ]
+    },
+    "magnum.slideforward": {
+      "name": "Magnum.SlideForward",
+      "owner": "pistol_magnum",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/magnum/gunother/pistol_slideforward_1.wav"
+      ]
+    },
+    "melee.hit": {
+      "name": "Melee.Hit",
+      "owner": null,
+      "action": "hit",
+      "paths": [
+        "sound/player/survivor/hit/int/punch_boxing_facehit4.wav"
+      ]
+    },
+    "melee.hitbody": {
+      "name": "Melee.HitBody",
+      "owner": null,
+      "action": "hitbody",
+      "paths": [
+        "sound/player/survivor/hit/int/punch_boxing_facehit4.wav"
+      ]
+    },
+    "melee.hithead": {
+      "name": "Melee.HitHead",
+      "owner": null,
+      "action": "hithead",
+      "paths": [
+        "sound/npc/infected/gore/melee/melee_skull_break_01.wav",
+        "sound/npc/infected/gore/melee/melee_skull_break_02.wav"
+      ]
+    },
+    "melee.hitlimb": {
+      "name": "Melee.HitLimb",
+      "owner": null,
+      "action": "hitlimb",
+      "paths": [
+        "sound/npc/infected/gore/melee/melee_arm_break_01.wav",
+        "sound/npc/infected/gore/melee/melee_arm_break_02.wav"
+      ]
+    },
+    "melee.hitworld": {
+      "name": "Melee.HitWorld",
+      "owner": null,
+      "action": "hitworld",
+      "paths": [
+        "sound/weapons/knife/knife_hitwall1.wav"
+      ]
+    },
+    "melee.miss": {
+      "name": "Melee.Miss",
+      "owner": null,
+      "action": "miss",
+      "paths": [
+        "sound/player/survivor/swing/swing_miss1.wav",
+        "sound/player/survivor/swing/swing_miss2.wav"
+      ]
+    },
+    "minigun.fire": {
+      "name": "Minigun.Fire",
+      "owner": null,
+      "action": "fire",
+      "paths": [
+        "sound/weapons/minigun/gunfire/minigun_fire.wav"
+      ]
+    },
+    "minigun.spindown": {
+      "name": "Minigun.SpinDown",
+      "owner": null,
+      "action": "spindown",
+      "paths": [
+        "sound/weapons/minigun/gunother/minigun_wind_down.wav"
+      ]
+    },
+    "minigun.spinup": {
+      "name": "Minigun.SpinUp",
+      "owner": null,
+      "action": "spinup",
+      "paths": [
+        "sound/weapons/minigun/gunother/minigun_wind_up.wav"
+      ]
+    },
+    "molotov.helpinghandextend": {
+      "name": "Molotov.HelpingHandExtend",
+      "owner": null,
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "molotov.helpinghandretract": {
+      "name": "Molotov.HelpingHandRetract",
+      "owner": null,
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "molotov.idleloop": {
+      "name": "Molotov.IdleLoop",
+      "owner": null,
+      "action": "idleloop",
+      "paths": [
+        "sound/weapons/molotov/fire_idle_loop_1.wav"
+      ]
+    },
+    "molotov.itempickupextend": {
+      "name": "Molotov.ItemPickupExtend",
+      "owner": null,
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "molotov.itempickupretract": {
+      "name": "Molotov.ItemPickupRetract",
+      "owner": null,
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "molotov.loop": {
+      "name": "Molotov.Loop",
+      "owner": null,
+      "action": "loop",
+      "paths": [
+        "sound/weapons/molotov/fire_loop_1.wav"
+      ]
+    },
+    "molotov.throw": {
+      "name": "Molotov.Throw",
+      "owner": null,
+      "action": "throw",
+      "paths": [
+        "sound/weapons/molotov/fire_ignite_2.wav"
+      ]
+    },
+    "painpills.deploy": {
+      "name": "PainPills.Deploy",
+      "owner": null,
+      "action": "deploy",
+      "paths": [
+        "sound/player/items/pain_pills/pills_deploy_1.wav",
+        "sound/player/items/pain_pills/pills_deploy_2.wav",
+        "sound/player/items/pain_pills/pills_deploy_3.wav"
+      ]
+    },
+    "painpills.use": {
+      "name": "PainPills.Use",
+      "owner": null,
+      "action": "use",
+      "paths": [
+        "sound/player/items/pain_pills/pills_use_1.wav"
+      ]
+    },
+    "pan.break": {
+      "name": "Pan.Break",
+      "owner": "frying_pan",
+      "action": "break",
+      "paths": [
+        "sound/weapons/pan/pan_break.wav"
+      ]
+    },
+    "pan.deploy": {
+      "name": "Pan.Deploy",
+      "owner": "frying_pan",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/pan/pan_deploy_1.wav"
+      ]
+    },
+    "pan.helpinghandextend": {
+      "name": "Pan.HelpingHandExtend",
+      "owner": "frying_pan",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "pan.helpinghandretract": {
+      "name": "Pan.HelpingHandRetract",
+      "owner": "frying_pan",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "pan.impactflesh": {
+      "name": "Pan.ImpactFlesh",
+      "owner": "frying_pan",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/pan/melee_frying_pan_01.wav",
+        "sound/weapons/pan/melee_frying_pan_02.wav",
+        "sound/weapons/pan/melee_frying_pan_03.wav",
+        "sound/weapons/pan/melee_frying_pan_04.wav"
+      ]
+    },
+    "pan.impactworld": {
+      "name": "Pan.ImpactWorld",
+      "owner": "frying_pan",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/pan/pan_impact_world1.wav",
+        "sound/weapons/pan/pan_impact_world2.wav",
+        "sound/weapons/pan/pan_impact_world3.wav"
+      ]
+    },
+    "pan.itempickupextend": {
+      "name": "Pan.ItemPickupExtend",
+      "owner": "frying_pan",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "pan.itempickupretract": {
+      "name": "Pan.ItemPickupRetract",
+      "owner": "frying_pan",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "pan.miss": {
+      "name": "Pan.Miss",
+      "owner": "frying_pan",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/pan/pan_swing_miss1.wav",
+        "sound/weapons/pan/pan_swing_miss2.wav"
+      ]
+    },
+    "pipebomb.bounce": {
+      "name": "PipeBomb.Bounce",
+      "owner": null,
+      "action": "bounce",
+      "paths": [
+        "sound/weapons/hegrenade/he_bounce-1.wav"
+      ]
+    },
+    "pipebomb.drydebris": {
+      "name": "PipeBomb.DryDebris",
+      "owner": null,
+      "action": "drydebris",
+      "paths": [
+        "sound/physics/explosion/post_grenade_dirt_debris_01.wav",
+        "sound/physics/explosion/post_grenade_dirt_debris_02.wav"
+      ]
+    },
+    "pipebomb.helpinghandextend": {
+      "name": "PipeBomb.HelpingHandExtend",
+      "owner": null,
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "pipebomb.helpinghandretract": {
+      "name": "PipeBomb.HelpingHandRetract",
+      "owner": null,
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "pipebomb.itempickupextend": {
+      "name": "PipeBomb.ItemPickupExtend",
+      "owner": null,
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "pipebomb.itempickupretract": {
+      "name": "PipeBomb.ItemPickupRetract",
+      "owner": null,
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "pipebomb.timerbeep": {
+      "name": "PipeBomb.TimerBeep",
+      "owner": null,
+      "action": "timerbeep",
+      "paths": [
+        "sound/weapons/hegrenade/beep.wav"
+      ]
+    },
+    "pipebomb.wetdebris": {
+      "name": "PipeBomb.WetDebris",
+      "owner": null,
+      "action": "wetdebris",
+      "paths": [
+        "sound/physics/explosion/post_grenade_fleshy_debris_01.wav",
+        "sound/physics/explosion/post_grenade_fleshy_debris_02.wav"
+      ]
+    },
+    "pistol_silver.clipin": {
+      "name": "Pistol_Silver.ClipIn",
+      "owner": "pistol",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_clip_in_1.wav"
+      ]
+    },
+    "pistol_silver.cliplocked": {
+      "name": "Pistol_Silver.ClipLocked",
+      "owner": "pistol",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_clip_locked_1.wav"
+      ]
+    },
+    "pistol_silver.clipout": {
+      "name": "Pistol_Silver.ClipOut",
+      "owner": "pistol",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_clip_out_1.wav"
+      ]
+    },
+    "pistol_silver.deploy": {
+      "name": "Pistol_Silver.Deploy",
+      "owner": "pistol",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/pistol_silver/gunother/pistol_silver_deploy_1.wav"
+      ]
+    },
+    "pistol_silver.fire": {
+      "name": "Pistol_Silver.Fire",
+      "owner": "pistol",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/pistol_silver/gunfire/pistol_fire.wav"
+      ]
+    },
+    "pistol_silver.helpinghandextend": {
+      "name": "Pistol_Silver.HelpingHandExtend",
+      "owner": "pistol",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "pistol_silver.helpinghandretract": {
+      "name": "Pistol_Silver.HelpingHandRetract",
+      "owner": "pistol",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "pistol_silver.itempickupextend": {
+      "name": "Pistol_Silver.ItemPickupExtend",
+      "owner": "pistol",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "pistol_silver.itempickupretract": {
+      "name": "Pistol_Silver.ItemPickupRetract",
+      "owner": "pistol",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "pistol_silver.slideback": {
+      "name": "Pistol_Silver.Slideback",
+      "owner": "pistol",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_slideback_1.wav"
+      ]
+    },
+    "pistol_silver.slideforward": {
+      "name": "Pistol_Silver.SlideForward",
+      "owner": "pistol",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_slideforward_1.wav"
+      ]
+    },
+    "pistol.clipin": {
+      "name": "Pistol.ClipIn",
+      "owner": "pistol",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_clip_in_1.wav"
+      ]
+    },
+    "pistol.cliplocked": {
+      "name": "Pistol.ClipLocked",
+      "owner": "pistol",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_clip_locked_1.wav"
+      ]
+    },
+    "pistol.clipout": {
+      "name": "Pistol.ClipOut",
+      "owner": "pistol",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_clip_out_1.wav"
+      ]
+    },
+    "pistol.deploy": {
+      "name": "Pistol.Deploy",
+      "owner": "pistol",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_deploy_1.wav"
+      ]
+    },
+    "pistol.dualfire": {
+      "name": "Pistol.DualFire",
+      "owner": "dual_pistol",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/pistol/gunfire/pistol_dual_fire.wav"
+      ]
+    },
+    "pistol.fire": {
+      "name": "Pistol.Fire",
+      "owner": "pistol",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/pistol/gunfire/pistol_fire.wav"
+      ]
+    },
+    "pistol.helpinghandextend": {
+      "name": "Pistol.HelpingHandExtend",
+      "owner": "pistol",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "pistol.helpinghandretract": {
+      "name": "Pistol.HelpingHandRetract",
+      "owner": "pistol",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "pistol.itempickupextend": {
+      "name": "Pistol.ItemPickupExtend",
+      "owner": "pistol",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "pistol.itempickupretract": {
+      "name": "Pistol.ItemPickupRetract",
+      "owner": "pistol",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "pistol.slideback": {
+      "name": "Pistol.Slideback",
+      "owner": "pistol",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_slideback_1.wav"
+      ]
+    },
+    "pistol.slideforward": {
+      "name": "Pistol.SlideForward",
+      "owner": "pistol",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_slideforward_1.wav"
+      ]
+    },
+    "pitchfork.deploy": {
+      "name": "Pitchfork.Deploy",
+      "owner": "pitchfork",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/pitchfork/pitchfork_deploy_1.wav"
+      ]
+    },
+    "pitchfork.impactflesh": {
+      "name": "Pitchfork.ImpactFlesh",
+      "owner": "pitchfork",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/pitchfork/pitchfork_impact_flesh1.wav",
+        "sound/weapons/pitchfork/pitchfork_impact_flesh2.wav",
+        "sound/weapons/pitchfork/pitchfork_impact_flesh3.wav",
+        "sound/weapons/pitchfork/pitchfork_impact_flesh4.wav"
+      ]
+    },
+    "pitchfork.impactworld": {
+      "name": "Pitchfork.ImpactWorld",
+      "owner": "pitchfork",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/pitchfork/pitchfork_impact_world1.wav",
+        "sound/weapons/pitchfork/pitchfork_impact_world2.wav",
+        "sound/weapons/pitchfork/pitchfork_impact_world3.wav",
+        "sound/weapons/pitchfork/pitchfork_impact_world4.wav"
+      ]
+    },
+    "pitchfork.miss": {
+      "name": "Pitchfork.Miss",
+      "owner": "pitchfork",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/pitchfork/pitchfork_swing_miss1.wav",
+        "sound/weapons/pitchfork/pitchfork_swing_miss2.wav"
+      ]
+    },
+    "rifle_desert.clipin": {
+      "name": "Rifle_Desert.ClipIn",
+      "owner": "rifle_desert",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/rifle_desert/gunother/rifle_clip_in_1.wav"
+      ]
+    },
+    "rifle_desert.cliplocked": {
+      "name": "Rifle_Desert.ClipLocked",
+      "owner": "rifle_desert",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/rifle_desert/gunother/rifle_clip_locked_1.wav"
+      ]
+    },
+    "rifle_desert.clipout": {
+      "name": "Rifle_Desert.ClipOut",
+      "owner": "rifle_desert",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/rifle_desert/gunother/rifle_clip_out_1.wav"
+      ]
+    },
+    "rifle_desert.deploy": {
+      "name": "Rifle_Desert.Deploy",
+      "owner": "rifle_desert",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/rifle_desert/gunother/rifle_deploy_1.wav"
+      ]
+    },
+    "rifle_desert.fire": {
+      "name": "Rifle_Desert.Fire",
+      "owner": "rifle_desert",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/rifle_desert/gunfire/rifle_fire_1.wav"
+      ]
+    },
+    "rifle_desert.fireincendiary": {
+      "name": "Rifle_Desert.FireIncendiary",
+      "owner": "rifle_desert",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/rifle_desert/gunfire/rifle_fire_1_incendiary.wav"
+      ]
+    },
+    "rifle_desert.fullautobutton": {
+      "name": "Rifle_Desert.FullAutoButton",
+      "owner": "rifle_desert",
+      "action": "fullautobutton",
+      "paths": [
+        "sound/weapons/rifle_desert/gunother/rifle_fullautobutton_1.wav"
+      ]
+    },
+    "rifle_desert.helpinghandextend": {
+      "name": "Rifle_Desert.HelpingHandExtend",
+      "owner": "rifle_desert",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "rifle_desert.helpinghandretract": {
+      "name": "Rifle_Desert.HelpingHandRetract",
+      "owner": "rifle_desert",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "rifle_desert.itempickupextend": {
+      "name": "Rifle_Desert.ItemPickupExtend",
+      "owner": "rifle_desert",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "rifle_desert.itempickupretract": {
+      "name": "Rifle_Desert.ItemPickupRetract",
+      "owner": "rifle_desert",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "rifle_desert.pushbutton": {
+      "name": "Rifle_Desert.PushButton",
+      "owner": "rifle_desert",
+      "action": "pushbutton",
+      "paths": [
+        "sound/weapons/rifle_desert/gunother/rifle_ready_1.wav"
+      ]
+    },
+    "rifle_desert.slideback": {
+      "name": "Rifle_Desert.SlideBack",
+      "owner": "rifle_desert",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/rifle_desert/gunother/rifle_slideback_1.wav"
+      ]
+    },
+    "rifle_desert.slideforward": {
+      "name": "Rifle_Desert.SlideForward",
+      "owner": "rifle_desert",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/rifle_desert/gunother/rifle_slideforward_1.wav"
+      ]
+    },
+    "rifle.clipin": {
+      "name": "Rifle.ClipIn",
+      "owner": "rifle",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_clip_in_1.wav"
+      ]
+    },
+    "rifle.cliplocked": {
+      "name": "Rifle.ClipLocked",
+      "owner": "rifle",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_clip_locked_1.wav"
+      ]
+    },
+    "rifle.clipout": {
+      "name": "Rifle.ClipOut",
+      "owner": "rifle",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_clip_out_1.wav"
+      ]
+    },
+    "rifle.deploy": {
+      "name": "Rifle.Deploy",
+      "owner": "rifle",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_deploy_1.wav"
+      ]
+    },
+    "rifle.fire": {
+      "name": "Rifle.Fire",
+      "owner": "rifle",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/rifle/gunfire/rifle_fire_1.wav"
+      ]
+    },
+    "rifle.fireincendiary": {
+      "name": "Rifle.FireIncendiary",
+      "owner": "rifle",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/rifle/gunfire/rifle_fire_1_incendiary.wav"
+      ]
+    },
+    "rifle.fullautobutton": {
+      "name": "Rifle.FullAutoButton",
+      "owner": "rifle",
+      "action": "fullautobutton",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_fullautobutton_1.wav"
+      ]
+    },
+    "rifle.helpinghandextend": {
+      "name": "Rifle.HelpingHandExtend",
+      "owner": "rifle",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "rifle.helpinghandretract": {
+      "name": "Rifle.HelpingHandRetract",
+      "owner": "rifle",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "rifle.itempickupextend": {
+      "name": "Rifle.ItemPickupExtend",
+      "owner": "rifle",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "rifle.itempickupretract": {
+      "name": "Rifle.ItemPickupRetract",
+      "owner": "rifle",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "rifle.pushbutton": {
+      "name": "Rifle.PushButton",
+      "owner": "rifle",
+      "action": "pushbutton",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_ready_1.wav"
+      ]
+    },
+    "rifle.slideback": {
+      "name": "Rifle.SlideBack",
+      "owner": "rifle",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_slideback_1.wav"
+      ]
+    },
+    "rifle.slideforward": {
+      "name": "Rifle.SlideForward",
+      "owner": "rifle",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_slideforward_1.wav"
+      ]
+    },
+    "shotgun_chrome.deploy": {
+      "name": "Shotgun_Chrome.Deploy",
+      "owner": "shotgun_chrome",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/shotgun_chrome/gunother/shotgun_deploy_1.wav"
+      ]
+    },
+    "shotgun_chrome.fire": {
+      "name": "Shotgun_Chrome.Fire",
+      "owner": "shotgun_chrome",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/shotgun_chrome/gunfire/shotgun_fire_1.wav"
+      ]
+    },
+    "shotgun_chrome.fireincendiary": {
+      "name": "Shotgun_Chrome.FireIncendiary",
+      "owner": "shotgun_chrome",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/shotgun_chrome/gunfire/shotgun_fire_1_incendiary.wav"
+      ]
+    },
+    "shotgun_chrome.loadshell": {
+      "name": "Shotgun_Chrome.LoadShell",
+      "owner": "shotgun_chrome",
+      "action": "loadshell",
+      "paths": [
+        "sound/weapons/shotgun_chrome/gunother/shotgun_load_shell_2.wav",
+        "sound/weapons/shotgun_chrome/gunother/shotgun_load_shell_4.wav"
+      ]
+    },
+    "shotgun_chrome.pump": {
+      "name": "Shotgun_Chrome.Pump",
+      "owner": "shotgun_chrome",
+      "action": "pump",
+      "paths": [
+        "sound/weapons/shotgun_chrome/gunother/shotgun_pump_1.wav"
+      ]
+    },
+    "shotgun.deploy": {
+      "name": "Shotgun.Deploy",
+      "owner": "pumpshotgun",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/shotgun/gunother/shotgun_deploy_1.wav"
+      ]
+    },
+    "shotgun.fire": {
+      "name": "Shotgun.Fire",
+      "owner": "pumpshotgun",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/shotgun/gunfire/shotgun_fire_1.wav"
+      ]
+    },
+    "shotgun.fireincendiary": {
+      "name": "Shotgun.FireIncendiary",
+      "owner": "pumpshotgun",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/shotgun/gunfire/shotgun_fire_1_incendiary.wav"
+      ]
+    },
+    "shotgun.helpinghandextend": {
+      "name": "Shotgun.HelpingHandExtend",
+      "owner": "pumpshotgun",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "shotgun.helpinghandretract": {
+      "name": "Shotgun.HelpingHandRetract",
+      "owner": "pumpshotgun",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "shotgun.itempickupextend": {
+      "name": "Shotgun.ItemPickupExtend",
+      "owner": "pumpshotgun",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "shotgun.itempickupretract": {
+      "name": "Shotgun.ItemPickupRetract",
+      "owner": "pumpshotgun",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "shotgun.loadshell": {
+      "name": "Shotgun.LoadShell",
+      "owner": "pumpshotgun",
+      "action": "loadshell",
+      "paths": [
+        "sound/weapons/shotgun/gunother/shotgun_load_shell_2.wav",
+        "sound/weapons/shotgun/gunother/shotgun_load_shell_4.wav"
+      ]
+    },
+    "shotgun.pump": {
+      "name": "Shotgun.Pump",
+      "owner": "pumpshotgun",
+      "action": "pump",
+      "paths": [
+        "sound/weapons/shotgun/gunother/shotgun_pump_1.wav"
+      ]
+    },
+    "shovel.deploy": {
+      "name": "Shovel.Deploy",
+      "owner": "shovel",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/shovel/shovel_deploy_1.wav"
+      ]
+    },
+    "shovel.impactflesh": {
+      "name": "Shovel.ImpactFlesh",
+      "owner": "shovel",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/shovel/shovel_impact_flesh1.wav",
+        "sound/weapons/shovel/shovel_impact_flesh2.wav",
+        "sound/weapons/shovel/shovel_impact_flesh3.wav",
+        "sound/weapons/shovel/shovel_impact_flesh4.wav"
+      ]
+    },
+    "shovel.impactworld": {
+      "name": "Shovel.ImpactWorld",
+      "owner": "shovel",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/shovel/shovel_impact_world1.wav",
+        "sound/weapons/shovel/shovel_impact_world2.wav"
+      ]
+    },
+    "shovel.miss": {
+      "name": "Shovel.Miss",
+      "owner": "shovel",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/shovel/shovel_swing_miss1.wav",
+        "sound/weapons/shovel/shovel_swing_miss2.wav"
+      ]
+    },
+    "smg_silenced.clipin": {
+      "name": "SMG_Silenced.ClipIn",
+      "owner": "smg_silenced",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/smg_silenced/gunother/smg_clip_in_1.wav"
+      ]
+    },
+    "smg_silenced.cliplocked": {
+      "name": "SMG_Silenced.ClipLocked",
+      "owner": "smg_silenced",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/smg_silenced/gunother/smg_clip_locked_1.wav"
+      ]
+    },
+    "smg_silenced.clipout": {
+      "name": "SMG_Silenced.ClipOut",
+      "owner": "smg_silenced",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/smg_silenced/gunother/smg_clip_out_1.wav"
+      ]
+    },
+    "smg_silenced.deploy": {
+      "name": "SMG_Silenced.Deploy",
+      "owner": "smg_silenced",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/smg_silenced/gunother/smg_silenced_deploy_1.wav"
+      ]
+    },
+    "smg_silenced.fire": {
+      "name": "SMG_Silenced.Fire",
+      "owner": "smg_silenced",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/smg_silenced/gunfire/smg_fire_1.wav"
+      ]
+    },
+    "smg_silenced.fireincendiary": {
+      "name": "SMG_Silenced.FireIncendiary",
+      "owner": "smg_silenced",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/smg_silenced/gunfire/smg_fire_1_incendiary.wav"
+      ]
+    },
+    "smg_silenced.fullautobutton": {
+      "name": "SMG_Silenced.FullAutoButton",
+      "owner": "smg_silenced",
+      "action": "fullautobutton",
+      "paths": [
+        "sound/weapons/smg_silenced/gunother/smg_fullautobutton_1.wav"
+      ]
+    },
+    "smg_silenced.helpinghandextend": {
+      "name": "SMG_Silenced.HelpingHandExtend",
+      "owner": "smg_silenced",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "smg_silenced.helpinghandretract": {
+      "name": "SMG_Silenced.HelpingHandRetract",
+      "owner": "smg_silenced",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "smg_silenced.itempickupextend": {
+      "name": "SMG_Silenced.ItemPickupExtend",
+      "owner": "smg_silenced",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "smg_silenced.itempickupretract": {
+      "name": "SMG_Silenced.ItemPickupRetract",
+      "owner": "smg_silenced",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "smg_silenced.slideback": {
+      "name": "SMG_Silenced.SlideBack",
+      "owner": "smg_silenced",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/smg_silenced/gunother/smg_slideback_1.wav"
+      ]
+    },
+    "smg_silenced.slideforward": {
+      "name": "SMG_Silenced.SlideForward",
+      "owner": "smg_silenced",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/smg_silenced/gunother/smg_slideforward_1.wav"
+      ]
+    },
+    "smg.clipin": {
+      "name": "SMG.ClipIn",
+      "owner": "smg",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/smg/gunother/smg_clip_in_1.wav"
+      ]
+    },
+    "smg.cliplocked": {
+      "name": "SMG.ClipLocked",
+      "owner": "smg",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/smg/gunother/smg_clip_locked_1.wav"
+      ]
+    },
+    "smg.clipout": {
+      "name": "SMG.ClipOut",
+      "owner": "smg",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/smg/gunother/smg_clip_out_1.wav"
+      ]
+    },
+    "smg.deploy": {
+      "name": "SMG.Deploy",
+      "owner": "smg",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/smg/gunother/smg_deploy_1.wav"
+      ]
+    },
+    "smg.fire": {
+      "name": "SMG.Fire",
+      "owner": "smg",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/smg/gunfire/smg_fire_1.wav"
+      ]
+    },
+    "smg.fireincendiary": {
+      "name": "SMG.FireIncendiary",
+      "owner": "smg",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/smg/gunfire/smg_fire_1_incendiary.wav"
+      ]
+    },
+    "smg.fullautobutton": {
+      "name": "SMG.FullAutoButton",
+      "owner": "smg",
+      "action": "fullautobutton",
+      "paths": [
+        "sound/weapons/smg/gunother/smg_fullautobutton_1.wav"
+      ]
+    },
+    "smg.helpinghandextend": {
+      "name": "SMG.HelpingHandExtend",
+      "owner": "smg",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "smg.helpinghandretract": {
+      "name": "SMG.HelpingHandRetract",
+      "owner": "smg",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "smg.itempickupextend": {
+      "name": "SMG.ItemPickupExtend",
+      "owner": "smg",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav"
+      ]
+    },
+    "smg.itempickupretract": {
+      "name": "SMG.ItemPickupRetract",
+      "owner": "smg",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav"
+      ]
+    },
+    "smg.slideback": {
+      "name": "SMG.SlideBack",
+      "owner": "smg",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/smg/gunother/smg_slideback_1.wav"
+      ]
+    },
+    "smg.slideforward": {
+      "name": "SMG.SlideForward",
+      "owner": "smg",
+      "action": "slideforward",
+      "paths": [
+        "sound/weapons/smg/gunother/smg_slideforward_1.wav"
+      ]
+    },
+    "sniper__military.itempickupextend": {
+      "name": "Sniper__Military.ItemPickupExtend",
+      "owner": "sniper_military",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "sniper_military.boltback": {
+      "name": "Sniper_Military.Boltback",
+      "owner": "sniper_military",
+      "action": "boltback",
+      "paths": [
+        "sound/weapons/sniper_military/gunother/sniper_military_slideback_1.wav"
+      ]
+    },
+    "sniper_military.boltforward": {
+      "name": "Sniper_Military.BoltForward",
+      "owner": "sniper_military",
+      "action": "boltforward",
+      "paths": [
+        "sound/weapons/sniper_military/gunother/sniper_military_slideforward_1.wav"
+      ]
+    },
+    "sniper_military.clipin": {
+      "name": "Sniper_Military.ClipIn",
+      "owner": "sniper_military",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/sniper_military/gunother/sniper_military_clip_in_1.wav"
+      ]
+    },
+    "sniper_military.cliplocked": {
+      "name": "Sniper_Military.ClipLocked",
+      "owner": "sniper_military",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/sniper_military/gunother/sniper_military_clip_locked_1.wav"
+      ]
+    },
+    "sniper_military.clipout": {
+      "name": "Sniper_Military.ClipOut",
+      "owner": "sniper_military",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/sniper_military/gunother/sniper_military_clip_out_1.wav"
+      ]
+    },
+    "sniper_military.deploy": {
+      "name": "Sniper_Military.Deploy",
+      "owner": "sniper_military",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/sniper_military/gunother/sniper_military_deploy_1.wav"
+      ]
+    },
+    "sniper_military.fire": {
+      "name": "Sniper_Military.Fire",
+      "owner": "sniper_military",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/sniper_military/gunfire/sniper_military_fire_1.wav"
+      ]
+    },
+    "sniper_military.fireincendiary": {
+      "name": "Sniper_Military.FireIncendiary",
+      "owner": "sniper_military",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/sniper_military/gunfire/sniper_military_fire_1_incendiary.wav"
+      ]
+    },
+    "sniper_military.helpinghandextend": {
+      "name": "Sniper_Military.HelpingHandExtend",
+      "owner": "sniper_military",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav"
+      ]
+    },
+    "sniper_military.helpinghandretract": {
+      "name": "Sniper_Military.HelpingHandRetract",
+      "owner": "sniper_military",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "sniper_military.itempickupretract": {
+      "name": "Sniper_Military.ItemPickupRetract",
+      "owner": "sniper_military",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+      ]
+    },
+    "sniper_military.pushbutton": {
+      "name": "Sniper_Military.PushButton",
+      "owner": "sniper_military",
+      "action": "pushbutton",
+      "paths": [
+        "sound/weapons/sniper_military/gunother/sniper_military_push_button_1.wav"
+      ]
+    },
+    "sniper_military.zoom": {
+      "name": "Sniper_Military.Zoom",
+      "owner": "sniper_military",
+      "action": "zoom",
+      "paths": [
+        "sound/weapons/sniper_military/gunother/sniper_military_zoom.wav"
+      ]
+    },
+    "tonfa.break": {
+      "name": "Tonfa.Break",
+      "owner": "tonfa",
+      "action": "break",
+      "paths": [
+        "sound/weapons/pan/pan_break.wav"
+      ]
+    },
+    "tonfa.deploy": {
+      "name": "Tonfa.Deploy",
+      "owner": "tonfa",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/tonfa/tonfa_deploy_1.wav"
+      ]
+    },
+    "tonfa.helpinghandextend": {
+      "name": "Tonfa.HelpingHandExtend",
+      "owner": "tonfa",
+      "action": "helpinghandextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "tonfa.helpinghandretract": {
+      "name": "Tonfa.HelpingHandRetract",
+      "owner": "tonfa",
+      "action": "helpinghandretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "tonfa.impactflesh": {
+      "name": "Tonfa.ImpactFlesh",
+      "owner": "tonfa",
+      "action": "impactflesh",
+      "paths": [
+        "sound/weapons/tonfa/melee_tonfa_01.wav",
+        "sound/weapons/tonfa/melee_tonfa_02.wav"
+      ]
+    },
+    "tonfa.impactworld": {
+      "name": "Tonfa.ImpactWorld",
+      "owner": "tonfa",
+      "action": "impactworld",
+      "paths": [
+        "sound/weapons/tonfa/tonfa_impact_world1.wav",
+        "sound/weapons/tonfa/tonfa_impact_world2.wav"
+      ]
+    },
+    "tonfa.itempickupextend": {
+      "name": "Tonfa.ItemPickupExtend",
+      "owner": "tonfa",
+      "action": "itempickupextend",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandextend.wav"
+      ]
+    },
+    "tonfa.itempickupretract": {
+      "name": "Tonfa.ItemPickupRetract",
+      "owner": "tonfa",
+      "action": "itempickupretract",
+      "paths": [
+        "sound/weapons/molotov/molotov_helpinghandretract.wav"
+      ]
+    },
+    "tonfa.miss": {
+      "name": "Tonfa.Miss",
+      "owner": "tonfa",
+      "action": "miss",
+      "paths": [
+        "sound/weapons/tonfa/tonfa_swing_miss1.wav",
+        "sound/weapons/tonfa/tonfa_swing_miss2.wav"
+      ]
+    },
+    "weapon_awp.bolt": {
+      "name": "Weapon_AWP.Bolt",
+      "owner": "sniper_awp",
+      "action": "bolt",
+      "paths": [
+        "sound/weapons/awp/gunother/awp_bolt.wav"
+      ]
+    },
+    "weapon_awp.boltforward": {
+      "name": "Weapon_AWP.BoltForward",
+      "owner": "sniper_awp",
+      "action": "boltforward",
+      "paths": [
+        "sound/weapons/awp/gunother/awp_bolt_forward.wav"
+      ]
+    },
+    "weapon_awp.clipin": {
+      "name": "Weapon_AWP.Clipin",
+      "owner": "sniper_awp",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/awp/gunother/awp_clipin.wav"
+      ]
+    },
+    "weapon_awp.clipout": {
+      "name": "Weapon_AWP.Clipout",
+      "owner": "sniper_awp",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/awp/gunother/awp_clipout.wav"
+      ]
+    },
+    "weapon_awp.deploy": {
+      "name": "Weapon_AWP.Deploy",
+      "owner": "sniper_awp",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/awp/gunother/awp_deploy.wav"
+      ]
+    },
+    "weapon_awp.fireincendiary": {
+      "name": "Weapon_AWP.FireIncendiary",
+      "owner": "sniper_awp",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/awp/gunfire/awp1_incendiary.wav"
+      ]
+    },
+    "weapon_awp.single": {
+      "name": "Weapon_AWP.Single",
+      "owner": "sniper_awp",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/awp/gunfire/awp1.wav"
+      ]
+    },
+    "weapon_knife.deploy": {
+      "name": "Weapon_Knife.Deploy",
+      "owner": "knife",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/knife/knife_deploy.wav"
+      ]
+    },
+    "weapon_knife.hit": {
+      "name": "Weapon_Knife.Hit",
+      "owner": "knife",
+      "action": "hit",
+      "paths": [
+        "sound/player/pz/hit/claw_hit_flesh_1.wav",
+        "sound/player/pz/hit/claw_hit_flesh_2.wav",
+        "sound/player/pz/hit/claw_hit_flesh_3.wav",
+        "sound/player/pz/hit/claw_hit_flesh_4.wav"
+      ]
+    },
+    "weapon_knife.hitwall": {
+      "name": "Weapon_Knife.HitWall",
+      "owner": "knife",
+      "action": "hitwall",
+      "paths": [
+        "sound/weapons/knife/knife_hitwall1.wav"
+      ]
+    },
+    "weapon_knife.slash": {
+      "name": "Weapon_Knife.Slash",
+      "owner": "knife",
+      "action": "slash",
+      "paths": [
+        "sound/npc/infected/miss/claw_miss_1.wav",
+        "sound/npc/infected/miss/claw_miss_2.wav"
+      ]
+    },
+    "weapon_knife.stab": {
+      "name": "Weapon_Knife.Stab",
+      "owner": "knife",
+      "action": "stab",
+      "paths": [
+        "sound/player/pz/hit/claw_hit_flesh_1.wav",
+        "sound/player/pz/hit/claw_hit_flesh_2.wav",
+        "sound/player/pz/hit/claw_hit_flesh_3.wav",
+        "sound/player/pz/hit/claw_hit_flesh_4.wav"
+      ]
+    },
+    "weapon_mp5navy.clipin": {
+      "name": "Weapon_MP5Navy.Clipin",
+      "owner": "smg_mp5",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/mp5navy/gunother/mp5_clipin.wav"
+      ]
+    },
+    "weapon_mp5navy.clipout": {
+      "name": "Weapon_MP5Navy.Clipout",
+      "owner": "smg_mp5",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/mp5navy/gunother/mp5_clipout.wav"
+      ]
+    },
+    "weapon_mp5navy.deploy": {
+      "name": "Weapon_MP5Navy.Deploy",
+      "owner": "smg_mp5",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/mp5navy/gunother/mp5_deploy.wav"
+      ]
+    },
+    "weapon_mp5navy.fireincendiary": {
+      "name": "Weapon_MP5Navy.FireIncendiary",
+      "owner": "smg_mp5",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/mp5navy/gunfire/mp5-1_incendiary.wav"
+      ]
+    },
+    "weapon_mp5navy.single": {
+      "name": "Weapon_MP5Navy.Single",
+      "owner": "smg_mp5",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/mp5navy/gunfire/mp5-1.wav"
+      ]
+    },
+    "weapon_mp5navy.slideback": {
+      "name": "Weapon_MP5Navy.Slideback",
+      "owner": "smg_mp5",
+      "action": "slideback",
+      "paths": [
+        "sound/weapons/mp5navy/gunother/mp5_slideback.wav"
+      ]
+    },
+    "weapon_scout.boltback": {
+      "name": "Weapon_Scout.BoltBack",
+      "owner": "sniper_scout",
+      "action": "boltback",
+      "paths": [
+        "sound/weapons/scout/gunother/scout_bolt.wav"
+      ]
+    },
+    "weapon_scout.boltforward": {
+      "name": "Weapon_Scout.BoltForward",
+      "owner": "sniper_scout",
+      "action": "boltforward",
+      "paths": [
+        "sound/weapons/scout/gunother/scout_bolt_forward.wav"
+      ]
+    },
+    "weapon_scout.clipin": {
+      "name": "Weapon_Scout.Clipin",
+      "owner": "sniper_scout",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/scout/gunother/scout_clipin.wav"
+      ]
+    },
+    "weapon_scout.cliplocked": {
+      "name": "Weapon_Scout.ClipLocked",
+      "owner": "sniper_scout",
+      "action": "cliplocked",
+      "paths": [
+        "sound/weapons/scout/gunother/scout_clipin_locked.wav"
+      ]
+    },
+    "weapon_scout.clipout": {
+      "name": "Weapon_Scout.Clipout",
+      "owner": "sniper_scout",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/scout/gunother/scout_clipout.wav"
+      ]
+    },
+    "weapon_scout.deploy": {
+      "name": "Weapon_Scout.Deploy",
+      "owner": "sniper_scout",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/scout/gunother/scout_deploy.wav"
+      ]
+    },
+    "weapon_scout.fireincendiary": {
+      "name": "Weapon_Scout.FireIncendiary",
+      "owner": "sniper_scout",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/scout/gunfire/scout_fire-1_incendiary.wav"
+      ]
+    },
+    "weapon_scout.single": {
+      "name": "Weapon_Scout.Single",
+      "owner": "sniper_scout",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/scout/gunfire/scout_fire-1.wav"
+      ]
+    },
+    "weapon_sg552.boltpullback": {
+      "name": "Weapon_SG552.BoltpullBack",
+      "owner": "rifle_sg552",
+      "action": "boltpullback",
+      "paths": [
+        "sound/weapons/sg552/gunother/sg552_boltpull.wav"
+      ]
+    },
+    "weapon_sg552.boltpullforward": {
+      "name": "Weapon_SG552.BoltpullForward",
+      "owner": "rifle_sg552",
+      "action": "boltpullforward",
+      "paths": [
+        "sound/weapons/sg552/gunother/sg552_boltpullforward.wav"
+      ]
+    },
+    "weapon_sg552.clipin": {
+      "name": "Weapon_SG552.Clipin",
+      "owner": "rifle_sg552",
+      "action": "clipin",
+      "paths": [
+        "sound/weapons/sg552/gunother/sg552_clipin.wav"
+      ]
+    },
+    "weapon_sg552.clipout": {
+      "name": "Weapon_SG552.Clipout",
+      "owner": "rifle_sg552",
+      "action": "clipout",
+      "paths": [
+        "sound/weapons/sg552/gunother/sg552_clipout.wav"
+      ]
+    },
+    "weapon_sg552.deploy": {
+      "name": "Weapon_SG552.Deploy",
+      "owner": "rifle_sg552",
+      "action": "deploy",
+      "paths": [
+        "sound/weapons/sg552/gunother/sg552_deploy.wav"
+      ]
+    },
+    "weapon_sg552.fireincendiary": {
+      "name": "Weapon_SG552.FireIncendiary",
+      "owner": "rifle_sg552",
+      "action": "fireincendiary",
+      "paths": [
+        "sound/weapons/sg552/gunfire/sg552-1_incendiary.wav"
+      ]
+    },
+    "weapon_sg552.single": {
+      "name": "Weapon_SG552.Single",
+      "owner": "rifle_sg552",
+      "action": "fire",
+      "paths": [
+        "sound/weapons/sg552/gunfire/sg552-1.wav"
+      ]
+    }
+  },
+  "shared_paths": [
+    "sound/weapons/hegrenade/he_bounce-1.wav",
+    "sound/weapons/hunting_rifle/gunother/hunting_rifle_zoom.wav",
+    "sound/weapons/knife/knife_hitwall1.wav",
+    "sound/weapons/molotov/fire_loop_1.wav",
+    "sound/weapons/molotov/molotov_helpinghandextend.wav",
+    "sound/weapons/molotov/molotov_helpinghandretract.wav",
+    "sound/weapons/pan/pan_break.wav",
+    "sound/weapons/pistol/gunother/pistol_clip_locked_1.wav",
+    "sound/weapons/pistol/gunother/pistol_helpinghandextend.wav",
+    "sound/weapons/pistol/gunother/pistol_helpinghandretract.wav",
+    "sound/weapons/pistol/gunother/pistol_slideback_1.wav",
+    "sound/weapons/pistol/gunother/pistol_slideforward_1.wav",
+    "sound/weapons/rifle/gunother/rifle_helpinghandextend.wav",
+    "sound/weapons/rifle/gunother/rifle_helpinghandretract.wav"
+  ]
+}

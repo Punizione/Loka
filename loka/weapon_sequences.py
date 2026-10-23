@@ -86,6 +86,11 @@ class PlannedSequence:
     preserve_source_fps: bool = False
     # Exact original official timing ratio; fps_scale is a reporting float only.
     fps_scale_ratio: tuple[int, int] | None = None
+    # Ordered source clips and native layer helpers for a composed reload.
+    reload_parts: tuple[SourceSequence, ...] = ()
+    reload_helpers: tuple[str, ...] = ()
+    reload_helper: bool = False
+    source_sequence_map: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -141,6 +146,8 @@ def _idle_raw_correction_warnings(sources, profile):
 
 
 def _classify(source, profile, index):
+    if profile.id=='hunting_rifle' and index in (12,13):
+        return 'reload_empty',index==13,True
     from .weapon_catalog import MELEE_IDS
     if profile.id in MELEE_IDS:
         from .weapon_melee_sequences import classify_melee
@@ -186,6 +193,15 @@ def _timing(source,slot):
     return Fraction(source.frame_count-1)*Fraction(str(slot.fps))/Fraction(str(slot.end_frame)),None
 
 
+def target_timing_slot(profile,slot):
+    # Hunting-rifle empty slots have no independent official duration. When
+    # populated with a real donor, use its ordinary reload timer for both slots.
+    if profile.id=='hunting_rifle' and slot.index in (12,13):
+        timer=next(s for s in profile.slots if s.semantic=='reload' and not s.layer and not s.unused)
+        return replace(slot,unused=False,end_frame=timer.end_frame,fps=timer.fps,flexible=timer.flexible)
+    return slot
+
+
 def _static_timing_warning(source,slot):
     if source and source.frame_count==1 and not source.loop and slot.end_frame and slot.end_frame>0 and slot.fps and not slot.flexible and slot.semantic!='look_poses':
         return f'{slot.name} 来源 {source.name} 为单帧，无法用 FPS 表示目标时长；保留单帧和原 FPS。'
@@ -196,12 +212,16 @@ def _timer_slot(slot,profile):
     """A usable paired layer owns visible events; viewer-hidden is not semantics."""
     if slot.layer or slot.index+1>=len(profile.slots):return False
     partner=profile.slots[slot.index+1]
-    return partner.layer and not partner.unused and partner.semantic==slot.semantic
+    return partner.layer and (not partner.unused or profile.id=='hunting_rifle' and partner.index==13) and partner.semantic==slot.semantic
 
 
-def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True, fps_match=False, exclude_inspect_fps=False) -> SequencePlan:
+def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True, fps_match=False, exclude_inspect_fps=False, reload_loop_count=1) -> SequencePlan:
+    if type(reload_loop_count) is not int or reload_loop_count<0:
+        raise ValueError('换弹 Loop 次数必须为非负整数')
     sources=tuple(sources)
     plan=_plan_sequences(sources,source_id,target_id,keep_ads=keep_ads)
+    from .weapon_reload import compose_reload_plan
+    plan=compose_reload_plan(plan,sources,source_id,target_id,reload_loop_count)
     source_profile=get_profile(source_id);target_profile=get_profile(target_id)
     indexes={s.name.lower():i for i,s in enumerate(sources)}
     rows=[];warnings=list(plan.warnings)
@@ -212,7 +232,7 @@ def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id:
             _normalized_timing_activity(row.activity or row.inferred_source_activity or '').removeprefix('ACT_VM_').removesuffix('_LAYER'),''))
         if exclude_inspect_fps and source is not None and semantic in _IDLE_HELPER_ACTIONS:
             rows.append(replace(row,fps=round_fps(source.fps),fps_scale=None,preserve_source_fps=True));continue
-        if not fps_match or 'LAYER' not in row.activity.upper():
+        if row.reload_parts or not fps_match or 'LAYER' not in row.activity.upper():
             rows.append(replace(row,fps=round_fps(row.fps)));continue
         reason=None;source=row.source
         if source is None:reason='占位动作'
@@ -338,6 +358,13 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
             if chosen is not None:
                 source=sources[chosen]
                 if classified[chosen][:2]==(slot.semantic,slot.layer):used.add(chosen)
+                if reuse_action=='idle':
+                    idle,reference_index=_helper_idle_motion(source,slot)
+                    if idle is not None:source=idle
+        elif target_id=='hunting_rifle' and slot.index in (12,13):
+            chosen=common_motion('reload_empty',slot.layer)
+            if chosen is not None:
+                source=sources[chosen];used.add(chosen)
         elif not slot.unused:
             actions=[slot.semantic]
             if slot.semantic in fallback:actions.append(fallback[slot.semantic])
@@ -363,7 +390,7 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
             if idle_fallback:warnings.append(f'{slot.name} 缺少辅助动作，复用 {source.name} 的 idle 动画引用 {reference_index}。')
         if source is None and not slot.unused and slot.semantic not in ('look_poses','idle_raw'):
             missing.append(slot.name)
-        fps,numframes=_timing(source,slot)
+        fps,numframes=_timing(source,target_timing_slot(target,slot) if source is not None else slot)
         notice=_static_timing_warning(source,slot)
         if notice:warnings.append(notice)
         inferred=source_profile.slots[chosen].activity if source is not None and not source.activity and chosen<len(source_profile.slots) else None
@@ -371,7 +398,7 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
         result.append(PlannedSequence(slot.name,activity,source,fps,numframes,
                                       source is None,slot.index,inferred,
                                       classified[chosen][1] if source is not None else None,
-                                      source_reference_index=reference_index if idle_fallback else 0 if source is not None and reuse_action else None,
+                                      source_reference_index=reference_index if reference_index is not None else 0 if source is not None and reuse_action else None,
                                       idle_fallback=idle_fallback))
     reserved={s.name.lower() for s in result}
     for i,s in enumerate(sources):
