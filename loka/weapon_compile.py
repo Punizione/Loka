@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import hashlib,math,os,queue,re,shutil,struct,subprocess,tempfile,threading,time
 
-from .compile_game import prepare_compile_game
+from .compile_game import prepare_compile_game,apply_nekomdl_max_bones
 from .decompiler import MdlDecompiler,DecompileOptions
 from .core.mdl_data import SourceMdlFileData49
 from .core.reader import BinaryReader
@@ -468,6 +468,7 @@ def compile_and_fill(pack_dir,qc_paths,compiler_path,*,game_path='',retired_mode
     for i,(qc,target) in enumerate(zip(qcs,targets)):
         check();job=stage/str(i);job.mkdir()
         game=Path(prepare_compile_game(str(job),game_path,str(pack),extra_dependency_paths=[qc.parent]))
+        apply_nekomdl_max_bones(qc,compiler)
         code,output=run_compiler([str(compiler),'-nop4','-game',str(game),'-i',str(qc)],qc.parent,job/'compiler.log',cancelled=cancelled,on_log=on_log)
         if code!=0 or re.search(r'(?mi)^\s*(?:ERROR(?:\s|:)|FATAL\b|EXCEPTION_ACCESS_VIOLATION)',output):raise ValueError('模型编译失败: '+str(qc)+'\n'+output[-4000:])
         model=game/target

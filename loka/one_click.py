@@ -25,7 +25,7 @@ from dataclasses import dataclass, field, replace
 from typing import Callable, Optional
 
 from .decompiler import DecompileOptions, MdlDecompiler, DecompileResult
-from .compile_game import prepare_compile_game
+from .compile_game import prepare_compile_game, apply_nekomdl_max_bones
 from .process_limits import exception_text
 
 __all__ = [
@@ -267,6 +267,7 @@ def run_one_click(
         if result.decompile_result.model_role in ("viewmodel", "animation_library"):
             stage = tempfile.mkdtemp(prefix=".loka_compile_", dir=result.dec_dir)
             compile_game = prepare_compile_game(stage, game_dir, result.dec_dir)
+        apply_nekomdl_max_bones(qc_path, exe_path)
         process = subprocess.run(
             [exe_path, "-nop4", "-game", compile_game, "-i", qc_path],
             capture_output=True,
