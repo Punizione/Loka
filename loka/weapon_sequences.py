@@ -100,6 +100,7 @@ class SequencePlan:
     missing_actions: tuple[str, ...]
     excluded_sequences: tuple[str, ...] = ()
     keep_ads: bool = True
+    excluded_fire_sequences: tuple[str, ...] = ()
 
 
 _ACTIONS={
@@ -180,6 +181,20 @@ def _classify(source, profile, index):
 def _extra_activity(activity):
     return activity.upper().startswith(('ACT_PRIMARY_VM_','ACT_SECONDARY_VM_','ACT_TERTIARY_VM_',
                                 'ACT_FOURTH_VM_','MIXED_ACT_'))
+
+
+def _dual_pistol_fire_alternative(source,target,action,layer):
+    """Keep surplus shots playable as primary fire in their original state."""
+    if action not in ('fire','fire_left'):return None
+    activity=source.activity.upper()
+    domain=re.match(r'^(?:MIXED_)?ACT_(?:PRIMARY|SECONDARY|TERTIARY|FOURTH)_VM_',activity)
+    if domain:layer=True
+    compatible=next((slot for slot in target.slots if slot.semantic=='fire'
+                     and slot.layer==layer and not slot.unused),None)
+    if compatible is None:return None
+    if domain:activity=domain[0]+'PRIMARYATTACK'
+    else:activity=('MIXED_' if activity.startswith('MIXED_ACT_VM_') else '')+compatible.activity
+    return activity,compatible,layer
 
 
 def _timing(source,slot):
@@ -321,6 +336,16 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
         names.add(s.name.lower())
     classified=[('',False,True) if i in helpers else _classify(s,source_profile,i)
                 for i,s in enumerate(sources)]
+    dual_to_other=source_id=='dual_pistol' and target_id!='dual_pistol'
+    if dual_to_other:
+        # Explicit last-shot Activities are layers even without a _LAYER suffix;
+        # Activity-free official last-shot timers retain their base role.
+        timers={slot.name.lower():(slot.semantic,slot.layer,slot.unused) for slot in source_profile.slots
+                if slot.semantic in ('fire_last','fire_last_left') and not slot.activity}
+        for i,source in enumerate(sources):
+            action,layer,unused=classified[i]
+            if not source.activity:classified[i]=timers.get(source.name.lower(),classified[i])
+            elif action in ('fire_last','fire_last_left'):classified[i]=(action,True,unused)
     used=set();result=[];missing=[]
     warnings=[f'排除无 Activity 的非官方 sequence（来源序号 {i}）: {sources[i].name}'
               for i in sorted(excluded)]
@@ -400,12 +425,19 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
                                       classified[chosen][1] if source is not None else None,
                                       source_reference_index=reference_index if reference_index is not None else 0 if source is not None and reuse_action else None,
                                       idle_fallback=idle_fallback))
+    fire_excluded={i for i,(action,layer,unused) in enumerate(classified)
+                   if dual_to_other and action in ('fire_last','fire_last_left')
+                   and i not in used and i not in ads_excluded
+                   and not any(slot.semantic==action and slot.layer==layer and not slot.unused for slot in target.slots)}
     reserved={s.name.lower() for s in result}
     for i,s in enumerate(sources):
         action,layer,unused=classified[i]
-        if i in used or unused or i in ads_excluded:continue
+        if i in used or unused or i in ads_excluded or i in fire_excluded:continue
         compatible=next((slot for slot in target.slots if slot.semantic==action
                          and slot.layer==layer and not slot.unused),None)
+        alternative=(_dual_pistol_fire_alternative(s,target,action,layer)
+                     if dual_to_other else None)
+        if alternative:activity,compatible,layer=alternative
         # Authored alternatives keep their full motion, even when the corresponding official slot is a timer.
         fps,numframes=_timing(s,replace(compatible,hidden=False)) if compatible else (s.fps,None)
         static_notice=_static_timing_warning(s,compatible) if compatible else None
@@ -416,7 +448,8 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
             while f'{stem}_{n}'.lower() in reserved:n+=1
             name=f'{stem}_{n}'
         reserved.add(name.lower())
-        activity=compatible.activity if s.activity and compatible and not _extra_activity(s.activity) else s.activity
+        if not alternative:
+            activity=compatible.activity if s.activity and compatible and not _extra_activity(s.activity) else s.activity
         if _misassigned_idle_raw(s,source_profile) is not None:activity=''
         inferred=source_profile.slots[i].activity if not s.activity and i<len(source_profile.slots) else None
         result.append(PlannedSequence(name,activity,
@@ -466,7 +499,7 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
         for dependency in source.dependencies:
             index=available.get(dependency.lower())
             if index is None:raise ValueError(f'sequence {source.name} 引用了不存在的 sequence: {dependency}')
-            if index in ads_excluded:continue
+            if index in ads_excluded or index in fire_excluded:continue
             child=sources[index];pending.append(child)
             if child.name.lower() in represented:continue
             if not child.name or any(c in child.name for c in '\r\n\x00"'):
@@ -489,7 +522,8 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
             f'排除无 Activity 的非官方 sequence（来源序号 {i}）: {sources[i].name}'
             for i in retained_dependencies}]
     return SequencePlan(tuple(result),tuple(warnings),tuple(missing),
-                        tuple(sources[i].name for i in sorted(ads_excluded)),keep_ads)
+                        tuple(sources[i].name for i in sorted(ads_excluded)),keep_ads,
+                        tuple(sources[i].name for i in sorted(fire_excluded)))
 
 
 def validate_sequence_layout(sequences, target_id: str) -> list[str]:

@@ -181,11 +181,11 @@ def plan_l4n_conversion(pack_dir, source_qcs, target_profiles, source_profile, *
     targets = tuple(dict.fromkeys(target_profiles))
     if source_profile not in reference.profiles or not targets or any(t not in reference.profiles for t in targets):
         raise ValueError('L4N 来源/目标声音配置无效')
-    private_wave=audio._melee_private_wave(reference,source_profile,set(targets))
+    private_wave=audio._source_private_wave(reference,source_profile,set(targets))
     rng = rng if rng is not None else random.SystemRandom()
     identifier = _identifier(root, files, identifier)
     waves = {k for k in files if k.startswith('sound/') and k.endswith('.wav')}
-    shared = {p.lower() for p in reference.shared_paths}
+    shared = {p.lower() for p in reference.shared_paths if not private_wave(p)}
     calls = []
     retain, warnings, decisions = set(), [], []
     for qc in source_qcs:

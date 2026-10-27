@@ -430,13 +430,15 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
             plans[target_profile]=plan
             reports.append({'target_profile':target_profile,'sequences':[asdict(s) for s in plan.sequences],
                             'missing_actions':plan.missing_actions,'warnings':plan.warnings,
-                            'excluded_ads_sequences':plan.excluded_sequences})
+                            'excluded_ads_sequences':plan.excluded_sequences,
+                            'excluded_fire_sequences':plan.excluded_fire_sequences})
             if plan.missing_actions:
                 detail(f'{target_profile} 缺少动作，需要转换阶段处理: '+', '.join(plan.missing_actions))
             for warning in plan.warnings:
                 if warning not in result.warnings:result.warnings.append(warning)
                 detail(warning)
             for name in plan.excluded_sequences:detail(f'排除 ADS/MIXED sequence: {name}')
+            for name in plan.excluded_fire_sequences:detail(f'排除多余 dryfire sequence: {name}')
         result.removed_ads_sequences=list(dict.fromkeys(name for plan in plans.values() for name in plan.excluded_sequences))
         report_path=work/'v_dec/sequence_plan.json'
         report_path.write_text(json.dumps({'source_view_model':primary,'source_world_model':world,'source_pistol_mode':options.source_pistol_mode,'source_profile':source_profile,'keep_ads':options.keep_ads,
@@ -546,7 +548,8 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
             applied_decisions=[dict(d) for d in l4n_plan.decisions]
             overflow_paths={item['source_path'] for item in l4n_plan.extra_sounds}
             retained_overflow=set()
-            melee_audio_cleanup=inspection.weapon.category=='melee'
+            source_audio_cleanup=(inspection.weapon.category=='melee' or
+                source_profile in ('pistol','dual_pistol') and not {'pistol','dual_pistol'} & set(target_profiles))
             if options.l4n_enabled:
                 l4n=build_l4n_pack(l4n_plan,work/'l4n/pack',
                     title=f'{inspection.path.stem}_{options.target_id}_L4N音频',cancelled=cancelled)
@@ -562,7 +565,7 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
                 result.l4n_report_file=str(l4n_report)
                 detail(f'L4N 准备：{len(l4n.wave_files)} 个过剩 WAV；报告 {l4n_report}')
             else:
-                retained_overflow=set() if melee_audio_cleanup else set(overflow_paths)
+                retained_overflow=set() if source_audio_cleanup else set(overflow_paths)
                 retain_paths.update(retained_overflow)
                 remove_sources=[p for p in remove_sources if p not in retained_overflow]
                 for profile,values in event_overrides.items():
@@ -571,12 +574,12 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
                             preserve_events[profile].add(name);del values[name]
                 for decision in applied_decisions:
                     if decision['reason']=='l4n':
-                        decision['reason']='dropped_source_audio' if melee_audio_cleanup else 'retained_overflow'
+                        decision['reason']='dropped_source_audio' if source_audio_cleanup else 'retained_overflow'
                         decision.pop('target_event',None);decision.pop('archive_path',None)
                 if retained_overflow:
                     result.warnings.append(f'目标声音槽容量不足，L4N 未开启；保留 {len(retained_overflow)} 个过剩原始 WAV 及声音事件。')
-                elif melee_audio_cleanup and overflow_paths:
-                    result.warnings.append(f'目标声音槽容量不足，L4N 未开启；移除 {len(overflow_paths)} 个过剩近战 WAV 及声音事件。')
+                elif source_audio_cleanup and overflow_paths:
+                    result.warnings.append(f'目标声音槽容量不足，L4N 未开启；移除 {len(overflow_paths)} 个过剩来源 WAV 及声音事件。')
                 # OFF must still preserve the allocation's planning hash boundary.
                 for source,digest in l4n_plan.source_hashes.items():
                     check_cancel()
@@ -604,7 +607,7 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
                 'preserve_events':{p:sorted(values) for p,values in preserve_events.items()},
                 'wave_requests':l4n_plan.wave_requests,'retain_wave_paths':sorted(retain_paths),'remove_wave_sources':remove_sources,
                 'retained_overflow_paths':sorted(retained_overflow),'retained_overflow_wav_count':len(retained_overflow),
-                'dropped_overflow_paths':sorted(overflow_paths) if melee_audio_cleanup and not options.l4n_enabled else [],
+                'dropped_overflow_paths':sorted(overflow_paths) if source_audio_cleanup and not options.l4n_enabled else [],
                 'generated_extra_wav_count':len(result.l4n_audio_files),'applied_wave_manifest':audio.file_manifest},
                 ensure_ascii=False,indent=2),encoding='utf-8')
             result.audio_slot_report_file=str(slot_report)

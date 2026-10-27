@@ -143,6 +143,23 @@ def _melee_private_wave(reference,source_profile,targets):
     return private
 
 
+def _source_private_wave(reference,source_profile,targets):
+    """Include both pistol variants and silver aliases when leaving that family."""
+    private=_melee_private_wave(reference,source_profile,targets)
+    family={'pistol','dual_pistol'}
+    if source_profile not in family or not targets or family & set(targets):return private
+    roots=('sound/weapons/pistol/','sound/weapons/dual_pistol/','sound/weapons/pistol_silver/')
+    family_paths={path.lower() for record in reference.events.values() if record.owner in family for path in record.paths}
+    # A path shared only by single/dual/silver pistols is still family-private.
+    protected={path.lower() for path in reference.shared_paths}-family_paths
+    protected.update(path.lower() for record in reference.events.values()
+                     if record.owner in targets or record.owner not in family for path in record.paths)
+    def pistol_private(path):
+        path=path.lower()
+        return path.endswith('.wav') and path.startswith(roots) and path not in protected
+    return pistol_private
+
+
 def _counterpart(record,target,reference):
     key=reference.profiles[target].get(record.action)
     return reference.events[key] if key else None
@@ -202,9 +219,9 @@ def _reason(record,target,reference):
 
 def _conversion_reason(record,target,reference,private_wave):
     reason=_reason(record,target,reference)
-    # Melee random-variant counts differ between weapons. Both allocation and
-    # conversion copy the available prefix and discard excess private variants.
-    if reason=='variant_count_mismatch' and record.paths and all(private_wave(p) for p in record.paths):
+    # Source-private variants may have different counts or be shared only
+    # inside the source family. Conversion copies the available target prefix.
+    if target is not None and reason in ('variant_count_mismatch','shared_source') and record.paths and all(private_wave(p) for p in record.paths):
         return ''
     return reason
 
@@ -219,7 +236,7 @@ def plan_audio_conversion(pack_dir,qc_targets,source_profile,*,original_names=No
     qc_targets=[(Path(p).resolve(),target) for p,target in qc_targets]
     from .weapon_catalog import MELEE_IDS
     melee_conversion=source_profile in MELEE_IDS and bool(qc_targets) and all(target in MELEE_IDS for _,target in qc_targets)
-    private_wave=_melee_private_wave(reference,source_profile,{target for _,target in qc_targets})
+    private_wave=_source_private_wave(reference,source_profile,{target for _,target in qc_targets})
     protected=(root,root.parent/'unpack',root.parent/'source')
     for path,target in qc_targets:
         if target not in reference.profiles:raise ValueError('没有目标声音配置: '+target)
@@ -254,7 +271,7 @@ def plan_audio_conversion(pack_dir,qc_targets,source_profile,*,original_names=No
             destination_wave=value[0].replace('\\','/').lower().lstrip(')*#@^><!?')
             if not destination_wave.startswith('sound/'):destination_wave='sound/'+destination_wave
             if ((destination_record and any(private_wave(p) for p in destination_record.paths)) or private_wave(destination_wave)):
-                raise ValueError('近战声音覆盖不能引用待移除的来源专属音频: '+value[0])
+                raise ValueError('声音覆盖不能引用待移除的来源专属音频: '+value[0])
             record=reference.events.get(name)
             if record:allocated.update(p.lower() for p in record.paths)
     for values in preserved.values():
@@ -271,7 +288,7 @@ def plan_audio_conversion(pack_dir,qc_targets,source_profile,*,original_names=No
             if not key.startswith(('scripts/','l4n/scripts/')) or not key.endswith(('.txt','.vdf')):continue
             raw=path.read_bytes()
             try:tokens,_=material_tokens(raw)
-            except ValueError as error:raise ValueError('无法核对近战专属音频的本地声音脚本: '+str(path)) from error
+            except ValueError as error:raise ValueError('无法核对来源专属音频的本地声音脚本: '+str(path)) from error
             plan.source_hashes[path]=hashlib.sha256(raw).hexdigest()
             for index,token in enumerate(tokens):
                 if not index or tokens[index-1].value.lower()!='wave' or not token.value.lower().endswith('.wav'):continue
@@ -281,7 +298,7 @@ def plan_audio_conversion(pack_dir,qc_targets,source_profile,*,original_names=No
                     raise ValueError(f'本地声音脚本引用待清理的来源专属音频，无法安全改写别名: {path}: {dependency}')
 
     def private_record(record):
-        return record is not None and record.owner==source_profile and bool(record.paths) and all(private_wave(p) for p in record.paths)
+        return record is not None and bool(record.paths) and all(private_wave(p) for p in record.paths)
 
     def conversion_reason(record,target):
         return _conversion_reason(record,target,reference,private_wave)

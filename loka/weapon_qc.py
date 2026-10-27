@@ -297,6 +297,7 @@ class _Document:
         self.resources={}
         self.frame_counts={}
         self.excluded_sequences=()
+        self.excluded_fire_sequences=()
         self.ads_removals=None
 
     def animation_frames(self,command):
@@ -353,6 +354,7 @@ class _Document:
         return _patch(text,changes)
 
     def symbols(self,text,sequence_map=None):
+        text,_=remove_ads_layers(text,self.excluded_fire_sequences)
         text,removed=remove_ads_layers(text,self.excluded_sequences)
         if removed and self.ads_removals is not None:
             self.ads_removals.extend(dict(item,source_qc=str(self.path),command=_tokens(text)[1].value) for item in removed)
@@ -516,6 +518,7 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
     documents=[_Document(p,i) for i,p in enumerate([primary_qc]+list(include_qcs))]
     for doc in documents:
         doc.excluded_sequences=plan.excluded_sequences
+        doc.excluded_fire_sequences=plan.excluded_fire_sequences
         doc.ads_removals=ads_removals
     sources={}
     for doc in documents:
