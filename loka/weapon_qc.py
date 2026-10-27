@@ -627,6 +627,9 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
     for doc in documents:
         for command in doc.commands:
             if command.kind in ('sequence','includemodel','modelname','animation'):continue
+            if command.kind=='keyvalues':
+                # Keep author blocks verbatim, including repeated library blocks.
+                header.append(command.text);continue
             if command.kind=='weightlist':
                 header.append(_rename(command.text,doc.weights[command.name.lower()]));continue
             if doc.index:
