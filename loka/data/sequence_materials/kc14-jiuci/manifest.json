@@ -1,13 +1,26 @@
 {
-  "schema_version": 3,
-  "method": "uv-rgba-tone-anchors-v1",
+  "schema_version": 5,
+  "method": "smd-uv-island-regional-operators-v1",
   "phase_method": "uv-wire-white-front-material-v2",
-  "reference_encoding": "mip-frame-xor64-v1",
   "recipe_id": "kc14-jiuci",
   "recipe_name": "KC17纪元造物·不会贴皮の久辞",
-  "reference_root": "materials/models/sjz/kc17zwjy/jc",
-  "baseline_resampling": "linear-light RGB box; normalized normal box; independent alpha",
-  "applicability": "Original UV layout only; no UV remapping or SMD inference.",
+  "applicability": "Same UV layout as the matching standard; no UV or model inference at runtime.",
+  "representation": "Shared SMD UV-island scan cells and regional numeric operators; compact local indices retain exact mode/alpha histories.",
+  "precision": {
+    "signed_gain_steps": 63,
+    "light_steps": 127,
+    "hue_component_steps": 31,
+    "shared_material_fit_rgb_error": 6,
+    "exact_categorical_histories": [
+      "mode",
+      "alpha"
+    ],
+    "regional_categorical_fields": [
+      "effect_hue"
+    ],
+    "surface_training": "SMD-covered samples only; nearest-profile synthesis padding",
+    "exact_analog_anchors": true
+  },
   "entries": {
     "dev_lam_peq25_005_mechrevodf_vk_print_softframe_colorfront.vtf": {
       "source": "dev_lam_peq25_005_mechrevodf_vk_d2.vtf",
@@ -16,6 +29,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "2ee4f6bf9bda8de3dcca0fb74c96cfbac1f25f730332164c6ba83b6d296bbe0e",
       "part": "lam",
       "layer": "print",
       "variant": "",
@@ -23,20 +37,10 @@
       "frames": 11,
       "format": 15,
       "flags": 8274,
-      "bundle": "b31edcbb1715051c4df832ad88f373d4b210fa97ef5b6436f8b6eacf1454c234.stpl",
-      "bundle_sha256": "b31edcbb1715051c4df832ad88f373d4b210fa97ef5b6436f8b6eacf1454c234",
-      "bundle_bytes": 1042120,
-      "baseline_sha256": "f82bf73deca2a0c0f68a5fd6d4d4d9d52148200c53a92d246d362a503a0ed900",
-      "reference_sha256": "2ee4f6bf9bda8de3dcca0fb74c96cfbac1f25f730332164c6ba83b6d296bbe0e",
-      "reference_bytes": 3845152,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "eac82d0bed092bca339c0359b09ef5ed0a62676b72ba8e733189aa5732e13570.uvrule",
+      "bundle_sha256": "eac82d0bed092bca339c0359b09ef5ed0a62676b72ba8e733189aa5732e13570",
+      "bundle_bytes": 87922,
+      "atlas": "7134cc6b938c58f7dc6eb776799a488a730166a922827681098565a997d19cfe.uvatlas",
       "sweep_color_rgb": [
         171,
         243,
@@ -50,12 +54,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "dev_lam_peq25_005_mechrevodf_vk_print_softframe_colorfront_red.vtf",
-      "phase_sha256": "09e71004ea1cebcf67477e65fb517ccdf613b7dbcf04fac3b77c3ec0ccc729ed",
-      "phase_counts": {
-        "wire": 1563374,
-        "white_model": 169494,
-        "print_head": 63445,
-        "material": 1087271
+      "regional_parameters": {
+        "regional_profiles": 3805,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 53800,
+        "training_pixels": 184399,
+        "payload_bytes": 1430358
       }
     },
     "dev_lam_peq25_005_mechrevodf_vk_print_softframe_colorfront_red.vtf": {
@@ -65,6 +70,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "f24815b1f03c6473c818dd80ac3cfd3974a6e8700405a847bc60cb1550ce6fac",
       "part": "lam",
       "layer": "print",
       "variant": "",
@@ -72,20 +78,10 @@
       "frames": 11,
       "format": 15,
       "flags": 8274,
-      "bundle": "757346f688832a40d1333109e136498e4500465e989048619aff26f3749aeaee.stpl",
-      "bundle_sha256": "757346f688832a40d1333109e136498e4500465e989048619aff26f3749aeaee",
-      "bundle_bytes": 967592,
-      "baseline_sha256": "c4ea944e67e7df4e1c427c5dcb5625dadad3eb9976ad4b247d4f14a0cb1572a4",
-      "reference_sha256": "f24815b1f03c6473c818dd80ac3cfd3974a6e8700405a847bc60cb1550ce6fac",
-      "reference_bytes": 3845152,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "b1af0410d3057bc3149c126670f7b41210fe85a55cd603e377dd5c30c802b21a.uvrule",
+      "bundle_sha256": "b1af0410d3057bc3149c126670f7b41210fe85a55cd603e377dd5c30c802b21a",
+      "bundle_bytes": 83639,
+      "atlas": "7134cc6b938c58f7dc6eb776799a488a730166a922827681098565a997d19cfe.uvatlas",
       "sweep_color_rgb": [
         170,
         243,
@@ -99,12 +95,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "dev_lam_peq25_005_mechrevodf_vk_print_softframe_colorfront.vtf",
-      "phase_sha256": "0b877e813dd742e4df4f6bcc16c0fd8111049eec9486069f30331dd9a8482eb0",
-      "phase_counts": {
-        "wire": 1539226,
-        "white_model": 194047,
-        "print_head": 64400,
-        "material": 1085911
+      "regional_parameters": {
+        "regional_profiles": 3865,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 55117,
+        "training_pixels": 184399,
+        "payload_bytes": 1436298
       }
     },
     "dev_lam_peq25_005_mechrevodf_vk_normal_clearoutline.vtf": {
@@ -114,6 +111,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "6726ed5da238ccbca291333c8f50408188ac39e91b94ef3031d2cdf9b279c68d",
       "part": "lam",
       "layer": "normal",
       "variant": "",
@@ -121,31 +119,22 @@
       "frames": 11,
       "format": 15,
       "flags": 8338,
-      "bundle": "1bee9dcd088bcdfccba580fdbb61995d0a29236c0c39cd5d11e6d4935e8644a4.stpl",
-      "bundle_sha256": "1bee9dcd088bcdfccba580fdbb61995d0a29236c0c39cd5d11e6d4935e8644a4",
-      "bundle_bytes": 940370,
-      "baseline_sha256": "a58911dcf0e9b5d4bc96b89f5a0028f5f1c4503d6277222053673eccdb85b82e",
-      "reference_sha256": "6726ed5da238ccbca291333c8f50408188ac39e91b94ef3031d2cdf9b279c68d",
-      "reference_bytes": 3845152,
-      "first_alpha_range": [
-        0,
-        255
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "7fa365184aff88f685e9b099f458b51fd30e5e0fda2e7dc4528761b2dfea903e.uvrule",
+      "bundle_sha256": "7fa365184aff88f685e9b099f458b51fd30e5e0fda2e7dc4528761b2dfea903e",
+      "bundle_bytes": 208461,
+      "atlas": "7134cc6b938c58f7dc6eb776799a488a730166a922827681098565a997d19cfe.uvatlas",
       "sweep_color_rgb": null,
       "sweep_color_method": "authored-print-front-rgb-v3",
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "ed74f61cc29b52936e8a6a357152b898d371deb63424e1d310c4ed9286e71159",
-      "phase_counts": {
-        "wire": 0,
-        "white_model": 0,
-        "print_head": 0,
-        "material": 2883584
+      "regional_parameters": {
+        "regional_profiles": 10694,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 118028,
+        "training_pixels": 184399,
+        "payload_bytes": 2112369
       }
     },
     "dev_lam_peq25_005_mechrevodf_vk_glow_colorfront.vtf": {
@@ -155,6 +144,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "9e60ba3270be87d905af080136acb57376d12c5805eae403a37685bcaf91ef3f",
       "part": "lam",
       "layer": "glow",
       "variant": "",
@@ -162,20 +152,10 @@
       "frames": 11,
       "format": 13,
       "flags": 82,
-      "bundle": "4c4bbe2d7eb8ff8fb557e529acfeacb0dfd1114a924f2df5394b0f5c5fc1d0ac.stpl",
-      "bundle_sha256": "4c4bbe2d7eb8ff8fb557e529acfeacb0dfd1114a924f2df5394b0f5c5fc1d0ac",
-      "bundle_bytes": 84415,
-      "baseline_sha256": "5d7f31038a04415c10473ed956869e596e16edb34b6458571c57aab4073b79c1",
-      "reference_sha256": "9e60ba3270be87d905af080136acb57376d12c5805eae403a37685bcaf91ef3f",
-      "reference_bytes": 1922616,
-      "first_alpha_range": [
-        255,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "95422ade5b2194bd9cb7ad5cdc7d925c96d138b2be6ed5904659a64521e93e61.uvrule",
+      "bundle_sha256": "95422ade5b2194bd9cb7ad5cdc7d925c96d138b2be6ed5904659a64521e93e61",
+      "bundle_bytes": 23858,
+      "atlas": "7134cc6b938c58f7dc6eb776799a488a730166a922827681098565a997d19cfe.uvatlas",
       "sweep_color_rgb": [
         82,
         255,
@@ -185,12 +165,13 @@
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "171ec1497fa935cc9a46f2e75779b5d034b938f303f99bd31b90cbe0f3ff66b5",
-      "phase_counts": {
-        "wire": 2739066,
-        "white_model": 0,
-        "print_head": 144518,
-        "material": 0
+      "regional_parameters": {
+        "regional_profiles": 1909,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 28393,
+        "training_pixels": 184399,
+        "payload_bytes": 1242654
       }
     },
     "dev_weal_strobelight_006_mechrevodf_vk_print13_allparts.vtf": {
@@ -200,6 +181,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "04284063f07999cfe3930758fb39e27886f8bb0e77520bd3c4ffa1e5752daeb6",
       "part": "weal",
       "layer": "print",
       "variant": "",
@@ -207,20 +189,10 @@
       "frames": 13,
       "format": 15,
       "flags": 8274,
-      "bundle": "5ebe3926750cd4bb4594174b45e8d3b2686be60bf8e27713787c549776e74252.stpl",
-      "bundle_sha256": "5ebe3926750cd4bb4594174b45e8d3b2686be60bf8e27713787c549776e74252",
-      "bundle_bytes": 908831,
-      "baseline_sha256": "1e8cd87b25d4e1ae718ecccacb9785a520d8fd6b19a9f6e2377ad17057f914a0",
-      "reference_sha256": "04284063f07999cfe3930758fb39e27886f8bb0e77520bd3c4ffa1e5752daeb6",
-      "reference_bytes": 4544256,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "8cea11eee0cdca8ae4311df46fd608b884b0b8900ddf99ec6b3c7a4489cb50dd.uvrule",
+      "bundle_sha256": "8cea11eee0cdca8ae4311df46fd608b884b0b8900ddf99ec6b3c7a4489cb50dd",
+      "bundle_bytes": 130337,
+      "atlas": "0271e05e66b5fd060cd2441b0e06fcfe17518006ee8a911e8854b9bd9a230441.uvatlas",
       "sweep_color_rgb": [
         187,
         245,
@@ -234,12 +206,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "dev_weal_strobelight_006_mechrevodf_vk_print13_allparts_red.vtf",
-      "phase_sha256": "ac8950c72db2a921d3dc7bd4887bcebfddae8c7c2304ebf9dde768515099812f",
-      "phase_counts": {
-        "wire": 1771436,
-        "white_model": 568169,
-        "print_head": 80661,
-        "material": 987606
+      "regional_parameters": {
+        "regional_profiles": 5444,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 132050,
+        "training_pixels": 185579,
+        "payload_bytes": 1690411
       }
     },
     "dev_weal_strobelight_006_mechrevodf_vk_print13_allparts_red.vtf": {
@@ -249,6 +222,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "cf7459876158f44465c11b9a571b75527f2a86cc1a7914b1730feaf6b8f0f92e",
       "part": "weal",
       "layer": "print",
       "variant": "",
@@ -256,20 +230,10 @@
       "frames": 13,
       "format": 15,
       "flags": 8274,
-      "bundle": "e59b93e5a227aa933d4c30363665db349e171da87676d28797056b48d040321e.stpl",
-      "bundle_sha256": "e59b93e5a227aa933d4c30363665db349e171da87676d28797056b48d040321e",
-      "bundle_bytes": 856048,
-      "baseline_sha256": "4d326917d370a8420e18a71af9b24666d3574aad4e38eec55bc7324598edee1d",
-      "reference_sha256": "cf7459876158f44465c11b9a571b75527f2a86cc1a7914b1730feaf6b8f0f92e",
-      "reference_bytes": 4544256,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "a254f2c62a4f923aab1b48f0acd775a56975bcb52f758abcf56e96dd66caf940.uvrule",
+      "bundle_sha256": "a254f2c62a4f923aab1b48f0acd775a56975bcb52f758abcf56e96dd66caf940",
+      "bundle_bytes": 121782,
+      "atlas": "0271e05e66b5fd060cd2441b0e06fcfe17518006ee8a911e8854b9bd9a230441.uvatlas",
       "sweep_color_rgb": [
         197,
         249,
@@ -283,12 +247,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "dev_weal_strobelight_006_mechrevodf_vk_print13_allparts.vtf",
-      "phase_sha256": "44a4814f7b8ba0c02ef865f40e6ca0c8e89ba36077b850c0f66f0a513df17fef",
-      "phase_counts": {
-        "wire": 1771165,
-        "white_model": 575330,
-        "print_head": 73815,
-        "material": 987562
+      "regional_parameters": {
+        "regional_profiles": 5431,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 132226,
+        "training_pixels": 185579,
+        "payload_bytes": 1688890
       }
     },
     "dev_weal_strobelight_006_mechrevodf_vk_normal13_allparts.vtf": {
@@ -298,6 +263,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "0dc641018829b916703360a284185dbc7eeefca8aec469410e77193339380555",
       "part": "weal",
       "layer": "normal",
       "variant": "",
@@ -305,31 +271,22 @@
       "frames": 13,
       "format": 15,
       "flags": 8338,
-      "bundle": "eb972b8d34920fb1cfe9abb4450bfc8231c562783679e23b01d8b7c87e542894.stpl",
-      "bundle_sha256": "eb972b8d34920fb1cfe9abb4450bfc8231c562783679e23b01d8b7c87e542894",
-      "bundle_bytes": 1066088,
-      "baseline_sha256": "5d50ebbcb73276c44d966f7686de2728715bde8ca26ec329d97595364b63095c",
-      "reference_sha256": "0dc641018829b916703360a284185dbc7eeefca8aec469410e77193339380555",
-      "reference_bytes": 4544256,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "95a9123d127337d3dd535e0fd5b61b1b94a52758628eb19b3bbdd3b06201ae85.uvrule",
+      "bundle_sha256": "95a9123d127337d3dd535e0fd5b61b1b94a52758628eb19b3bbdd3b06201ae85",
+      "bundle_bytes": 191951,
+      "atlas": "0271e05e66b5fd060cd2441b0e06fcfe17518006ee8a911e8854b9bd9a230441.uvatlas",
       "sweep_color_rgb": null,
       "sweep_color_method": "authored-print-front-rgb-v3",
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "ea4f32b03692af6c07b16742e657b9442b019c2c869d36e0f7d1a83ce448529f",
-      "phase_counts": {
-        "wire": 0,
-        "white_model": 0,
-        "print_head": 0,
-        "material": 3407872
+      "regional_parameters": {
+        "regional_profiles": 8714,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 85066,
+        "training_pixels": 185579,
+        "payload_bytes": 2073001
       }
     },
     "dev_weal_strobelight_006_mechrevodf_vk_glow13_allparts.vtf": {
@@ -339,6 +296,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "fbff23eee5979ce46949cf68a79874d0f5415adef2d50a152ebf0af6cba055d4",
       "part": "weal",
       "layer": "glow",
       "variant": "",
@@ -346,20 +304,10 @@
       "frames": 13,
       "format": 13,
       "flags": 82,
-      "bundle": "e8b21f4bae72088558f4af5bb21c0e18affe68092666f2d6cb6406c9e57caacf.stpl",
-      "bundle_sha256": "e8b21f4bae72088558f4af5bb21c0e18affe68092666f2d6cb6406c9e57caacf",
-      "bundle_bytes": 319764,
-      "baseline_sha256": "512fa2e19783225fdfeb02b6b8c8bd2717510eb6856c66a2289d3d35b3174de8",
-      "reference_sha256": "fbff23eee5979ce46949cf68a79874d0f5415adef2d50a152ebf0af6cba055d4",
-      "reference_bytes": 2272168,
-      "first_alpha_range": [
-        255,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "3f54f0341677071d449478f4edfebaf723483d347d33362a2b89d85fcb782718.uvrule",
+      "bundle_sha256": "3f54f0341677071d449478f4edfebaf723483d347d33362a2b89d85fcb782718",
+      "bundle_bytes": 57485,
+      "atlas": "0271e05e66b5fd060cd2441b0e06fcfe17518006ee8a911e8854b9bd9a230441.uvatlas",
       "sweep_color_rgb": [
         68,
         217,
@@ -369,12 +317,13 @@
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "9c3a34ed58db47f71b1adf9fe22b0327d4fc9eebbef8b1759f5663aede775c97",
-      "phase_counts": {
-        "wire": 2944654,
-        "white_model": 0,
-        "print_head": 463218,
-        "material": 0
+      "regional_parameters": {
+        "regional_profiles": 2950,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 97816,
+        "training_pixels": 185579,
+        "payload_bytes": 1398613
       }
     },
     "fros_am17_045_mechrevodf_vk_print_softframe_colorfront.vtf": {
@@ -384,6 +333,7 @@
         512,
         512
       ],
+      "reference_sha256": "cc480c426f3d6b8f92877797c3126319eafbb293342347f9be47d22919c368f5",
       "part": "fros",
       "layer": "print",
       "variant": "",
@@ -391,20 +341,10 @@
       "frames": 7,
       "format": 15,
       "flags": 8274,
-      "bundle": "c672cf61cbae3147e7154862396259ce7e45ed696bf1bc8d580a41310845b540.stpl",
-      "bundle_sha256": "c672cf61cbae3147e7154862396259ce7e45ed696bf1bc8d580a41310845b540",
-      "bundle_bytes": 692504,
-      "baseline_sha256": "64bf6525f4bc2742e254cad29c4718babab3382b4eb920ae2a2f6629816bb6d8",
-      "reference_sha256": "cc480c426f3d6b8f92877797c3126319eafbb293342347f9be47d22919c368f5",
-      "reference_bytes": 2446944,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "0d7b15d08f230d24bed1bee034461b6fe0c211a6b7fa4c00299424cfa2dde366.uvrule",
+      "bundle_sha256": "0d7b15d08f230d24bed1bee034461b6fe0c211a6b7fa4c00299424cfa2dde366",
+      "bundle_bytes": 97764,
+      "atlas": "7697e0d3ecd294df6340bb385be3694e976c6c660e0832959a7d89085d7c9df4.uvatlas",
       "sweep_color_rgb": [
         166,
         246,
@@ -418,12 +358,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "fros_am17_045_mechrevodf_vk_print_softframe_colorfront_red.vtf",
-      "phase_sha256": "54e4a651c4308bfccf202653cdc5025414c0b4d01c0ce3d88a0f7e16e1699c2c",
-      "phase_counts": {
-        "wire": 1460670,
-        "white_model": 17820,
-        "print_head": 4780,
-        "material": 351738
+      "regional_parameters": {
+        "regional_profiles": 3383,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 164343,
+        "training_pixels": 175786,
+        "payload_bytes": 1262980
       }
     },
     "fros_am17_045_mechrevodf_vk_print_softframe_colorfront_red.vtf": {
@@ -433,6 +374,7 @@
         512,
         512
       ],
+      "reference_sha256": "5f7acc8b8b75587433326fdfb745ce2788e02672f8eccb09e12fef3e2f2300c3",
       "part": "fros",
       "layer": "print",
       "variant": "",
@@ -440,20 +382,10 @@
       "frames": 7,
       "format": 15,
       "flags": 8274,
-      "bundle": "417cfe33a852ac1ee6156b5333f449d1ec35d2abf2c45d83efb60ae702d065b8.stpl",
-      "bundle_sha256": "417cfe33a852ac1ee6156b5333f449d1ec35d2abf2c45d83efb60ae702d065b8",
-      "bundle_bytes": 717412,
-      "baseline_sha256": "0c8977b6a8628be6a117c2e6aa6db0d193c43da6604307eb033671f009a11d5a",
-      "reference_sha256": "5f7acc8b8b75587433326fdfb745ce2788e02672f8eccb09e12fef3e2f2300c3",
-      "reference_bytes": 2446944,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "f2d7ca7d3a0fdc844d54af9e36d1f929607d27ca17f163e6b495b94a67cc1eb5.uvrule",
+      "bundle_sha256": "f2d7ca7d3a0fdc844d54af9e36d1f929607d27ca17f163e6b495b94a67cc1eb5",
+      "bundle_bytes": 62464,
+      "atlas": "7697e0d3ecd294df6340bb385be3694e976c6c660e0832959a7d89085d7c9df4.uvatlas",
       "sweep_color_rgb": [
         139,
         243,
@@ -467,12 +399,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "fros_am17_045_mechrevodf_vk_print_softframe_colorfront.vtf",
-      "phase_sha256": "5949f6a73ce573ede175916994dd14574c0030a8cd3612148881efc103892f9c",
-      "phase_counts": {
-        "wire": 1460740,
-        "white_model": 18078,
-        "print_head": 4826,
-        "material": 351364
+      "regional_parameters": {
+        "regional_profiles": 2054,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 121905,
+        "training_pixels": 175786,
+        "payload_bytes": 1179253
       }
     },
     "fros_am17_045_mechrevodf_vk_normal_clearoutline.vtf": {
@@ -482,6 +415,7 @@
         512,
         512
       ],
+      "reference_sha256": "79dd76483a93c1d485173d7afbc1d1f300e71d0e0996b696a7896a86428e148b",
       "part": "fros",
       "layer": "normal",
       "variant": "",
@@ -489,31 +423,22 @@
       "frames": 7,
       "format": 15,
       "flags": 8338,
-      "bundle": "f313bd1bad715f382017cfd04762d3c6194e411caad8ad8ea6d42a6039a038cb.stpl",
-      "bundle_sha256": "f313bd1bad715f382017cfd04762d3c6194e411caad8ad8ea6d42a6039a038cb",
-      "bundle_bytes": 581076,
-      "baseline_sha256": "14f803a81d723dd53d683b7e8a9669c6e81cc442efe67ddccbde20aab4fa609b",
-      "reference_sha256": "79dd76483a93c1d485173d7afbc1d1f300e71d0e0996b696a7896a86428e148b",
-      "reference_bytes": 2446944,
-      "first_alpha_range": [
-        0,
-        219
-      ],
-      "last_alpha_range": [
-        7,
-        239
-      ],
+      "bundle": "b197ff4e82d8ce6a1ab93f91bc1c0b1a230cc8b7a30387f9bea1fdd1a03e47a6.uvrule",
+      "bundle_sha256": "b197ff4e82d8ce6a1ab93f91bc1c0b1a230cc8b7a30387f9bea1fdd1a03e47a6",
+      "bundle_bytes": 24178,
+      "atlas": "7697e0d3ecd294df6340bb385be3694e976c6c660e0832959a7d89085d7c9df4.uvatlas",
       "sweep_color_rgb": null,
       "sweep_color_method": "authored-print-front-rgb-v3",
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "93eeb14a95e74d92a2477b12aff3bb44be173bd486ad400e00e6c1fe61db23e2",
-      "phase_counts": {
-        "wire": 0,
-        "white_model": 0,
-        "print_head": 0,
-        "material": 1835008
+      "regional_parameters": {
+        "regional_profiles": 686,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 67088,
+        "training_pixels": 175786,
+        "payload_bytes": 1093069
       }
     },
     "han_am17_long_160_mechrevodf_vk_print_softframe_colorfront.vtf": {
@@ -523,6 +448,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "e38a620a0de0f03b7a756254ee15c930b2cfaa14baa3a6d8ed03b48812f06ee5",
       "part": "han",
       "layer": "print",
       "variant": "",
@@ -530,20 +456,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "2df94909689b664abcbc28f825dca34767c9c141d73ed361cb8e41a5fdfe8597.stpl",
-      "bundle_sha256": "2df94909689b664abcbc28f825dca34767c9c141d73ed361cb8e41a5fdfe8597",
-      "bundle_bytes": 1342159,
-      "baseline_sha256": "9133def582281643162277c962632202f24293536770ed43bd3d8e96ac49b910",
-      "reference_sha256": "e38a620a0de0f03b7a756254ee15c930b2cfaa14baa3a6d8ed03b48812f06ee5",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "a8ae391d20fc8ca39bd38130689409f9b152588ad33ac21f254534a0be674695.uvrule",
+      "bundle_sha256": "a8ae391d20fc8ca39bd38130689409f9b152588ad33ac21f254534a0be674695",
+      "bundle_bytes": 502663,
+      "atlas": "f8006cd6d5bb05067680c888e2e1ea95ed6460af31bcd6fb12434f67c28b3b22.uvatlas",
       "sweep_color_rgb": [
         184,
         246,
@@ -557,12 +473,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "han_am17_long_160_mechrevodf_vk_print_softframe_colorfront_red.vtf",
-      "phase_sha256": "e6d9e58a606b826d2d4d0fc597e30047b2fbb7795808bc3bb007a4380a208ca0",
-      "phase_counts": {
-        "wire": 5195730,
-        "white_model": 1285549,
-        "print_head": 204278,
-        "material": 2751627
+      "regional_parameters": {
+        "regional_profiles": 25199,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 113191,
+        "training_pixels": 167942,
+        "payload_bytes": 9243303
       }
     },
     "han_am17_long_160_mechrevodf_vk_print_softframe_colorfront_red.vtf": {
@@ -572,6 +489,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "8e732522802f87a926faf28dbe501ba33a0879a2de475fd817ebcb93c19a8970",
       "part": "han",
       "layer": "print",
       "variant": "",
@@ -579,20 +497,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "3c2c28a049f36b8fd15e1f9f392a35acd8e64dec68fa4f185befa0dd35b399b4.stpl",
-      "bundle_sha256": "3c2c28a049f36b8fd15e1f9f392a35acd8e64dec68fa4f185befa0dd35b399b4",
-      "bundle_bytes": 1380602,
-      "baseline_sha256": "0fabd7ea23d617175f8780b89968e6a3373ac6a0ac4d36a9d2c16335915b8442",
-      "reference_sha256": "8e732522802f87a926faf28dbe501ba33a0879a2de475fd817ebcb93c19a8970",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "4d5b99f5ff01499ea2237ba40e1e36858c7046d6b147b1f3a3bd30328f42782e.uvrule",
+      "bundle_sha256": "4d5b99f5ff01499ea2237ba40e1e36858c7046d6b147b1f3a3bd30328f42782e",
+      "bundle_bytes": 473685,
+      "atlas": "f8006cd6d5bb05067680c888e2e1ea95ed6460af31bcd6fb12434f67c28b3b22.uvatlas",
       "sweep_color_rgb": [
         184,
         245,
@@ -606,12 +514,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "han_am17_long_160_mechrevodf_vk_print_softframe_colorfront.vtf",
-      "phase_sha256": "4de330966c736727cfffafe9d460c2d0265cf03f2f5d875fcfafae53100cc850",
-      "phase_counts": {
-        "wire": 5192280,
-        "white_model": 1312065,
-        "print_head": 179225,
-        "material": 2753614
+      "regional_parameters": {
+        "regional_profiles": 25501,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 114496,
+        "training_pixels": 167942,
+        "payload_bytes": 9341151
       }
     },
     "han_am17_long_160_mechrevodf_vk_normal36_recstyle.vtf": {
@@ -621,6 +530,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "b2dbf37eb83f804838b6815956deebe040672fa38f7972eb96a47374405fd96c",
       "part": "han",
       "layer": "normal",
       "variant": "",
@@ -628,31 +538,22 @@
       "frames": 36,
       "format": 15,
       "flags": 8338,
-      "bundle": "6fe31ae19bf96f688f304f65d4a32d96b346687506123a7d53e55d82cff92993.stpl",
-      "bundle_sha256": "6fe31ae19bf96f688f304f65d4a32d96b346687506123a7d53e55d82cff92993",
-      "bundle_bytes": 334533,
-      "baseline_sha256": "9399e84131baf18e1b95eda0b92b904155518c5d03141d117595410397e6e436",
-      "reference_sha256": "b2dbf37eb83f804838b6815956deebe040672fa38f7972eb96a47374405fd96c",
-      "reference_bytes": 3146768,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "4fecb6e09009d779aeeb54a1000f731d07d630db12089ded32a83b62d38fe8b8.uvrule",
+      "bundle_sha256": "4fecb6e09009d779aeeb54a1000f731d07d630db12089ded32a83b62d38fe8b8",
+      "bundle_bytes": 259403,
+      "atlas": "f8006cd6d5bb05067680c888e2e1ea95ed6460af31bcd6fb12434f67c28b3b22.uvatlas",
       "sweep_color_rgb": null,
       "sweep_color_method": "authored-print-front-rgb-v3",
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "a0cb13ceb753fbb32d6b07b06d683435217698f221fe57e5c359df6118bc3c6d",
-      "phase_counts": {
-        "wire": 0,
-        "white_model": 0,
-        "print_head": 0,
-        "material": 2359296
+      "regional_parameters": {
+        "regional_profiles": 21197,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 29175,
+        "training_pixels": 48912,
+        "payload_bytes": 7160223
       }
     },
     "han_am17_long_160_mechrevodf_vk_glow_colorfront.vtf": {
@@ -662,6 +563,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "f0ad9e55980d6ef51a6e599ec972f22bb2060cf39b946fb87fe7778ad0c0ee14",
       "part": "han",
       "layer": "glow",
       "variant": "",
@@ -669,20 +571,10 @@
       "frames": 36,
       "format": 13,
       "flags": 82,
-      "bundle": "9b52fbe136c64de80542575caccf5d814e3efe2c205c6dfffd821eec04a631f1.stpl",
-      "bundle_sha256": "9b52fbe136c64de80542575caccf5d814e3efe2c205c6dfffd821eec04a631f1",
-      "bundle_bytes": 334081,
-      "baseline_sha256": "6247972e754ed38414d9cd34c2e47cd3e2d86a9d506a277a2ee3a3326f6ab729",
-      "reference_sha256": "f0ad9e55980d6ef51a6e599ec972f22bb2060cf39b946fb87fe7778ad0c0ee14",
-      "reference_bytes": 1573424,
-      "first_alpha_range": [
-        255,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "3d3017f82ec01052e10336bfc72dff96f5a88fc069fe057cd6e0c77be210f697.uvrule",
+      "bundle_sha256": "3d3017f82ec01052e10336bfc72dff96f5a88fc069fe057cd6e0c77be210f697",
+      "bundle_bytes": 169045,
+      "atlas": "f8006cd6d5bb05067680c888e2e1ea95ed6460af31bcd6fb12434f67c28b3b22.uvatlas",
       "sweep_color_rgb": [
         0,
         212,
@@ -692,12 +584,13 @@
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "fb24c6a385b6ae32a1b1ac7a92d507c9cae56b14db52a07cd9f4f35704d01e17",
-      "phase_counts": {
-        "wire": 1897396,
-        "white_model": 0,
-        "print_head": 461900,
-        "material": 0
+      "regional_parameters": {
+        "regional_profiles": 13950,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 21455,
+        "training_pixels": 48912,
+        "payload_bytes": 4812195
       }
     },
     "muz_ak_pbs_04_012_mechrevodf_vk_print_softframe_colorfront.vtf": {
@@ -707,6 +600,7 @@
         512,
         512
       ],
+      "reference_sha256": "da21e9e8ca4c6a449fe7de167df5db419dd954fe28605c795cbb6c4ebca0b419",
       "part": "muz",
       "layer": "print",
       "variant": "",
@@ -714,20 +608,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "00fc30c079512bd4f63bbbfa4e70bf067e4b9b18bb3eea1515e861ed7954de0c.stpl",
-      "bundle_sha256": "00fc30c079512bd4f63bbbfa4e70bf067e4b9b18bb3eea1515e861ed7954de0c",
-      "bundle_bytes": 420955,
-      "baseline_sha256": "2c6f2e14118070a74eba8a5f338546b45e8729b6b8cc44d5f8944f13247e9ff0",
-      "reference_sha256": "da21e9e8ca4c6a449fe7de167df5db419dd954fe28605c795cbb6c4ebca0b419",
-      "reference_bytes": 3146768,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "faaa7e63cc0210f84e3f091ac49124c4e3a1d048d13a49a6b156150f1546e9c0.uvrule",
+      "bundle_sha256": "faaa7e63cc0210f84e3f091ac49124c4e3a1d048d13a49a6b156150f1546e9c0",
+      "bundle_bytes": 193170,
+      "atlas": "43702bef82fc60723c68f49a42e64c47a6404ab686a529af60e1ceb46e111ecf.uvatlas",
       "sweep_color_rgb": [
         185,
         246,
@@ -741,12 +625,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "muz_ak_pbs_04_012_mechrevodf_vk_print_softframe_colorfront_red.vtf",
-      "phase_sha256": "cb42026ebbf0820862bd31ca4dc1c196cbc8112f916c25143e7a97d734a4f7db",
-      "phase_counts": {
-        "wire": 1198769,
-        "white_model": 545922,
-        "print_head": 88723,
-        "material": 525882
+      "regional_parameters": {
+        "regional_profiles": 7213,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 27431,
+        "training_pixels": 47002,
+        "payload_bytes": 2607391
       }
     },
     "muz_ak_pbs_04_012_mechrevodf_vk_print_softframe_colorfront_red.vtf": {
@@ -756,6 +641,7 @@
         512,
         512
       ],
+      "reference_sha256": "8b5479811dbf234aaa59dadbccb162869985d78dcf319d0912c8297b40d2a300",
       "part": "muz",
       "layer": "print",
       "variant": "",
@@ -763,20 +649,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "38ced93006658a44b7068141484ae12bcf4f10adb9435c2705bb1f665f03f71d.stpl",
-      "bundle_sha256": "38ced93006658a44b7068141484ae12bcf4f10adb9435c2705bb1f665f03f71d",
-      "bundle_bytes": 420749,
-      "baseline_sha256": "b5d4892d3bbce7f69ccee261e45d86b03a80b2b91949d94e42c05d8c2a7d0738",
-      "reference_sha256": "8b5479811dbf234aaa59dadbccb162869985d78dcf319d0912c8297b40d2a300",
-      "reference_bytes": 3146768,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        255
-      ],
+      "bundle": "dca80dc47853cf1851de5c1bd4e54b0d0f82f41578c576b9753e35f3d79d0949.uvrule",
+      "bundle_sha256": "dca80dc47853cf1851de5c1bd4e54b0d0f82f41578c576b9753e35f3d79d0949",
+      "bundle_bytes": 180966,
+      "atlas": "43702bef82fc60723c68f49a42e64c47a6404ab686a529af60e1ceb46e111ecf.uvatlas",
       "sweep_color_rgb": [
         184,
         245,
@@ -790,12 +666,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "muz_ak_pbs_04_012_mechrevodf_vk_print_softframe_colorfront.vtf",
-      "phase_sha256": "1afdb1c506bb30848c492845b6db34ed57c2dc96808fd3269e9c8cfc26c51769",
-      "phase_counts": {
-        "wire": 1195186,
-        "white_model": 558886,
-        "print_head": 79498,
-        "material": 525726
+      "regional_parameters": {
+        "regional_profiles": 7314,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 28818,
+        "training_pixels": 47002,
+        "payload_bytes": 2640115
       }
     },
     "muz_ak_pbs_04_012_mechrevodf_vk_normal36_recstyle.vtf": {
@@ -805,6 +682,7 @@
         512,
         512
       ],
+      "reference_sha256": "35c02b3c67c9a76afefe3f1e78d03780ea73fa31b62e09a69a521a294c674814",
       "part": "muz",
       "layer": "normal",
       "variant": "",
@@ -812,31 +690,22 @@
       "frames": 36,
       "format": 15,
       "flags": 8338,
-      "bundle": "ff7b0c81c508f7dd7e66a81f3706d660a8a29d8f392c8e9c101e6d84fa4f41c4.stpl",
-      "bundle_sha256": "ff7b0c81c508f7dd7e66a81f3706d660a8a29d8f392c8e9c101e6d84fa4f41c4",
-      "bundle_bytes": 296870,
-      "baseline_sha256": "643f7d39d2215d18d82a2ce25978180f2e7da90cb60c7c20efdb3e05f962a457",
-      "reference_sha256": "35c02b3c67c9a76afefe3f1e78d03780ea73fa31b62e09a69a521a294c674814",
-      "reference_bytes": 3146768,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        0,
-        249
-      ],
+      "bundle": "27dbd29430eb0cdfc5b213c321e03b0f220673eb371030ab5d3444e6b851e7d3.uvrule",
+      "bundle_sha256": "27dbd29430eb0cdfc5b213c321e03b0f220673eb371030ab5d3444e6b851e7d3",
+      "bundle_bytes": 139584,
+      "atlas": "43702bef82fc60723c68f49a42e64c47a6404ab686a529af60e1ceb46e111ecf.uvatlas",
       "sweep_color_rgb": null,
       "sweep_color_method": "authored-print-front-rgb-v3",
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "a0cb13ceb753fbb32d6b07b06d683435217698f221fe57e5c359df6118bc3c6d",
-      "phase_counts": {
-        "wire": 0,
-        "white_model": 0,
-        "print_head": 0,
-        "material": 2359296
+      "regional_parameters": {
+        "regional_profiles": 8606,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 30283,
+        "training_pixels": 47002,
+        "payload_bytes": 3058723
       }
     },
     "muz_ak_pbs_04_012_mechrevodf_vk_glow_colorfront.vtf": {
@@ -846,6 +715,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "371d9ea3e1731ee5db8401cb0aa14968f53fa4138399e97c35fc76fbe8e924b3",
       "part": "muz",
       "layer": "glow",
       "variant": "",
@@ -853,20 +723,10 @@
       "frames": 36,
       "format": 13,
       "flags": 82,
-      "bundle": "1bc21bcc668e6f3bf9951de6d86aecdf644c901dae2a997bc00b66a3e578963b.stpl",
-      "bundle_sha256": "1bc21bcc668e6f3bf9951de6d86aecdf644c901dae2a997bc00b66a3e578963b",
-      "bundle_bytes": 219608,
-      "baseline_sha256": "02ce5cd05543b7f31c20739c427b916aaf1c31a085f02b1c0b69d99913a8f70f",
-      "reference_sha256": "371d9ea3e1731ee5db8401cb0aa14968f53fa4138399e97c35fc76fbe8e924b3",
-      "reference_bytes": 1573424,
-      "first_alpha_range": [
-        255,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "748a6156771aace3f9a403aac5affc39103b474899f7e7214a81155698377534.uvrule",
+      "bundle_sha256": "748a6156771aace3f9a403aac5affc39103b474899f7e7214a81155698377534",
+      "bundle_bytes": 74839,
+      "atlas": "43702bef82fc60723c68f49a42e64c47a6404ab686a529af60e1ceb46e111ecf.uvatlas",
       "sweep_color_rgb": [
         68,
         217,
@@ -876,12 +736,13 @@
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "2370c1358b75608dafef00670929788356aad0112d5bb5003271aeca0eb95b94",
-      "phase_counts": {
-        "wire": 1974541,
-        "white_model": 0,
-        "print_head": 384755,
-        "material": 0
+      "regional_parameters": {
+        "regional_profiles": 4191,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 17423,
+        "training_pixels": 47002,
+        "payload_bytes": 1628263
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_print36_silksync.vtf": {
@@ -891,6 +752,7 @@
         2048,
         2048
       ],
+      "reference_sha256": "e2a97c02a93b93bd9c5b763debd1b67270a2da5ab2e15bc6db180d717058fd21",
       "part": "rec",
       "layer": "print",
       "variant": "silksync",
@@ -898,20 +760,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "a347c634091c1d4030c78ffccb2e1ff90cc9a5687bb3252b106308fbbdb358df.stpl",
-      "bundle_sha256": "a347c634091c1d4030c78ffccb2e1ff90cc9a5687bb3252b106308fbbdb358df",
-      "bundle_bytes": 1292736,
-      "baseline_sha256": "71eff06ca67377d6c173c75644608ebf7378d4aeb2fe047e7bc5f156ec76242e",
-      "reference_sha256": "e2a97c02a93b93bd9c5b763debd1b67270a2da5ab2e15bc6db180d717058fd21",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "64413007e364f9cdb96d4ec644a6dab6459620ec9b670dfae82bed1e7575b802.uvrule",
+      "bundle_sha256": "64413007e364f9cdb96d4ec644a6dab6459620ec9b670dfae82bed1e7575b802",
+      "bundle_bytes": 257111,
+      "atlas": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas",
       "sweep_color_rgb": [
         115,
         234,
@@ -925,12 +777,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "rec_smg_am17_066_mechrevodf_vk_01_print36_silksync_red.vtf",
-      "phase_sha256": "86539712856644e480422035e8795b187b052a4417b4763745366325246e347c",
-      "phase_counts": {
-        "wire": 2155749,
-        "white_model": 663446,
-        "print_head": 130430,
-        "material": 6487559
+      "regional_parameters": {
+        "regional_profiles": 13860,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 54803,
+        "training_pixels": 133410,
+        "payload_bytes": 5557679
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_print36_silksync_red.vtf": {
@@ -940,6 +793,7 @@
         2048,
         2048
       ],
+      "reference_sha256": "a5cf1f842f81f72f406476e0b78522f2e7584d49c68b410c438e2ed6bab2e85a",
       "part": "rec",
       "layer": "print",
       "variant": "silksync",
@@ -947,20 +801,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "60ddbeec3dc4cedc7f3220142c02f4d8924adffbd624ee308ae988e1d8321375.stpl",
-      "bundle_sha256": "60ddbeec3dc4cedc7f3220142c02f4d8924adffbd624ee308ae988e1d8321375",
-      "bundle_bytes": 1243573,
-      "baseline_sha256": "afcfb5ac6cad49c182a9ab0bc2793d38382e583c74915fc37e5d35e81eeff64c",
-      "reference_sha256": "a5cf1f842f81f72f406476e0b78522f2e7584d49c68b410c438e2ed6bab2e85a",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "31ba998380871b81e4f80c8d035983d82006ebc61958f8bf6ba1093be24c0c9c.uvrule",
+      "bundle_sha256": "31ba998380871b81e4f80c8d035983d82006ebc61958f8bf6ba1093be24c0c9c",
+      "bundle_bytes": 236150,
+      "atlas": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas",
       "sweep_color_rgb": [
         115,
         234,
@@ -974,12 +818,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "rec_smg_am17_066_mechrevodf_vk_01_print36_silksync.vtf",
-      "phase_sha256": "b97a3b44f12d7d0611370dc7dab8202e8a002e991326f5a0ef6ca0dc41dd957d",
-      "phase_counts": {
-        "wire": 2131677,
-        "white_model": 669971,
-        "print_head": 114700,
-        "material": 6520836
+      "regional_parameters": {
+        "regional_profiles": 13555,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 53738,
+        "training_pixels": 133410,
+        "payload_bytes": 5458859
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_print36_smoothwhite.vtf": {
@@ -989,6 +834,7 @@
         2048,
         2048
       ],
+      "reference_sha256": "e987c3557afd6f21804fa0a457a4963fcc183488418a81142369ebdecd05bb78",
       "part": "rec",
       "layer": "print",
       "variant": "smoothwhite",
@@ -996,20 +842,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "2e371595322fbe67eb893b89c06ebdaea60edddd7cee91d74fe987a7650aee4b.stpl",
-      "bundle_sha256": "2e371595322fbe67eb893b89c06ebdaea60edddd7cee91d74fe987a7650aee4b",
-      "bundle_bytes": 1363429,
-      "baseline_sha256": "71eff06ca67377d6c173c75644608ebf7378d4aeb2fe047e7bc5f156ec76242e",
-      "reference_sha256": "e987c3557afd6f21804fa0a457a4963fcc183488418a81142369ebdecd05bb78",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "2e07050b58a5fb14a37854d9db266b4626eca8ffdb40dc7137b4317d7b541aec.uvrule",
+      "bundle_sha256": "2e07050b58a5fb14a37854d9db266b4626eca8ffdb40dc7137b4317d7b541aec",
+      "bundle_bytes": 345223,
+      "atlas": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas",
       "sweep_color_rgb": [
         115,
         234,
@@ -1023,12 +859,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "rec_smg_am17_066_mechrevodf_vk_01_print36_smoothwhite_red.vtf",
-      "phase_sha256": "7573aacbd0a8bc364a6d0300f978c95bd5ef6331412b31869ac31f663e9f294e",
-      "phase_counts": {
-        "wire": 2449327,
-        "white_model": 663996,
-        "print_head": 150006,
-        "material": 6173855
+      "regional_parameters": {
+        "regional_profiles": 17163,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 67928,
+        "training_pixels": 133410,
+        "payload_bytes": 6627851
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_print36_smoothwhite_red.vtf": {
@@ -1038,6 +875,7 @@
         2048,
         2048
       ],
+      "reference_sha256": "65f68a1b1c251ac37395e25275e8d125cd805edaa8b41bf99779522e5a9e007b",
       "part": "rec",
       "layer": "print",
       "variant": "smoothwhite",
@@ -1045,20 +883,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "f66966212f52b55282b1f07a5befe06fd41a95038744682c8a141553e2a4786c.stpl",
-      "bundle_sha256": "f66966212f52b55282b1f07a5befe06fd41a95038744682c8a141553e2a4786c",
-      "bundle_bytes": 1313029,
-      "baseline_sha256": "afcfb5ac6cad49c182a9ab0bc2793d38382e583c74915fc37e5d35e81eeff64c",
-      "reference_sha256": "65f68a1b1c251ac37395e25275e8d125cd805edaa8b41bf99779522e5a9e007b",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "0dc860f2970d246c16d6e3b8a741839f26a03be415b0e2affe1983862b51351e.uvrule",
+      "bundle_sha256": "0dc860f2970d246c16d6e3b8a741839f26a03be415b0e2affe1983862b51351e",
+      "bundle_bytes": 315180,
+      "atlas": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas",
       "sweep_color_rgb": [
         115,
         234,
@@ -1072,12 +900,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "rec_smg_am17_066_mechrevodf_vk_01_print36_smoothwhite.vtf",
-      "phase_sha256": "ded94ff7fdb7357a35cca44cc24d6144885282d8cacbe23427b94a6e8b377d59",
-      "phase_counts": {
-        "wire": 2421322,
-        "white_model": 670579,
-        "print_head": 130998,
-        "material": 6214285
+      "regional_parameters": {
+        "regional_profiles": 16645,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 66564,
+        "training_pixels": 133410,
+        "payload_bytes": 6460019
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_normal36_silksync.vtf": {
@@ -1087,6 +916,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "ba4f15161aedebd03ce567dd0fc6f29ec5c4f1fc4eb231ef3067bb44aa70a530",
       "part": "rec",
       "layer": "normal",
       "variant": "silksync",
@@ -1094,31 +924,22 @@
       "frames": 36,
       "format": 15,
       "flags": 8338,
-      "bundle": "443e63a704577e56c44390ae5aa73514b36bc5b5c35ac27f30c17f21f80b28a1.stpl",
-      "bundle_sha256": "443e63a704577e56c44390ae5aa73514b36bc5b5c35ac27f30c17f21f80b28a1",
-      "bundle_bytes": 285099,
-      "baseline_sha256": "fe2b9b8b8c6de5cc5a2340210ee44ce3b7d401d705835306ddfc43d583f98ef3",
-      "reference_sha256": "ba4f15161aedebd03ce567dd0fc6f29ec5c4f1fc4eb231ef3067bb44aa70a530",
-      "reference_bytes": 3146768,
-      "first_alpha_range": [
-        0,
-        248
-      ],
-      "last_alpha_range": [
-        11,
-        248
-      ],
+      "bundle": "ea04e44e127c9d86807413aee3112af0df515a13b6affe39685b11660f8489db.uvrule",
+      "bundle_sha256": "ea04e44e127c9d86807413aee3112af0df515a13b6affe39685b11660f8489db",
+      "bundle_bytes": 111007,
+      "atlas": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas",
       "sweep_color_rgb": null,
       "sweep_color_method": "authored-print-front-rgb-v3",
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "a0cb13ceb753fbb32d6b07b06d683435217698f221fe57e5c359df6118bc3c6d",
-      "phase_counts": {
-        "wire": 0,
-        "white_model": 0,
-        "print_head": 0,
-        "material": 2359296
+      "regional_parameters": {
+        "regional_profiles": 9246,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 16052,
+        "training_pixels": 38118,
+        "payload_bytes": 3276311
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_normal36_smoothwhite.vtf": {
@@ -1128,6 +949,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "a37e5864f78d5c00d702786ffade4aa2767494cb060d0e8d5d111600504145d7",
       "part": "rec",
       "layer": "normal",
       "variant": "smoothwhite",
@@ -1135,31 +957,22 @@
       "frames": 36,
       "format": 15,
       "flags": 8338,
-      "bundle": "6884806d28663c56661b982ffeeba80c6363622a75025358f56ac3bd484ba918.stpl",
-      "bundle_sha256": "6884806d28663c56661b982ffeeba80c6363622a75025358f56ac3bd484ba918",
-      "bundle_bytes": 307568,
-      "baseline_sha256": "fe2b9b8b8c6de5cc5a2340210ee44ce3b7d401d705835306ddfc43d583f98ef3",
-      "reference_sha256": "a37e5864f78d5c00d702786ffade4aa2767494cb060d0e8d5d111600504145d7",
-      "reference_bytes": 3146768,
-      "first_alpha_range": [
-        0,
-        248
-      ],
-      "last_alpha_range": [
-        11,
-        248
-      ],
+      "bundle": "a27100d830db9fc8c34d334fa34638a9c6c4973f77a0a64a2bf02844c646a842.uvrule",
+      "bundle_sha256": "a27100d830db9fc8c34d334fa34638a9c6c4973f77a0a64a2bf02844c646a842",
+      "bundle_bytes": 146111,
+      "atlas": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas",
       "sweep_color_rgb": null,
       "sweep_color_method": "authored-print-front-rgb-v3",
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "a0cb13ceb753fbb32d6b07b06d683435217698f221fe57e5c359df6118bc3c6d",
-      "phase_counts": {
-        "wire": 0,
-        "white_model": 0,
-        "print_head": 0,
-        "material": 2359296
+      "regional_parameters": {
+        "regional_profiles": 11707,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 20823,
+        "training_pixels": 38118,
+        "payload_bytes": 4073675
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_glow36_silksync.vtf": {
@@ -1169,6 +982,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "ce720e6eb676c024bf9f254a9252d772a327c86353a25f87eec5063989c2f162",
       "part": "rec",
       "layer": "glow",
       "variant": "silksync",
@@ -1176,20 +990,10 @@
       "frames": 36,
       "format": 13,
       "flags": 82,
-      "bundle": "36fde6b56f837993be302a77a0ea91926c28600ed5fba6a0d154ee8d69583479.stpl",
-      "bundle_sha256": "36fde6b56f837993be302a77a0ea91926c28600ed5fba6a0d154ee8d69583479",
-      "bundle_bytes": 296918,
-      "baseline_sha256": "9339b89fab4f55b01206c294ef2537fb1a175784499a4563c33d4ef43663fa83",
-      "reference_sha256": "ce720e6eb676c024bf9f254a9252d772a327c86353a25f87eec5063989c2f162",
-      "reference_bytes": 6292016,
-      "first_alpha_range": [
-        255,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "570b73d34baaeba0572015f576cb5b9bf5a83cf8ee3ef67927c34b5c284829fb.uvrule",
+      "bundle_sha256": "570b73d34baaeba0572015f576cb5b9bf5a83cf8ee3ef67927c34b5c284829fb",
+      "bundle_bytes": 78742,
+      "atlas": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas",
       "sweep_color_rgb": [
         0,
         186,
@@ -1199,12 +1003,13 @@
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "9e0e95bde2e7027dc70512c8af1eb25e8ed6e15fe4ec56169be518f9b5dc2e20",
-      "phase_counts": {
-        "wire": 8780629,
-        "white_model": 0,
-        "print_head": 656555,
-        "material": 0
+      "regional_parameters": {
+        "regional_profiles": 8166,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 39338,
+        "training_pixels": 133410,
+        "payload_bytes": 3712823
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_glow36_smoothwhite.vtf": {
@@ -1214,6 +1019,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "7a8b8bc2b2af705b3eef987f84eb4d427216613b9713925922e22e1c52f17f5d",
       "part": "rec",
       "layer": "glow",
       "variant": "smoothwhite",
@@ -1221,20 +1027,10 @@
       "frames": 36,
       "format": 13,
       "flags": 82,
-      "bundle": "3b769525ac3dadd8c79dced44bd8499ec0ed81cb0c5b704981c340750859433c.stpl",
-      "bundle_sha256": "3b769525ac3dadd8c79dced44bd8499ec0ed81cb0c5b704981c340750859433c",
-      "bundle_bytes": 363881,
-      "baseline_sha256": "9339b89fab4f55b01206c294ef2537fb1a175784499a4563c33d4ef43663fa83",
-      "reference_sha256": "7a8b8bc2b2af705b3eef987f84eb4d427216613b9713925922e22e1c52f17f5d",
-      "reference_bytes": 6292016,
-      "first_alpha_range": [
-        255,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "1eb555b767e608c45f75637d0a88f3fedea1c1c00080568fd64efdb9e6f9e478.uvrule",
+      "bundle_sha256": "1eb555b767e608c45f75637d0a88f3fedea1c1c00080568fd64efdb9e6f9e478",
+      "bundle_bytes": 89615,
+      "atlas": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas",
       "sweep_color_rgb": [
         0,
         186,
@@ -1244,12 +1040,13 @@
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "623c8ee5ad274238fbc58d972c64f2e6afd928d0f49e89aecf47d378c0c45f38",
-      "phase_counts": {
-        "wire": 8585840,
-        "white_model": 0,
-        "print_head": 851344,
-        "material": 0
+      "regional_parameters": {
+        "regional_profiles": 8270,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 41094,
+        "training_pixels": 133410,
+        "payload_bytes": 3746519
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_silksync.vtf": {
@@ -1259,6 +1056,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "332624df92df607bea477b0686ef10abb8a1980aa589b45d55d1d1f81b74c258",
       "part": "rec_reuse",
       "layer": "print",
       "variant": "silksync",
@@ -1266,20 +1064,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "c19eedb2c9ae30706d33dab6accdb2c8d2934766501b053cece2ef0a3eb41cf8.stpl",
-      "bundle_sha256": "c19eedb2c9ae30706d33dab6accdb2c8d2934766501b053cece2ef0a3eb41cf8",
-      "bundle_bytes": 1106210,
-      "baseline_sha256": "304f62404ebd249d4f12f5bbb4a9e6fb83b6d80f2d34b0e2d1748d24b4291895",
-      "reference_sha256": "332624df92df607bea477b0686ef10abb8a1980aa589b45d55d1d1f81b74c258",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "c8d5c5f92b187b510a10bf370413a3ad6b2d79564d495dda7eb2fa20767b63fa.uvrule",
+      "bundle_sha256": "c8d5c5f92b187b510a10bf370413a3ad6b2d79564d495dda7eb2fa20767b63fa",
+      "bundle_bytes": 157455,
+      "atlas": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas",
       "sweep_color_rgb": [
         201,
         251,
@@ -1293,12 +1081,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_silksync_red.vtf",
-      "phase_sha256": "8567da728d19b6e3ebfec46be21b82d9b96c4b24be9aea1d003be79048076698",
-      "phase_counts": {
-        "wire": 4103691,
-        "white_model": 1271616,
-        "print_head": 209893,
-        "material": 3851984
+      "regional_parameters": {
+        "regional_profiles": 8322,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 53426,
+        "training_pixels": 46665,
+        "payload_bytes": 3755359
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_silksync_red.vtf": {
@@ -1308,6 +1097,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "9d28bcd3cb45d8d0faffbb47cd519dc5bc3f5e5564954fa0db8a2e8f012e3b89",
       "part": "rec_reuse",
       "layer": "print",
       "variant": "silksync",
@@ -1315,20 +1105,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "1f6e00077793e944d68e87587c207e70ff4b4c2e4aa89153ae205fe39c439d86.stpl",
-      "bundle_sha256": "1f6e00077793e944d68e87587c207e70ff4b4c2e4aa89153ae205fe39c439d86",
-      "bundle_bytes": 1068818,
-      "baseline_sha256": "f54c9216718248473335537d47e030bc045cee0bff2efb73a6827ddac615ffdd",
-      "reference_sha256": "9d28bcd3cb45d8d0faffbb47cd519dc5bc3f5e5564954fa0db8a2e8f012e3b89",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "e758f7d16ee3046939a5675fddea2701aa01f297a42f90cacea93ce11ecc367f.uvrule",
+      "bundle_sha256": "e758f7d16ee3046939a5675fddea2701aa01f297a42f90cacea93ce11ecc367f",
+      "bundle_bytes": 151003,
+      "atlas": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas",
       "sweep_color_rgb": [
         201,
         250,
@@ -1342,12 +1122,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_silksync.vtf",
-      "phase_sha256": "42492e412c398b9f905ea67d54d7840129a1e51f9a8bca6dc3b054b6df751775",
-      "phase_counts": {
-        "wire": 4103314,
-        "white_model": 1281535,
-        "print_head": 207811,
-        "material": 3844524
+      "regional_parameters": {
+        "regional_profiles": 8246,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 53357,
+        "training_pixels": 46665,
+        "payload_bytes": 3730735
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_smoothwhite.vtf": {
@@ -1357,6 +1138,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "373c23f30a4c35721ff05cafe73f68c1d2d8ec499c566f21c9e6c8085b9e72db",
       "part": "rec_reuse",
       "layer": "print",
       "variant": "smoothwhite",
@@ -1364,20 +1146,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "df1e4e3041a2187e5bf27dfa720d66c87069737fa89eb45f1ed75539397eafdb.stpl",
-      "bundle_sha256": "df1e4e3041a2187e5bf27dfa720d66c87069737fa89eb45f1ed75539397eafdb",
-      "bundle_bytes": 1282683,
-      "baseline_sha256": "304f62404ebd249d4f12f5bbb4a9e6fb83b6d80f2d34b0e2d1748d24b4291895",
-      "reference_sha256": "373c23f30a4c35721ff05cafe73f68c1d2d8ec499c566f21c9e6c8085b9e72db",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "7993b31ae0e4b947905bf3e283ab6d95835238dea58b136d361842146722eccd.uvrule",
+      "bundle_sha256": "7993b31ae0e4b947905bf3e283ab6d95835238dea58b136d361842146722eccd",
+      "bundle_bytes": 265361,
+      "atlas": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas",
       "sweep_color_rgb": [
         183,
         247,
@@ -1391,12 +1163,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_smoothwhite_red.vtf",
-      "phase_sha256": "a23e806f648459fa3d480c08f5f9ab1aead753d05d039f9f38810d6066ad5ac3",
-      "phase_counts": {
-        "wire": 4579450,
-        "white_model": 1540358,
-        "print_head": 163000,
-        "material": 3154376
+      "regional_parameters": {
+        "regional_profiles": 12496,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 70316,
+        "training_pixels": 46665,
+        "payload_bytes": 5107735
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_smoothwhite_red.vtf": {
@@ -1406,6 +1179,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "0911558e742f65a12f227eb285f673c39f796bf52136595b8d895fd09fb9207c",
       "part": "rec_reuse",
       "layer": "print",
       "variant": "smoothwhite",
@@ -1413,20 +1187,10 @@
       "frames": 36,
       "format": 15,
       "flags": 8274,
-      "bundle": "4ad12d9ded07858e73558348ead5685cee20234387580cbd4d740a54244ddd1b.stpl",
-      "bundle_sha256": "4ad12d9ded07858e73558348ead5685cee20234387580cbd4d740a54244ddd1b",
-      "bundle_bytes": 1243780,
-      "baseline_sha256": "f54c9216718248473335537d47e030bc045cee0bff2efb73a6827ddac615ffdd",
-      "reference_sha256": "0911558e742f65a12f227eb285f673c39f796bf52136595b8d895fd09fb9207c",
-      "reference_bytes": 12583952,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "e96707695a0d27e761a2293db8337a543388e26088342c69cdf2a219c5083a00.uvrule",
+      "bundle_sha256": "e96707695a0d27e761a2293db8337a543388e26088342c69cdf2a219c5083a00",
+      "bundle_bytes": 256183,
+      "atlas": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas",
       "sweep_color_rgb": [
         183,
         246,
@@ -1440,12 +1204,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_smoothwhite.vtf",
-      "phase_sha256": "e96ec65bce4486bc51b6ccd02086a888132883c6a24ffe6fac0c64fab47ab49b",
-      "phase_counts": {
-        "wire": 4579213,
-        "white_model": 1549108,
-        "print_head": 159748,
-        "material": 3149115
+      "regional_parameters": {
+        "regional_profiles": 12401,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 70088,
+        "training_pixels": 46665,
+        "payload_bytes": 5076955
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_reuse_normal36_silksync.vtf": {
@@ -1455,6 +1220,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "a2ca42be63c01f16930c1f1d74b85ce8da2ff042e65e7fc096135b4e1a6b4fb7",
       "part": "rec_reuse",
       "layer": "normal",
       "variant": "silksync",
@@ -1462,31 +1228,22 @@
       "frames": 36,
       "format": 15,
       "flags": 8338,
-      "bundle": "64f4c00820a6d979762097eb4bd2d681236152ec532f31688cf340a6ab6ff078.stpl",
-      "bundle_sha256": "64f4c00820a6d979762097eb4bd2d681236152ec532f31688cf340a6ab6ff078",
-      "bundle_bytes": 300125,
-      "baseline_sha256": "fe2b9b8b8c6de5cc5a2340210ee44ce3b7d401d705835306ddfc43d583f98ef3",
-      "reference_sha256": "a2ca42be63c01f16930c1f1d74b85ce8da2ff042e65e7fc096135b4e1a6b4fb7",
-      "reference_bytes": 3146768,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        11,
-        248
-      ],
+      "bundle": "feb6f3d79cbb180dfe0f8b9916f58888101c8820183800fb9b3f11f180d629d2.uvrule",
+      "bundle_sha256": "feb6f3d79cbb180dfe0f8b9916f58888101c8820183800fb9b3f11f180d629d2",
+      "bundle_bytes": 72319,
+      "atlas": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas",
       "sweep_color_rgb": null,
       "sweep_color_method": "authored-print-front-rgb-v3",
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "a0cb13ceb753fbb32d6b07b06d683435217698f221fe57e5c359df6118bc3c6d",
-      "phase_counts": {
-        "wire": 0,
-        "white_model": 0,
-        "print_head": 0,
-        "material": 2359296
+      "regional_parameters": {
+        "regional_profiles": 5948,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 12741,
+        "training_pixels": 14087,
+        "payload_bytes": 2199751
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_reuse_normal36_smoothwhite.vtf": {
@@ -1496,6 +1253,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "c8070f439a26c9b321080b7dffa1f02d3d33e1eb5055425a16356dacfab9600c",
       "part": "rec_reuse",
       "layer": "normal",
       "variant": "smoothwhite",
@@ -1503,31 +1261,22 @@
       "frames": 36,
       "format": 15,
       "flags": 8338,
-      "bundle": "0f1cf021f8c4138ef54c6df7b9ce0626e4301e9857e1e2940c5066206252469d.stpl",
-      "bundle_sha256": "0f1cf021f8c4138ef54c6df7b9ce0626e4301e9857e1e2940c5066206252469d",
-      "bundle_bytes": 346901,
-      "baseline_sha256": "fe2b9b8b8c6de5cc5a2340210ee44ce3b7d401d705835306ddfc43d583f98ef3",
-      "reference_sha256": "c8070f439a26c9b321080b7dffa1f02d3d33e1eb5055425a16356dacfab9600c",
-      "reference_bytes": 3146768,
-      "first_alpha_range": [
-        0,
-        0
-      ],
-      "last_alpha_range": [
-        11,
-        248
-      ],
+      "bundle": "4b15f7d2b5c94ff89d9f4555ff213e81ab75c6d4bafcb99a2410be94d41d8f41.uvrule",
+      "bundle_sha256": "4b15f7d2b5c94ff89d9f4555ff213e81ab75c6d4bafcb99a2410be94d41d8f41",
+      "bundle_bytes": 100217,
+      "atlas": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas",
       "sweep_color_rgb": null,
       "sweep_color_method": "authored-print-front-rgb-v3",
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "a0cb13ceb753fbb32d6b07b06d683435217698f221fe57e5c359df6118bc3c6d",
-      "phase_counts": {
-        "wire": 0,
-        "white_model": 0,
-        "print_head": 0,
-        "material": 2359296
+      "regional_parameters": {
+        "regional_profiles": 7987,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 16051,
+        "training_pixels": 14087,
+        "payload_bytes": 2860387
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_reuse_glow36_silksync.vtf": {
@@ -1537,6 +1286,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "033740dab87dedc1109278d0ebf8945f2117069922d2dff2fac0f4af802529c4",
       "part": "rec_reuse",
       "layer": "glow",
       "variant": "silksync",
@@ -1544,20 +1294,10 @@
       "frames": 36,
       "format": 13,
       "flags": 82,
-      "bundle": "6e399dab62f7f7201f7c3ffed16e4ee9c1f5a0284fc5bca6fbc6b69b82709939.stpl",
-      "bundle_sha256": "6e399dab62f7f7201f7c3ffed16e4ee9c1f5a0284fc5bca6fbc6b69b82709939",
-      "bundle_bytes": 400653,
-      "baseline_sha256": "9339b89fab4f55b01206c294ef2537fb1a175784499a4563c33d4ef43663fa83",
-      "reference_sha256": "033740dab87dedc1109278d0ebf8945f2117069922d2dff2fac0f4af802529c4",
-      "reference_bytes": 6292016,
-      "first_alpha_range": [
-        255,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "a82b3c1373327f4bd7ef34422ae5f7493bdcec943a6e6342a5ca0012db71422c.uvrule",
+      "bundle_sha256": "a82b3c1373327f4bd7ef34422ae5f7493bdcec943a6e6342a5ca0012db71422c",
+      "bundle_bytes": 71465,
+      "atlas": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas",
       "sweep_color_rgb": [
         82,
         255,
@@ -1567,12 +1307,13 @@
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "10fafc873413d0d65c49b69417346caa6035dd16b828f55a370d2aff76e5932d",
-      "phase_counts": {
-        "wire": 8350600,
-        "white_model": 0,
-        "print_head": 1086584,
-        "material": 0
+      "regional_parameters": {
+        "regional_profiles": 5508,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 43033,
+        "training_pixels": 46665,
+        "payload_bytes": 2843623
       }
     },
     "rec_smg_am17_066_mechrevodf_vk_01_reuse_glow36_smoothwhite.vtf": {
@@ -1582,6 +1323,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "fb8f87411cc047a41e90be6609f3c6f06bb7ec2e82c34d5850a0c886500e978e",
       "part": "rec_reuse",
       "layer": "glow",
       "variant": "smoothwhite",
@@ -1589,20 +1331,10 @@
       "frames": 36,
       "format": 13,
       "flags": 82,
-      "bundle": "c1c013d9847e22677c5edfd6de681ce26093dc6219736bf40429027a48beb888.stpl",
-      "bundle_sha256": "c1c013d9847e22677c5edfd6de681ce26093dc6219736bf40429027a48beb888",
-      "bundle_bytes": 567358,
-      "baseline_sha256": "9339b89fab4f55b01206c294ef2537fb1a175784499a4563c33d4ef43663fa83",
-      "reference_sha256": "fb8f87411cc047a41e90be6609f3c6f06bb7ec2e82c34d5850a0c886500e978e",
-      "reference_bytes": 6292016,
-      "first_alpha_range": [
-        255,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "26ee177ba4eb4ba029b492d715c029234810a192ffa91b003dab46e73bc8106c.uvrule",
+      "bundle_sha256": "26ee177ba4eb4ba029b492d715c029234810a192ffa91b003dab46e73bc8106c",
+      "bundle_bytes": 96396,
+      "atlas": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas",
       "sweep_color_rgb": [
         0,
         186,
@@ -1612,12 +1344,13 @@
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "dbb2991e64d957e777c71d851a500e52c7f4655cc567b15792bad20ee427c523",
-      "phase_counts": {
-        "wire": 7966078,
-        "white_model": 0,
-        "print_head": 1471106,
-        "material": 0
+      "regional_parameters": {
+        "regional_profiles": 6114,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 47761,
+        "training_pixels": 46665,
+        "payload_bytes": 3039967
       }
     },
     "mi_props_box_am17_mechrevodf_vk_1p_soliddepth.vtf": {
@@ -1627,6 +1360,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "bc82f5974b24a2bc04991371e7f5134452e722f339634b76e8b3d38a2fbb0700",
       "part": "box",
       "layer": "soliddepth",
       "variant": "",
@@ -1634,20 +1368,10 @@
       "frames": 35,
       "format": 15,
       "flags": 8192,
-      "bundle": "81b6414fc033db3ba1c37a384db109a3567e34750c11357bbe0c731b37ebfc30.stpl",
-      "bundle_sha256": "81b6414fc033db3ba1c37a384db109a3567e34750c11357bbe0c731b37ebfc30",
-      "bundle_bytes": 749654,
-      "baseline_sha256": "5061a85b01cec5ec782767f8e7d792190bcbac3bfc95136c723e22f2720e9942",
-      "reference_sha256": "bc82f5974b24a2bc04991371e7f5134452e722f339634b76e8b3d38a2fbb0700",
-      "reference_bytes": 3059360,
-      "first_alpha_range": [
-        0,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "1c5a21d68f00cf8f0927c7ba56c4f5c41e521e71bdc76c2fbf6cbfc0c6cd07f5.uvrule",
+      "bundle_sha256": "1c5a21d68f00cf8f0927c7ba56c4f5c41e521e71bdc76c2fbf6cbfc0c6cd07f5",
+      "bundle_bytes": 725071,
+      "atlas": "701a8d56418458911f2417f5c27fe985a95446fc9c2dbc38f150e77bcc67d66f.uvatlas",
       "sweep_color_rgb": [
         255,
         229,
@@ -1661,12 +1385,13 @@
       ],
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "6898d08e670c9f2231aa62510747d2b0481f40facaff0f95f14a5209a3445575",
-      "phase_counts": {
-        "wire": 1505948,
-        "white_model": 242630,
-        "print_head": 79342,
-        "material": 465840
+      "regional_parameters": {
+        "regional_profiles": 20318,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 51797,
+        "training_pixels": 46251,
+        "payload_bytes": 6667753
       }
     },
     "props_collect_treasure_702_e_printsync36.vtf": {
@@ -1676,6 +1401,7 @@
         1024,
         1024
       ],
+      "reference_sha256": "9253553eb9ed9ba902fad660965b3d51c82b6b6cdc2e729d6fbe7101d5c12320",
       "part": "box",
       "layer": "glow",
       "variant": "",
@@ -1683,20 +1409,10 @@
       "frames": 35,
       "format": 13,
       "flags": 16,
-      "bundle": "2bc15b777cc1648c6e77207198db287fdb38f43b0e5dcff8ea26dda7d79f39a7.stpl",
-      "bundle_sha256": "2bc15b777cc1648c6e77207198db287fdb38f43b0e5dcff8ea26dda7d79f39a7",
-      "bundle_bytes": 21198,
-      "baseline_sha256": "24b00bcbca05899f84fe96e0ef126fbbe4379ac53a3c8381709a74a3e04bc114",
-      "reference_sha256": "9253553eb9ed9ba902fad660965b3d51c82b6b6cdc2e729d6fbe7101d5c12320",
-      "reference_bytes": 1529720,
-      "first_alpha_range": [
-        255,
-        255
-      ],
-      "last_alpha_range": [
-        255,
-        255
-      ],
+      "bundle": "22b13ca859e268592388ad563bb4a3efec94401ca0790c1b0dd971e139f7cb5e.uvrule",
+      "bundle_sha256": "22b13ca859e268592388ad563bb4a3efec94401ca0790c1b0dd971e139f7cb5e",
+      "bundle_bytes": 5394,
+      "atlas": "701a8d56418458911f2417f5c27fe985a95446fc9c2dbc38f150e77bcc67d66f.uvatlas",
       "sweep_color_rgb": [
         219,
         255,
@@ -1706,19 +1422,281 @@
       "wire_color_rgb": null,
       "wire_color_method": "authored-shared-wire-rgb-v2",
       "wire_reference_pair": null,
-      "phase_sha256": "5e9ebde25804263e72ca3e4b9b6fa6a2e725fad1ad1733e282c6e6740081de3f",
-      "phase_counts": {
-        "wire": 2289742,
-        "white_model": 0,
-        "print_head": 1363,
-        "material": 2655
+      "regional_parameters": {
+        "regional_profiles": 1239,
+        "operator_rows": 9,
+        "categorical_histories": "exact mode and alpha on SMD-covered samples",
+        "residual_pixels": 166,
+        "training_pixels": 46251,
+        "payload_bytes": 657868
       }
+    }
+  },
+  "atlases": {
+    "7134cc6b938c58f7dc6eb776799a488a730166a922827681098565a997d19cfe.uvatlas": {
+      "part": "lam",
+      "bundle_sha256": "7134cc6b938c58f7dc6eb776799a488a730166a922827681098565a997d19cfe",
+      "bundle_bytes": 18470,
+      "smd": {
+        "file": "lam2.smd",
+        "material": "Dev_LAM_PEQ25_005_MECHREVODF_vk_Specail2",
+        "sha256": "845cfca1cc2e200fb676ce048f13af1c4245047c56466f740604859ec8e871a6",
+        "triangles": 4053,
+        "uv_islands": 151
+      },
+      "scan": {
+        "size": 512,
+        "regions": 1130,
+        "source_islands": 151,
+        "covered_pixels": 184399,
+        "overlapped_pixels": 635,
+        "padding_pixels": 75344,
+        "locally_corrected_pixels": 5161,
+        "global_scan_fit": {
+          "axis": [
+            -0.0954214975070198,
+            -0.3538299658790587,
+            0.9304295207373537
+          ],
+          "arrival_fit_median_frames": 1.5473279137670524,
+          "arrival_fit_p90_frames": 5.0893459163641115
+        }
+      },
+      "timing_reference": "dev_lam_peq25_005_mechrevodf_vk_print_softframe_colorfront.vtf",
+      "timing_reference_sha256": "2ee4f6bf9bda8de3dcca0fb74c96cfbac1f25f730332164c6ba83b6d296bbe0e"
+    },
+    "0271e05e66b5fd060cd2441b0e06fcfe17518006ee8a911e8854b9bd9a230441.uvatlas": {
+      "part": "weal",
+      "bundle_sha256": "0271e05e66b5fd060cd2441b0e06fcfe17518006ee8a911e8854b9bd9a230441",
+      "bundle_bytes": 16167,
+      "smd": {
+        "file": "weal2.smd",
+        "material": "Dev_Weal_StrobeLight_006_MECHREVODF_vk_Specail2",
+        "sha256": "c364c02f11cd2ee5120a71c9fca8278740c4b0f1c228c7bb56e4dad23222ab6e",
+        "triangles": 3945,
+        "uv_islands": 216
+      },
+      "scan": {
+        "size": 512,
+        "regions": 1080,
+        "source_islands": 197,
+        "covered_pixels": 185579,
+        "overlapped_pixels": 32718,
+        "padding_pixels": 74493,
+        "locally_corrected_pixels": 245,
+        "global_scan_fit": {
+          "axis": [
+            0.01556531795694139,
+            -0.9997487811666603,
+            -0.01612747446676959
+          ],
+          "arrival_fit_median_frames": 0.22463967049650435,
+          "arrival_fit_p90_frames": 0.4384745679440904
+        }
+      },
+      "timing_reference": "dev_weal_strobelight_006_mechrevodf_vk_print13_allparts.vtf",
+      "timing_reference_sha256": "04284063f07999cfe3930758fb39e27886f8bb0e77520bd3c4ffa1e5752daeb6"
+    },
+    "7697e0d3ecd294df6340bb385be3694e976c6c660e0832959a7d89085d7c9df4.uvatlas": {
+      "part": "fros",
+      "bundle_sha256": "7697e0d3ecd294df6340bb385be3694e976c6c660e0832959a7d89085d7c9df4",
+      "bundle_bytes": 9733,
+      "smd": {
+        "file": "fros2.smd",
+        "material": "FroS_AM17_045_MECHREVODF_vk_Specail2",
+        "sha256": "30d728fb0a30348ad7e1247a6c6a0e913b3c7f505a8beb8b62450eff25de9456",
+        "triangles": 1580,
+        "uv_islands": 74
+      },
+      "scan": {
+        "size": 512,
+        "regions": 177,
+        "source_islands": 71,
+        "covered_pixels": 175786,
+        "overlapped_pixels": 26336,
+        "padding_pixels": 77026,
+        "locally_corrected_pixels": 1766,
+        "global_scan_fit": {
+          "axis": [
+            0.43424116289219855,
+            -0.6748708171213664,
+            0.59664394126478
+          ],
+          "arrival_fit_median_frames": 0.5243778445127347,
+          "arrival_fit_p90_frames": 0.874648915045626
+        }
+      },
+      "timing_reference": "fros_am17_045_mechrevodf_vk_print_softframe_colorfront.vtf",
+      "timing_reference_sha256": "cc480c426f3d6b8f92877797c3126319eafbb293342347f9be47d22919c368f5"
+    },
+    "f8006cd6d5bb05067680c888e2e1ea95ed6460af31bcd6fb12434f67c28b3b22.uvatlas": {
+      "part": "han",
+      "bundle_sha256": "f8006cd6d5bb05067680c888e2e1ea95ed6460af31bcd6fb12434f67c28b3b22",
+      "bundle_bytes": 36139,
+      "smd": {
+        "file": "han2.smd",
+        "material": "Han_AM17_long_160_MECHREVODF_vk_Specail2",
+        "sha256": "b6e41245717c7f125bef53870b13346b7dd9df7b154a5e78056a1ca53a593b4b",
+        "triangles": 6893,
+        "uv_islands": 623
+      },
+      "scan": {
+        "size": 512,
+        "regions": 7421,
+        "source_islands": 326,
+        "covered_pixels": 167942,
+        "overlapped_pixels": 93647,
+        "padding_pixels": 94084,
+        "locally_corrected_pixels": 1530,
+        "global_scan_fit": {
+          "axis": [
+            0.009187150500123307,
+            -0.9998264980695838,
+            -0.016204012577150085
+          ],
+          "arrival_fit_median_frames": 0.32196691909283004,
+          "arrival_fit_p90_frames": 0.809383732567116
+        }
+      },
+      "timing_reference": "han_am17_long_160_mechrevodf_vk_print_softframe_colorfront.vtf",
+      "timing_reference_sha256": "e38a620a0de0f03b7a756254ee15c930b2cfaa14baa3a6d8ed03b48812f06ee5"
+    },
+    "43702bef82fc60723c68f49a42e64c47a6404ab686a529af60e1ceb46e111ecf.uvatlas": {
+      "part": "muz",
+      "bundle_sha256": "43702bef82fc60723c68f49a42e64c47a6404ab686a529af60e1ceb46e111ecf",
+      "bundle_bytes": 9950,
+      "smd": {
+        "file": "muz2.smd",
+        "material": "Muz_AK_PBS_04_012_MECHREVODF_vk_Specail2",
+        "sha256": "a3cc934543f545e21c6d266cc8f480324270588f0a5d7ba695c423f0ef7f8330",
+        "triangles": 1418,
+        "uv_islands": 68
+      },
+      "scan": {
+        "size": 256,
+        "regions": 1917,
+        "source_islands": 53,
+        "covered_pixels": 47002,
+        "overlapped_pixels": 4324,
+        "padding_pixels": 15640,
+        "locally_corrected_pixels": 335,
+        "global_scan_fit": {
+          "axis": [
+            -0.008904622478832867,
+            -0.9999596244776549,
+            -0.001207109364230598
+          ],
+          "arrival_fit_median_frames": 0.27713199586437653,
+          "arrival_fit_p90_frames": 0.6436327163046969
+        }
+      },
+      "timing_reference": "muz_ak_pbs_04_012_mechrevodf_vk_print_softframe_colorfront.vtf",
+      "timing_reference_sha256": "da21e9e8ca4c6a449fe7de167df5db419dd954fe28605c795cbb6c4ebca0b419"
+    },
+    "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas": {
+      "part": "rec",
+      "bundle_sha256": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4",
+      "bundle_bytes": 32473,
+      "smd": {
+        "file": "rec2.smd",
+        "material": "Rec_SMG_AM17_066_MECHREVODF_vk_012",
+        "sha256": "eda34e6f06cb55658a8673ec1cc52017684587f0316dffce621550fbe7a0308e",
+        "triangles": 6569,
+        "uv_islands": 326
+      },
+      "scan": {
+        "size": 512,
+        "regions": 4474,
+        "source_islands": 285,
+        "covered_pixels": 133410,
+        "overlapped_pixels": 17569,
+        "padding_pixels": 78469,
+        "locally_corrected_pixels": 12607,
+        "global_scan_fit": {
+          "axis": [
+            -0.001622838608913447,
+            0.9932728277524252,
+            -0.11578625153078582
+          ],
+          "arrival_fit_median_frames": 0.7667970847501415,
+          "arrival_fit_p90_frames": 3.010055779055075
+        }
+      },
+      "timing_reference": "rec_smg_am17_066_mechrevodf_vk_01_print36_silksync.vtf",
+      "timing_reference_sha256": "e2a97c02a93b93bd9c5b763debd1b67270a2da5ab2e15bc6db180d717058fd21"
+    },
+    "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas": {
+      "part": "rec_reuse",
+      "bundle_sha256": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a",
+      "bundle_bytes": 19437,
+      "smd": {
+        "file": "rec2.smd",
+        "material": "Rec_SMG_AM17_066_MECHREVODF_vk_01_Reuse2",
+        "sha256": "eda34e6f06cb55658a8673ec1cc52017684587f0316dffce621550fbe7a0308e",
+        "triangles": 4405,
+        "uv_islands": 208
+      },
+      "scan": {
+        "size": 512,
+        "regions": 2472,
+        "source_islands": 146,
+        "covered_pixels": 46665,
+        "overlapped_pixels": 18472,
+        "padding_pixels": 61294,
+        "locally_corrected_pixels": 3351,
+        "global_scan_fit": {
+          "axis": [
+            0.12284262270325674,
+            0.9923456503011837,
+            -0.012641217334817694
+          ],
+          "arrival_fit_median_frames": 0.8823785489865639,
+          "arrival_fit_p90_frames": 1.9883929778020095
+        }
+      },
+      "timing_reference": "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_silksync.vtf",
+      "timing_reference_sha256": "332624df92df607bea477b0686ef10abb8a1980aa589b45d55d1d1f81b74c258"
+    },
+    "701a8d56418458911f2417f5c27fe985a95446fc9c2dbc38f150e77bcc67d66f.uvatlas": {
+      "part": "box",
+      "bundle_sha256": "701a8d56418458911f2417f5c27fe985a95446fc9c2dbc38f150e77bcc67d66f",
+      "bundle_bytes": 8558,
+      "smd": {
+        "file": "zhuan2.smd",
+        "material": "MI_props_box_AM17_MECHREVODF_vk_1P2",
+        "sha256": "17c2d31f94857ff7e624da38c419f803f59a3cba47dddec18841ed9c0a8b44d0",
+        "triangles": 6501,
+        "uv_islands": 443
+      },
+      "scan": {
+        "size": 256,
+        "regions": 1218,
+        "source_islands": 178,
+        "covered_pixels": 46251,
+        "overlapped_pixels": 26420,
+        "padding_pixels": 18703,
+        "locally_corrected_pixels": 323,
+        "global_scan_fit": {
+          "axis": [
+            -0.0029166182958110997,
+            0.002525141597356902,
+            0.9999925584711268
+          ],
+          "arrival_fit_median_frames": 0.24925677231147958,
+          "arrival_fit_p90_frames": 0.6289496754998525
+        }
+      },
+      "timing_reference": "mi_props_box_am17_mechrevodf_vk_1p_soliddepth.vtf",
+      "timing_reference_sha256": "bc82f5974b24a2bc04991371e7f5134452e722f339634b76e8b3d38a2fbb0700"
     }
   },
   "resource_summary": {
     "output_mappings": 37,
     "unique_bundles": 37,
-    "bundle_bytes": 26479390,
-    "reference_vtf_bytes": 220621496
+    "bundle_bytes": 6563199,
+    "shared_atlases": 8,
+    "atlas_bytes": 150927,
+    "embedded_reference_vtf_bytes": 0,
+    "embedded_static_baseline_bytes": 0
   }
 }

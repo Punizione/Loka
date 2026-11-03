@@ -217,7 +217,7 @@ def generate_material(choice: MaterialChoice, *, cached: GeneratedMaterial | Non
     data = _read_source(choice)
     digest = hashlib.sha256(data).hexdigest()
     check_cancel(cancelled)
-    on_progress('读取效果模板', 0, 1)
+    on_progress('读取材质规则', 0, 1)
     template = load_material_template(choice.recipe_id, choice.rule, cancelled=cancelled)
     if sweep_color is not None and template.sweep_color is None:
         raise ValueError('该项参考动画没有可提取的打印前沿，暂不支持调色。')
@@ -232,11 +232,6 @@ def generate_material(choice: MaterialChoice, *, cached: GeneratedMaterial | Non
             and cached.wire_color == wire_color):
         on_progress('复用预览产物', 1, 1)
         return cached
-    if sweep_color is None and wire_color is None and digest == template.source_digest:
-        from .sequence_material_vtf import decode_product_frames
-        on_progress('复用原始效果模板', 1, 1)
-        frames = decode_product_frames(template.reference, choice.rule, cancelled)
-        return GeneratedMaterial(choice, digest, template.reference, frames, float('inf'), template.digest)
     source = _decode_vtf_uncached(data)
     del data
     check_cancel(cancelled)

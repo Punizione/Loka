@@ -193,31 +193,22 @@ def decode_product_frames(data, rule, cancelled=lambda: False):
 
 def encode_sequence(source, rule: OutputRule, *, template, sweep_color=None, wire_color=None, cancelled=lambda: False,
                     on_progress=lambda stage, done, total: None):
-    """Transfer the embedded effect; return bytes, frames and encoding PSNR."""
+    """Synthesize every frame from UV rules and the user's static material."""
     from PIL import Image
-    from .sequence_material_templates import transfer_template_frame
-    from .sequence_material_colors import recolor_sweep, recolor_wire
+    from .sequence_material_rules import synthesize_rule_frame
     normal = rule.layer == 'normal'
     original = Image.frombytes('RGBA', (source.width, source.height), source.rgba)
     static = resize_texture(original, (rule.size, rule.size), normal=normal, cancelled=cancelled)
     if rule.layer == 'glow':
         static.putalpha(255)
     del original
-    if sweep_color is None and wire_color is None and static.tobytes() == template.baseline:
-        on_progress('复用原始效果模板', rule.frames, rule.frames)
-        return template.reference, decode_product_frames(template.reference, rule, cancelled), math.inf
     levels = [bytearray() for _ in range(rule.size.bit_length())]
     final_image = None
-    for index, reference_frame in enumerate(iter_product_frames(template.reference, rule, cancelled)):
+    for index in range(rule.frames):
         check_cancel(cancelled)
         on_progress('合成与压缩', index, rule.frames)
-        image = transfer_template_frame(static, reference_frame.rgba, template, rule, index, cancelled=cancelled)
-        if wire_color is not None:
-            image = recolor_wire(image, reference_frame.rgba, template, wire_color,
-                                 rule, index, cancelled=cancelled)
-        if sweep_color is not None:
-            image = recolor_sweep(image, reference_frame.rgba, template, sweep_color,
-                                 rule, index, cancelled=cancelled)
+        image = synthesize_rule_frame(static, template, rule, index, sweep_color=sweep_color,
+                                      wire_color=wire_color, cancelled=cancelled)
         if index == rule.frames - 1:
             final_image = image.convert('RGB').tobytes()
         for mip in range(len(levels)):
