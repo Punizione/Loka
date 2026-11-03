@@ -9,6 +9,7 @@ Layout: a ``FluentWindow`` with a fixed (non-collapsible) left navigation bar:
 5. 反编译          -- input selection, file/text options, run button, log
 6. Subtract修正    -- advanced delta subtract base table + per-animation tuning
 7. BodyGroup处理   -- advanced mixed bodygroup event mapping
+8. 序列帧材质处理  -- advanced one-material VTF generation and preview
 
 The theme toggle lives at the very bottom of the navigation bar; the app starts
 in dark mode on first run and persists the chosen theme.  Shell drag & drop is
@@ -97,6 +98,7 @@ from .update_check import UpdateCheckController
 from .ffmpeg_install import FFmpegInstallController
 from .settings_layout import SettingsGroup,SettingsPathCard
 from .status_badges import active_badges
+from .sequence_materials import SequenceMaterialInterface
 
 #: "自动匹配" choice in the Subtract tab's idle selector (uses name matching).
 AUTO_IDLE_CHOICE = "自动（按名称匹配，ads 优先）"
@@ -1462,6 +1464,9 @@ class MainWindow(FluentWindow):
         self.decompile_page = DecompileInterface(self)
         self.subtract_page = SubtractInterface(self)
         self.bodygroup_page = BodyGroupInterface(self)
+        self.sequence_material_page = SequenceMaterialInterface(self)
+        self._close_after_sequence_material = False
+        self.sequence_material_page.busy_changed.connect(self._finish_sequence_material_close)
         self.weapon_conversion_page = WeaponConversionInterface(lambda: CFG.get(CFG.advanced),self,config=CFG)
         self.action_correction_page = None
 
@@ -1644,6 +1649,7 @@ class MainWindow(FluentWindow):
             (self.one_click_page, FluentIcon.PLAY, tr('兼容ADS处理'), self.weapon_conversion_page),
             (self.subtract_page, FluentIcon.SYNC, tr('Subtract修正'), self.decompile_page),
             (self.bodygroup_page, FluentIcon.TILES, tr('BodyGroup处理'), self.subtract_page),
+            (self.sequence_material_page, FluentIcon.TILES, tr('序列帧材质处理'), self.bodygroup_page),
         )
 
         # Always-on navigation chrome.  This used to live at the end of
@@ -1765,6 +1771,11 @@ class MainWindow(FluentWindow):
                 tr('拖入了 {value0} 项；使用第一项（{value1}）。', value0=len(usable), value1=os.path.basename(usable[0]))
             )
         path = usable[0]
+        if (self.stackedWidget.currentWidget() is self.sequence_material_page
+                and os.path.isdir(path)):
+            self.sequence_material_page.set_input_path(path)
+            event.acceptProposedAction()
+            return
         if os.path.isfile(path) and path.lower().endswith('.vpk'):
             self.weapon_conversion_page.set_input_path(path)
             self.switchTo(self.weapon_conversion_page)
@@ -1814,7 +1825,7 @@ class MainWindow(FluentWindow):
 
     def _worker_busy(self) -> bool:
         # A finished thread remains active until its queued completion reaches Qt.
-        return self._update_check.active or self._active_run_page is not None or (
+        return self._update_check.active or self.sequence_material_page.active or self._active_run_page is not None or (
             self._worker is not None and self._worker.is_alive())
 
     def run_weapon_scan(self, page, request=None):
@@ -2133,8 +2144,17 @@ class MainWindow(FluentWindow):
             self._close_after_ffmpeg=False
             QTimer.singleShot(0,self.close)
 
+    def _finish_sequence_material_close(self, busy):
+        if not busy and self._close_after_sequence_material:
+            self._close_after_sequence_material = False
+            QTimer.singleShot(0, self.close)
+
     def closeEvent(self,event):
         if self._update_check.active:
+            event.ignore();return
+        if self.sequence_material_page.active:
+            self._close_after_sequence_material = True
+            self.sequence_material_page.cancel()
             event.ignore();return
         if self.action_correction_page is not None and self._active_run_page is self.action_correction_page:
             self.action_correction_page.log_card.append(tr('请先等待当前动作任务完成，或取消任务后再关闭。'))
@@ -2148,6 +2168,7 @@ class MainWindow(FluentWindow):
             self.settings_page.ensureWidgetVisible(self.settings_page.ffmpeg_status)
             event.ignore();return
         self.settings_page._ffmpeg_install.cancel()
+        self.sequence_material_page.pause()
         if self.action_correction_page is not None:
             self.action_correction_page.pause()
             self.action_correction_page.audio.close()

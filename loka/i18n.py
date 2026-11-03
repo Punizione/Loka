@@ -15,8 +15,9 @@ def english_catalog():
     from .locales.en_main import MESSAGES as main
     from .locales.en_actions import MESSAGES as actions
     from .locales.en_messages import MESSAGES as backend
+    from .locales.en_sequence_materials import MESSAGES as sequence_materials
     messages={}
-    for catalog in (main,actions,backend):
+    for catalog in (main,actions,backend,sequence_materials):
         for source,translated in catalog.items():
             # Repeated shared terms belong to the first presentation catalog.
             messages.setdefault(source,translated)
