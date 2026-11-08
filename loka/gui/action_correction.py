@@ -6,12 +6,16 @@ from PySide6.QtCore import Qt, Signal, QTimer, QRectF
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QFileDialog, QDialog, QSplitter, QSizePolicy
 from qfluentwidgets import (BodyLabel, CaptionLabel, ComboBox,
-    PrimaryPushButton, PushButton, Slider, CheckBox, IndeterminateProgressBar,
+    PrimaryPushButton, PushButton, RadioButton, Slider, CheckBox, IndeterminateProgressBar,
     SubtitleLabel, TextEdit)
 from ..fps_values import fps_text,round_fps
 from ..i18n import tr, display_text
 from .action_dialogs import ActionFormDialog
 from .action_fps import ActionFpsInput
+
+
+SWAP_DESCRIPTION='相同 Activity 交换整套动作；近战 SHOOT_LAYER 与三方向 HIT 可互换。目标有官方计时则匹配时长，无计时则保留换入动作 FPS。'
+REPLACE_DESCRIPTION='把来源动作整套替换进目标槽位；来源槽位保留原动作，目标槽位原动作被舍弃；Activity 与槽位身份不变。'
 
 
 def sequence_option_text(action):
@@ -259,7 +263,7 @@ class ActionCorrectionInterface(QWidget):
         status=QHBoxLayout()
         self.status_label=CaptionLabel('',self);self.status_label.setWordWrap(True)
         self.details_button=PushButton(tr('模型与引用详情'),self)
-        self.swap_list_button=PushButton(tr('查看调换列表'),self)
+        self.swap_list_button=PushButton(tr('查看动作变更列表'),self)
         status.addWidget(self.status_label,1);status.addWidget(self.swap_list_button)
         status.addWidget(self.details_button);layout.addLayout(status)
         self.details_text=TextEdit(self);self.details_text.setReadOnly(True)
@@ -512,6 +516,14 @@ class ActionCorrectionInterface(QWidget):
         self.session.swap_sequences(model_index,first,second,preview=self._previews[model_index],timing_slots=timing_slots)
         self._sequence_changed()
 
+    def replace_sequence(self,destination,donor,*,timing_slots=None):
+        if self.continuous.active:return
+        if self._busy or not self.session or self.suspended:return
+        self.pause()
+        model_index=self._model_index
+        self.session.replace_sequence(model_index,destination,donor,preview=self._previews[model_index],timing_slots=timing_slots)
+        self._sequence_changed()
+
     def _show_swap_comparison(self):
         if (self._busy or self.session is None
                 or not 0<=self._model_index<len(self.session.models)):return
@@ -528,15 +540,21 @@ class ActionCorrectionInterface(QWidget):
         actions=tuple(a for a in model.swap_actions or model.actions
                       if (model_index,a.index) not in self.session.removed_sequences)
         if len(actions)<2:return
-        box=ActionFormDialog(tr('序列调换'),self,width=740);layout=box.viewLayout
-        description=BodyLabel(tr('相同 Activity 交换整套动作；近战 SHOOT_LAYER 与三方向 HIT 可互换。目标有官方计时则匹配时长，无计时则保留换入动作 FPS。'),box)
+        box=ActionFormDialog(tr('序列调换或替换'),self,width=740);layout=box.viewLayout
+        description=BodyLabel(tr(SWAP_DESCRIPTION),box)
         description.setWordWrap(True);layout.addWidget(description)
+        mode_row=QHBoxLayout();mode_row.setSpacing(18)
+        swap_mode=RadioButton(box);swap_mode.setText(tr('调换'))
+        replace_mode=RadioButton(box);replace_mode.setText(tr('替换'))
+        swap_mode.setChecked(True)
+        mode_row.addWidget(swap_mode);mode_row.addWidget(replace_mode);mode_row.addStretch(1)
+        layout.addWidget(CaptionLabel(tr('操作模式'),box));layout.addLayout(mode_row)
         first=ComboBox(box);second=ComboBox(box)
         for action in actions:first.addItem(sequence_option_text(action)+'  '+action.name,userData=action.index)
         current=self.sequence_box.currentData()
         first.setCurrentIndex(next((i for i,a in enumerate(actions) if a.index==current),0))
-        layout.addWidget(CaptionLabel(tr('目标槽位一'),box));layout.addWidget(first)
-        layout.addWidget(CaptionLabel(tr('目标槽位二'),box));layout.addWidget(second)
+        first_label=CaptionLabel(tr('目标槽位一'),box);layout.addWidget(first_label);layout.addWidget(first)
+        second_label=CaptionLabel(tr('目标槽位二'),box);layout.addWidget(second_label);layout.addWidget(second)
         timing_boxes={}
         for slot in (0,1):
             label=CaptionLabel(tr('目标槽位一的计时参考（可选）') if slot==0 else tr('目标槽位二的计时参考（可选）'),box)
@@ -544,14 +562,22 @@ class ActionCorrectionInterface(QWidget):
             timing_boxes[slot]=(label,combo)
         message=CaptionLabel('',box);message.setWordWrap(True);layout.addWidget(message)
         def refresh_times(*_):
+            replace=replace_mode.isChecked()
+            description.setText(tr(REPLACE_DESCRIPTION) if replace else tr(SWAP_DESCRIPTION))
+            first_label.setText(tr('目标槽位') if replace else tr('目标槽位一'))
+            second_label.setText(tr('来源动作') if replace else tr('目标槽位二'))
             a=self.session.action(model_index,first.currentData(),all_slots=True)
             b_index=second.currentData();cross=False
             if b_index is not None:cross=a.activity!=self.session.action(model_index,b_index,all_slots=True).activity
             valid=b_index is not None
             for slot,index in enumerate((first.currentData(),b_index)):
-                label,combo=timing_boxes[slot];label.setVisible(cross);combo.setVisible(cross)
+                label,combo=timing_boxes[slot]
+                # A replacement keeps the donor slot and its rate, so only the
+                # destination can be matched against an official duration.
+                shown=cross and not (replace and slot==1)
+                label.setVisible(shown);combo.setVisible(shown)
                 combo.clear()
-                if not cross or index is None:continue
+                if not shown or index is None:continue
                 action=self.session.action(model_index,index,all_slots=True)
                 choices=self.session.timing_choices(model_index,index)
                 combo.setEnabled(action.official_index is None)
@@ -570,7 +596,12 @@ class ActionCorrectionInterface(QWidget):
                                  if math.isclose(duration,action.official_duration)),None)
                 if chosen is None and len({duration for _,_,duration in choices})==1 and choices:chosen=1
                 if chosen is not None:combo.setCurrentIndex(chosen)
-            message.setText(tr('事件、IK、淡入淡出等内容一起调换；有官方计时的目标重算 FPS，无计时的目标保留换入动作 FPS。') if valid else tr('没有符合调换规则的另一个槽位。'))
+            if not valid:
+                message.setText(tr('没有符合替换规则的另一个槽位。') if replace else tr('没有符合调换规则的另一个槽位。'))
+            elif replace:
+                message.setText(tr(REPLACE_DESCRIPTION))
+            else:
+                message.setText(tr('事件、IK、淡入淡出等内容一起调换；有官方计时的目标重算 FPS，无计时的目标保留换入动作 FPS。'))
             box.yesButton.setEnabled(valid)
         def fill_second(*_):
             second.blockSignals(True);second.clear()
@@ -588,10 +619,13 @@ class ActionCorrectionInterface(QWidget):
                 if not label.isHidden():
                     if self.session.baseline_action(model_index,index,all_slots=True).official_index is not None:continue
                     if combo.currentData() is not None:slots[index]=combo.currentData()
-            try:self.swap_sequences(first.currentData(),second.currentData(),timing_slots=slots)
+            try:
+                if replace_mode.isChecked():self.replace_sequence(first.currentData(),second.currentData(),timing_slots=slots)
+                else:self.swap_sequences(first.currentData(),second.currentData(),timing_slots=slots)
             except (ValueError,OSError) as error:message.setText(display_text(str(error)));return False
             return True
         first.currentIndexChanged.connect(fill_second);second.currentIndexChanged.connect(refresh_times)
+        swap_mode.toggled.connect(refresh_times);replace_mode.toggled.connect(refresh_times)
         box.validate_callback=apply;fill_second();box.exec()
 
     def set_removed_sequences(self,indices):

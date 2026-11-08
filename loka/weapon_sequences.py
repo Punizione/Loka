@@ -91,6 +91,8 @@ class PlannedSequence:
     reload_helpers: tuple[str, ...] = ()
     reload_helper: bool = False
     source_sequence_map: tuple[tuple[str, str], ...] = ()
+    # Rebuilt body: one animation reference only, no inherited loop or events.
+    reference_only: bool = False
 
 
 @dataclass(frozen=True)
@@ -101,6 +103,15 @@ class SequencePlan:
     excluded_sequences: tuple[str, ...] = ()
     keep_ads: bool = True
     excluded_fire_sequences: tuple[str, ...] = ()
+    # (sequence, source, fps) rows whose source reference rates were kept on purpose.
+    fps_preserved: tuple[tuple[str, str, float], ...] = ()
+    # Reload rows fed by the melee item-pickup loop instead of a firearm reload.
+    reload_substitutes: tuple[str, ...] = ()
+    # Reload rows fed by the idle animation reference when the source has no item loop.
+    reload_fallbacks: tuple[str, ...] = ()
+    # Spared melee actions rewritten onto the target playback layer:
+    # (sequence, source activity, new activity, reason).
+    act_conversions: tuple[tuple[str, str, str, str], ...] = ()
 
 
 _ACTIONS={
@@ -115,6 +126,20 @@ _ACTIONS={
 
 _IDLE_HELPER_ACTIONS=frozenset(('helping_hand_extend','helping_hand_loop','helping_hand_retract',
                                'item_extend','item_loop','item_retract'))
+
+# Melee attack motion: semantic first, Activity second (crowbar swings as
+# ACT_VM_PRIMARYATTACK, knife layers as ACT_VM_HITRIGHT_LAYER).
+_MELEE_ATTACK_SEMANTICS=frozenset(('attack','attack_center','attack_left','attack_right','attack_hard'))
+_MELEE_ATTACK_ACTIVITIES=frozenset(('ACT_VM_HITCENTER','ACT_VM_HITLEFT','ACT_VM_HITRIGHT',
+                                    'ACT_VM_HITCENTER_LAYER','ACT_VM_HITLEFT_LAYER',
+                                    'ACT_VM_HITRIGHT_LAYER','ACT_VM_SHOOT_LAYER',
+                                    'ACT_VM_SWINGHARD','ACT_VM_PRIMARYATTACK'))
+
+
+def _attack_motion(slot,row):
+    if slot is not None and slot.semantic in _MELEE_ATTACK_SEMANTICS:return True
+    activities={(row.activity or '').upper(),(row.source.activity if row.source else '').upper()}
+    return bool(activities & _MELEE_ATTACK_ACTIVITIES)
 
 
 def _helper_idle_motion(source,slot):
@@ -230,7 +255,7 @@ def _timer_slot(slot,profile):
     return partner.layer and (not partner.unused or profile.id=='hunting_rifle' and partner.index==13) and partner.semantic==slot.semantic
 
 
-def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True, fps_match=False, exclude_inspect_fps=False, reload_loop_count=1) -> SequencePlan:
+def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True, fps_match=False, exclude_inspect_fps=False, reload_loop_count=1, melee_attack_fps_preserve=False) -> SequencePlan:
     if type(reload_loop_count) is not int or reload_loop_count<0:
         raise ValueError('换弹 Loop 次数必须为非负整数')
     sources=tuple(sources)
@@ -238,13 +263,22 @@ def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id:
     from .weapon_reload import compose_reload_plan
     plan=compose_reload_plan(plan,sources,source_id,target_id,reload_loop_count)
     source_profile=get_profile(source_id);target_profile=get_profile(target_id)
+    from .weapon_catalog import MELEE_IDS
+    # Feature scope: only a melee to melee conversion keeps authored attack rates.
+    melee_preserve=bool(melee_attack_fps_preserve and source_id in MELEE_IDS and target_id in MELEE_IDS)
     indexes={s.name.lower():i for i,s in enumerate(sources)}
-    rows=[];warnings=list(plan.warnings)
+    rows=[];warnings=list(plan.warnings);preserved=list(plan.fps_preserved)
     for row in plan.sequences:
         slot=target_profile.slots[row.official_index] if row.official_index is not None else None
         source=row.source
         semantic=(slot.semantic if slot else _ACTIONS.get(
             _normalized_timing_activity(row.activity or row.inferred_source_activity or '').removeprefix('ACT_VM_').removesuffix('_LAYER'),''))
+        if row.preserve_source_fps:
+            rows.append(replace(row,fps=round_fps(row.fps)));continue
+        if melee_preserve and source is not None and _attack_motion(slot,row):
+            fps=round_fps(source.fps)
+            rows.append(replace(row,fps=fps,fps_scale=None,fps_scale_ratio=None,preserve_source_fps=True))
+            preserved.append((row.name,source.name,fps));continue
         if exclude_inspect_fps and source is not None and semantic in _IDLE_HELPER_ACTIONS:
             rows.append(replace(row,fps=round_fps(source.fps),fps_scale=None,preserve_source_fps=True));continue
         if row.reload_parts or not fps_match or 'LAYER' not in row.activity.upper():
@@ -268,7 +302,7 @@ def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id:
                 row=replace(row,fps=scaled_fps(source.fps,*ratio),fps_scale=float(scale),fps_scale_ratio=ratio)
         if reason:warnings.append(f'FPS匹配 {row.name}: {reason}，回退原换算规则。')
         rows.append(replace(row,fps=round_fps(row.fps)))
-    return replace(plan,sequences=tuple(rows),warnings=tuple(warnings))
+    return replace(plan,sequences=tuple(rows),warnings=tuple(warnings),fps_preserved=tuple(preserved))
 
 
 def _normalized_timing_activity(activity):
@@ -312,11 +346,14 @@ def _official_timer_fraction(slot,profile):
 
 def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True) -> SequencePlan:
     source_profile=get_profile(source_id);target=get_profile(target_id)
-    from .weapon_catalog import MELEE_IDS
-    if source_id in MELEE_IDS or target_id in MELEE_IDS:
-        if source_id not in MELEE_IDS or target_id not in MELEE_IDS:raise ValueError('近战与枪械不能混合规划')
-        from .weapon_melee_sequences import plan_melee_sequences
-        return plan_melee_sequences(sources,source_profile,target,keep_ads=keep_ads)
+    from .weapon_catalog import MELEE_IDS,SHOTGUN_IDS
+    if source_id in MELEE_IDS:
+        if target_id in MELEE_IDS:
+            from .weapon_melee_sequences import plan_melee_sequences
+            return plan_melee_sequences(sources,source_profile,target,keep_ads=keep_ads)
+        if target_id in SHOTGUN_IDS:raise ValueError('近战武器不能转为霰弹枪')
+    elif target_id in MELEE_IDS:
+        raise ValueError('枪械武器不能转为近战武器')
     sources=tuple(sources)
     referenced={name.lower() for s in sources for name in s.dependencies}
     official_names={slot.name.lower() for slot in source_profile.slots}
@@ -363,13 +400,45 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
             if candidates:
                 return next((i for i in candidates if i in official_sources),candidates[0])
         return None
+    melee_map=None;melee_helpers=None
+    if source_id in MELEE_IDS:
+        from . import weapon_melee_to_firearm as melee_helpers
+        melee_map=melee_helpers.build_map(sources,source_profile)
+        for index,role in melee_map.overrides.items():classified[index]=role
+        warnings.extend(melee_map.warnings)
     dual_reuse=target_id=='dual_pistol' and source_id!='dual_pistol'
     pistol_target=target_id in ('pistol','dual_pistol','pistol_magnum')
     reused={action:common_motion(action,action!='idle') for action in ('fire','idle','reload')}
+    if melee_map is not None and melee_map.fire_timer is not None:reused['fire']=melee_map.fire_timer
     fallback={'reload_empty':'reload','fire_last':'fire','fire_left':'fire',
               'fire_last_left':'fire','dry_idle':'idle','idle_raw':'idle'}
+    reload_substitutes=[];reload_fallbacks=[];act_conversions=[]
     for slot in target.slots:
-        source=None;chosen=None;idle_fallback=False;reference_index=None
+        source=None;chosen=None;idle_fallback=False;reference_index=None;reference_only=False
+        playback_preserve=False
+        # A melee source has no reload motion: the item pickup loop supplies the
+        # animation reference only, so its loop flag and events never carry over.
+        if melee_map is not None and not slot.unused and slot.semantic.startswith('reload'):
+            donor=melee_helpers.reload_source_index(classified,slot.layer)
+            if donor is not None:
+                chosen=donor
+                source,reference_index=melee_helpers.borrow_animation(
+                    melee_helpers.reload_motion(sources[donor]))
+                reference_only=True
+                reload_substitutes.append(slot.name)
+            else:
+                # Official profiles without an item loop still convert: the idle
+                # animation reference supplies the reload motion instead.
+                idle=reused.get('idle')
+                borrowed=None
+                if idle is not None:
+                    borrowed,reference_index=_helper_idle_motion(sources[idle],slot)
+                if borrowed is not None:
+                    chosen=idle;source=borrowed;reference_only=True
+                    reload_fallbacks.append(slot.name)
+                    warnings.append(f'{slot.name} 缺少近战 item_pick_loop，改用 idle 动作引用 {borrowed.name}。')
+                else:
+                    warnings.append(f'{slot.name} 缺少近战 item_pick_loop 且没有可借用的 idle 动画引用，换弹槽无法填充。')
         reuse_action=('fire' if slot.semantic in ('fire','fire_left','fire_last','fire_last_left')
                       else 'idle' if slot.name in ('dry_right_idle','dry_right_idle_layer') else None) if dual_reuse else None
         # Missing pistol specials share one physical ordinary motion across the
@@ -378,7 +447,7 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
                                     or (target_id=='pistol' and slot.semantic=='fire_last')):
             if common_motion(slot.semantic,slot.layer) is None:
                 reuse_action=fallback[slot.semantic]
-        if reuse_action:
+        if source is None and reuse_action:
             chosen=reused[reuse_action]
             if chosen is not None:
                 source=sources[chosen]
@@ -386,11 +455,11 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
                 if reuse_action=='idle':
                     idle,reference_index=_helper_idle_motion(source,slot)
                     if idle is not None:source=idle
-        elif target_id=='hunting_rifle' and slot.index in (12,13):
+        elif source is None and target_id=='hunting_rifle' and slot.index in (12,13):
             chosen=common_motion('reload_empty',slot.layer)
             if chosen is not None:
                 source=sources[chosen];used.add(chosen)
-        elif not slot.unused:
+        elif source is None and not slot.unused:
             actions=[slot.semantic]
             if slot.semantic in fallback:actions.append(fallback[slot.semantic])
             for action in actions:
@@ -408,6 +477,10 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
                     # Borrowing a visible layer for a timer or a different action does not consume it.
                     if classified[chosen][:2]==(slot.semantic,slot.layer):used.add(chosen)
                     break
+        if (source is None and melee_map is not None and not slot.unused
+                and slot.semantic in ('melee','melee_layer') and melee_map.fire_timer is not None):
+            chosen=melee_map.fire_timer;source=sources[chosen]
+            warnings.append(f'{slot.name} 缺少近战推击来源，复用击打组 {source.name}。')
         if source is None and not slot.unused and slot.semantic in _IDLE_HELPER_ACTIONS:
             chosen=reused['idle']
             source,reference_index=_helper_idle_motion(sources[chosen] if chosen is not None else None,slot)
@@ -418,13 +491,21 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
         fps,numframes=_timing(source,target_timing_slot(target,slot) if source is not None else slot)
         notice=_static_timing_warning(source,slot)
         if notice:warnings.append(notice)
+        # A melee attack playback layer keeps the authored rate while the paired
+        # timer follows the official duration; borrowed unrelated motion cannot.
+        if melee_map is not None and source is not None and not slot.unused and melee_helpers.is_attack_playback(slot):
+            if chosen in (melee_map.fire_playback,melee_map.fire_timer):
+                fps=round_fps(source.fps);numframes=None;playback_preserve=True
+            else:
+                warnings.append(f'{slot.name} 播放层来源 {source.name} 无法保留原 FPS，回退计时层 FPS。')
         inferred=source_profile.slots[chosen].activity if source is not None and not source.activity and chosen<len(source_profile.slots) else None
         activity=slot.activity
         result.append(PlannedSequence(slot.name,activity,source,fps,numframes,
                                       source is None,slot.index,inferred,
                                       classified[chosen][1] if source is not None else None,
                                       source_reference_index=reference_index if reference_index is not None else 0 if source is not None and reuse_action else None,
-                                      idle_fallback=idle_fallback))
+                                      idle_fallback=idle_fallback,preserve_source_fps=playback_preserve,
+                                      reference_only=reference_only))
     fire_excluded={i for i,(action,layer,unused) in enumerate(classified)
                    if dual_to_other and action in ('fire_last','fire_last_left')
                    and i not in used and i not in ads_excluded
@@ -450,6 +531,17 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
         reserved.add(name.lower())
         if not alternative:
             activity=compatible.activity if s.activity and compatible and not _extra_activity(s.activity) else s.activity
+        if melee_map is not None and not alternative and s.activity and not _extra_activity(s.activity):
+            # A spared melee action is not an official target slot, so its own
+            # Activity (HIT*/SWINGHARD/SECONDARYATTACK/DRAW) has no firearm layer:
+            # it borrows the target playback layer name, never the timer name.
+            mapped=melee_helpers.extra_activity(action,target)
+            if mapped is not None:
+                if (activity or '')!=mapped:
+                    reason=('playback_layer' if mapped else
+                            'duplicate_idle' if action=='idle' else 'no_playback_slot')
+                    act_conversions.append((name,s.activity,mapped,reason))
+                activity=mapped
         if _misassigned_idle_raw(s,source_profile) is not None:activity=''
         inferred=source_profile.slots[i].activity if not s.activity and i<len(source_profile.slots) else None
         result.append(PlannedSequence(name,activity,
@@ -485,6 +577,10 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
                 # its original motion for RELOAD_EMPTY's distinct target timer.
                 fps,numframes=_timing(donor.source,replace(compatible,hidden=False))
                 result.append(replace(donor,name=name,activity=activity,fps=fps,numframes=numframes))
+    if melee_map is not None and keep_ads:
+        # Melee ADS roots carry HIT*/SHOOT/SECONDARY suffixes a firearm never uses;
+        # their motion is remapped onto the firearm ADS activities.
+        result=list(melee_helpers.remap_ads_rows(result,target,reserved,warnings))
     # Only roots that actually survived planning own dependencies. In particular,
     # removing an ADS root must not keep its private pose helpers alive.
     available={s.name.lower():i for i,s in reversed(tuple(enumerate(sources)))}
@@ -521,9 +617,15 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
         warnings=[notice for notice in warnings if notice not in {
             f'排除无 Activity 的非官方 sequence（来源序号 {i}）: {sources[i].name}'
             for i in retained_dependencies}]
+    preserved=tuple((row.name,row.source.name,round_fps(row.fps)) for row in result
+                    if row.source is not None and row.preserve_source_fps)
     return SequencePlan(tuple(result),tuple(warnings),tuple(missing),
                         tuple(sources[i].name for i in sorted(ads_excluded)),keep_ads,
-                        tuple(sources[i].name for i in sorted(fire_excluded)))
+                        tuple(sources[i].name for i in sorted(fire_excluded)),
+                        fps_preserved=preserved,
+                        reload_substitutes=tuple(reload_substitutes),
+                        reload_fallbacks=tuple(reload_fallbacks),
+                        act_conversions=tuple(act_conversions))
 
 
 def validate_sequence_layout(sequences, target_id: str) -> list[str]:

@@ -165,15 +165,17 @@ def _counterpart(record,target,reference):
     return reference.events[key] if key else None
 
 
-def _variant_pairs(record,target,files,*,rng=None,cache=None):
-    """Map existing variants, then fill extra melee miss/impact tail slots once."""
+def _variant_pairs(record,target,files,*,rng=None,cache=None,fill_tail=False):
+    """Map existing variants, then fill extra miss/impact tail slots once."""
     sources=tuple(p.lower() for p in record.paths);destinations=tuple(p.lower() for p in target.paths)
-    key=(record.owner,record.action,sources,target.owner,target.action,destinations)
+    key=(record.owner,record.action,sources,target.owner,target.action,destinations,bool(fill_tail))
     if cache is not None and key in cache:return cache[key]
     pairs=[(source,destination) for source,destination in zip(sources,destinations) if source in files]
     from .weapon_catalog import MELEE_IDS
-    if (record.owner in MELEE_IDS and target.owner in MELEE_IDS and record.action==target.action
-        and (record.action=='miss' or record.action.startswith('impact')) and len(destinations)>len(sources)):
+    same_melee=(record.owner in MELEE_IDS and target.owner in MELEE_IDS and record.action==target.action)
+    # fill_tail lets a melee source feed a firearm's fire variants of any count.
+    if ((record.action=='miss' or record.action.startswith('impact'))
+        and (fill_tail or same_melee) and len(destinations)>len(sources)):
         supplied=[source for source in sources if source in files]
         if supplied:
             rng=rng if rng is not None else random.SystemRandom()
@@ -229,7 +231,8 @@ def _conversion_reason(record,target,reference,private_wave):
 def plan_audio_conversion(pack_dir,qc_targets,source_profile,*,original_names=None,
                           event_overrides=None,preserve_events=None,extra_wave_requests=(),
                           remove_wave_sources=(),retain_wave_paths=(),target_metadata=None,
-                          ffmpeg_path='',cancelled=None,expected_source_hashes=None):
+                          ffmpeg_path='',cancelled=None,expected_source_hashes=None,rng=None):
+    rng=rng if rng is not None else random.SystemRandom()
     root=Path(pack_dir).resolve();reference=sound_reference()
     if not root.is_dir() or root.name!='pack':raise ValueError('音频转换只能处理独立的 pack 待打包目录')
     if source_profile not in reference.profiles:raise ValueError('没有来源声音配置: '+source_profile)
@@ -317,6 +320,30 @@ def plan_audio_conversion(pack_dir,qc_targets,source_profile,*,original_names=No
             reason=conversion_reason(record,target)
             if reason:preserve(record,reason);continue
             requests.extend(_variant_pairs(record,target,files,cache=variant_pairs))
+
+    # A melee source owns no engine-fired shot wave: fill the target firearm's
+    # fire slots from its miss/impact waves, in the documented priority order.
+    if source_profile in MELEE_IDS and any(target not in MELEE_IDS for _,target in qc_targets):
+        donors=[]
+        for action in ('miss','impactworld','impactflesh'):
+            key=reference.profiles[source_profile].get(action)
+            record=reference.events.get(key) if key else None
+            if record and any(p.lower() in files for p in record.paths):donors.append(record)
+        for target_id in dict.fromkeys(target for _,target in qc_targets):
+            if target_id in MELEE_IDS:continue
+            for action in ('fire','fireincendiary'):
+                key=reference.profiles[target_id].get(action)
+                target_record=reference.events.get(key) if key else None
+                if target_record is None:continue
+                pairs=();chosen=None
+                for donor in donors:
+                    pairs=_variant_pairs(donor,target_record,files,rng=rng,cache=variant_pairs,fill_tail=True)
+                    if pairs:chosen=donor;break
+                if not pairs or chosen is None:continue
+                requests.extend(pairs)
+                plan.decisions.append({'source':chosen.name,'target':target_record.name,'reason':'normal_slot'})
+                message=f'近战源无射击音效，目标 {action} 已用近战 {chosen.action} 音效填充（{len(pairs)} 个变体）。'
+                if message not in plan.warnings:plan.warnings.append(message)
 
     for qc,target_id in qc_targets:
         before=qc.read_bytes();text=before.decode('utf-8');changes=[]

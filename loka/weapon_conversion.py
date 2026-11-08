@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path, PurePosixPath
 from copy import deepcopy
 import secrets
+import random
 import shutil
 import json
 import hashlib
@@ -106,6 +107,8 @@ class ConversionOptions:
     fps_match: bool = False
     exclude_inspect_fps: bool = False
     reload_loop_count: int = 1
+    # Melee to melee only: keep authored attack reference rates, ignore fps_match.
+    melee_attack_fps_preserve: bool = False
 
 
 @dataclass
@@ -420,18 +423,30 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
         effective={}
         for source in gather(primary,set()):effective.setdefault(source.name.lower(),source)
         target_profiles=target_profiles_for(options.target_id)
+        from .weapon_catalog import MELEE_IDS
+        melee_to_firearm=source_profile in MELEE_IDS and options.target_id not in MELEE_IDS
         reports=[];plans={}
         for target_profile in target_profiles:
             plan=plan_sequences(effective.values(),source_profile,target_profile,keep_ads=options.keep_ads,
                                 fps_match=options.fps_match,exclude_inspect_fps=options.exclude_inspect_fps,
-                                reload_loop_count=options.reload_loop_count)
+                                reload_loop_count=options.reload_loop_count,
+                                melee_attack_fps_preserve=options.melee_attack_fps_preserve)
             problems=validate_sequence_layout(plan.sequences,target_profile)
             if problems:raise ValueError('sequence 计划校验失败: '+'; '.join(problems))
             plans[target_profile]=plan
             reports.append({'target_profile':target_profile,'sequences':[asdict(s) for s in plan.sequences],
                             'missing_actions':plan.missing_actions,'warnings':plan.warnings,
                             'excluded_ads_sequences':plan.excluded_sequences,
-                            'excluded_fire_sequences':plan.excluded_fire_sequences})
+                            'excluded_fire_sequences':plan.excluded_fire_sequences,
+                            'melee_to_firearm':melee_to_firearm,
+                            'reload_substitute':list(plan.reload_substitutes),
+                            'reload_fallback':list(plan.reload_fallbacks),
+                            'act_conversion':[{'sequence':name,'from':source_activity,
+                                               'to':target_activity,'reason':reason}
+                                              for name,source_activity,target_activity,reason
+                                              in plan.act_conversions],
+                            'fps_preserved':[{'sequence':name,'source':source,'fps':fps}
+                                             for name,source,fps in plan.fps_preserved]})
             if plan.missing_actions:
                 detail(f'{target_profile} 缺少动作，需要转换阶段处理: '+', '.join(plan.missing_actions))
             for warning in plan.warnings:
@@ -439,11 +454,20 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
                 detail(warning)
             for name in plan.excluded_sequences:detail(f'排除 ADS/MIXED sequence: {name}')
             for name in plan.excluded_fire_sequences:detail(f'排除多余 dryfire sequence: {name}')
+            for name in plan.reload_substitutes:detail(f'换弹取代 {name}: 使用近战 item_pick_loop 动作引用')
+            for name in plan.reload_fallbacks:detail(f'换弹回退 {name}: 缺少 item_pick_loop，改用 idle 动作引用')
+            for name,preserved_source,preserved_fps in plan.fps_preserved:
+                detail(f'保留原 FPS {name} <- {preserved_source}: {format(preserved_fps,".9g")} FPS')
+            for name,source_activity,target_activity,reason in plan.act_conversions:
+                detail(f'附加动作 act 转换 {name}: {source_activity or "（空）"} → '
+                       f'{target_activity or "（空）"}')
         result.removed_ads_sequences=list(dict.fromkeys(name for plan in plans.values() for name in plan.excluded_sequences))
         report_path=work/'v_dec/sequence_plan.json'
         report_path.write_text(json.dumps({'source_view_model':primary,'source_world_model':world,'source_pistol_mode':options.source_pistol_mode,'source_profile':source_profile,'keep_ads':options.keep_ads,
                                          'fps_match':options.fps_match,'exclude_inspect_fps':options.exclude_inspect_fps,
                                          'reload_loop_count':options.reload_loop_count,
+                                         'melee_attack_fps_preserve':options.melee_attack_fps_preserve,
+                                         'melee_to_firearm':melee_to_firearm,
                                          'targets':reports},ensure_ascii=False,indent=2),encoding='utf-8')
         result.sequence_plan_files.append(str(report_path))
         detail(f'已生成 sequence 顺序和时长计划: {report_path}')
@@ -511,6 +535,11 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
                         # animation/sequence constraints. Keep all other origins strict.
                         origin={'delta_post':0,'references':[{'delta':False,'ik':[],
                                 'frames':row.source.frame_count}],'ik_guard':False}
+                    if row.reference_only:
+                        # Only the animation reference survives the substitution: no
+                        # authored loop, events or IK from the melee pickup loop.
+                        origin={'delta_post':0,'references':[{'delta':False,'ik':[],
+                                'frames':row.source.frame_count}],'ik_guard':False}
                     mapped_origins[row.name]=origin
                 semantic_origins[str(qc.resolve())]=mapped_origins
                 audio_targets.append((qc,target_profile))
@@ -539,8 +568,9 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
             sounds=sound_reference()
             metadata_paths={p for profile in target_profiles for name in sounds.profiles[profile].values() for p in sounds.events[name.lower()].paths}
             target_metadata=load_target_metadata(paths=metadata_paths)
+            audio_rng=random.SystemRandom()
             l4n_plan=plan_l4n_conversion(work/'pack',original_view_qcs,target_profiles,source_profile,
-                audio_logic=options.audio_logic,target_metadata=target_metadata,cancelled=cancelled)
+                audio_logic=options.audio_logic,target_metadata=target_metadata,cancelled=cancelled,rng=audio_rng)
             event_overrides={profile:dict(values) for profile,values in l4n_plan.event_overrides.items()}
             preserve_events={profile:set(values) for profile,values in l4n_plan.preserve_events.items()}
             retain_paths=set(l4n_plan.retain_wave_paths)
@@ -591,7 +621,7 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
                 extra_wave_requests=l4n_plan.wave_requests,remove_wave_sources=remove_sources,retain_wave_paths=retain_paths)
             audio_plan=plan_audio_conversion(work/'pack',audio_targets,source_profile,
                 original_names=archive.original_names,target_metadata=target_metadata,cancelled=cancelled,
-                expected_source_hashes=l4n_plan.source_hashes,**l4n_keywords)
+                expected_source_hashes=l4n_plan.source_hashes,rng=audio_rng,**l4n_keywords)
             audio=apply_audio_conversion(audio_plan,cancelled=cancelled)
             result.warnings.extend(audio.warnings)
             result.converted_audio_files=audio.converted_files

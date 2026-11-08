@@ -68,7 +68,7 @@ class WeaponConversionInterface(ScrollArea):
         layout.setSpacing(14)
         layout.setAlignment(Qt.AlignTop)
         layout.addWidget(SubtitleLabel(tr('武器转模'), self))
-        note = CaptionLabel(tr('支持枪械互转和近战互转，处理动作、声音、ADS 和材质/HUD，编译验证后生成同级 VPK。原始解包与待打包内容独立保存。开启保留临时文件可查看转换源、编译日志与验证记录。'), self)
+        note = CaptionLabel(tr('支持枪械互转、近战互转，以及近战转为非霰弹枪枪械，处理动作、声音、ADS 和材质/HUD，编译验证后生成同级 VPK。原始解包与待打包内容独立保存。开启保留临时文件可查看转换源、编译日志与验证记录。'), self)
         note.setWordWrap(True)
         layout.addWidget(note)
 
@@ -128,6 +128,8 @@ class WeaponConversionInterface(ScrollArea):
         self.fps_check.setToolTip(tr('优先使用MOD中的FPS进行换算'))
         self.inspect_fps_check = CheckBox(tr('检视FPS排除'),option_card)
         self.inspect_fps_check.setToolTip(tr('helping_hand、item 系列动作保留原模 FPS，不进行时长换算或 FPS 匹配。'))
+        self.melee_attack_fps_check = CheckBox(tr('近战攻击FPS保留'),option_card)
+        self.melee_attack_fps_check.setToolTip(tr('近战转近战时，攻击类动作保留原 mdl 的 FPS，不进行官方时长换算；优先级高于 FPS匹配。'))
         self.ads_check.setChecked(True)
         self.fadein_check=CheckBox(tr('推击淡入'),option_card)
         self.fadein_check.setChecked(False)
@@ -135,7 +137,8 @@ class WeaponConversionInterface(ScrollArea):
         grid=QGridLayout();grid.setHorizontalSpacing(12);grid.setVerticalSpacing(8)
         for box,row,column in ((self.material_check,0,0),(self.normalize_vmt_check,0,1),(self.ads_check,0,2),
                                (self.l4n_check,1,0),(self.fadein_check,2,0),
-                               (self.fps_check,2,1),(self.inspect_fps_check,2,2),(self.keep_temp_check,3,0)):
+                               (self.fps_check,2,1),(self.inspect_fps_check,2,2),(self.keep_temp_check,3,0),
+                               (self.melee_attack_fps_check,3,1)):
             box.setMinimumWidth(box.fontMetrics().horizontalAdvance(box.text())+28)
             grid.addWidget(box,row,column)
         self.audio_logic_box=ComboBox(option_card)
@@ -144,7 +147,7 @@ class WeaponConversionInterface(ScrollArea):
         self.audio_logic_box.setToolTip(tr('频率优先：优先保留常用音效。\n均衡匹配：保留常用音效并优化时长匹配。\n完整优先：优先减少截断。'))
         self.ik_box=ComboBox(option_card)
         for value,label in IK_HANDLING_LABELS.items():self.ik_box.addItem(tr(label),userData=value)
-        self.ik_box.setToolTip(tr('默认：保留原有IK规则。\n删除：移除IK规则。\n使用源动画：根据动画重新计算接触IK。'))
+        self.ik_box.setToolTip(tr('默认：保留原有IK规则。\n单步源采样保留：保留源模型的触地IK采样曲线，不重新计算接触点。\n删除：移除IK规则。\n使用源动画：根据动画重新计算接触IK。'))
         self.ik_box.setCurrentIndex(1)
         self.audio_logic_box.setMinimumWidth(140)
         self.ik_box.setMinimumWidth(max(self.ik_box.fontMetrics().horizontalAdvance(tr(label)) for label in IK_HANDLING_LABELS.values())+52)
@@ -210,6 +213,7 @@ class WeaponConversionInterface(ScrollArea):
                          (self.l4n_check,config.conversion_l4n),
                          (self.fps_check,config.conversion_fps_match),
                          (self.inspect_fps_check,config.conversion_exclude_inspect_fps),
+                         (self.melee_attack_fps_check,config.conversion_melee_attack_fps_preserve),
                          (self.fadein_check,config.conversion_melee_layer_fadein_fix)):
             box.setChecked(config.get(item))
             box.toggled.connect(lambda checked,setting=item:config.set(setting,checked))
@@ -221,7 +225,7 @@ class WeaponConversionInterface(ScrollArea):
 
     def _fit_option_labels(self):
         changed=False
-        for box in (self.material_check,self.normalize_vmt_check,self.ads_check,self.keep_temp_check,self.l4n_check,self.fadein_check,self.fps_check,self.inspect_fps_check):
+        for box in (self.material_check,self.normalize_vmt_check,self.ads_check,self.keep_temp_check,self.l4n_check,self.fadein_check,self.fps_check,self.inspect_fps_check,self.melee_attack_fps_check):
             box.ensurePolished();width=box.fontMetrics().horizontalAdvance(box.text())+28
             if box.minimumWidth()!=width:box.setMinimumWidth(width);changed=True
         self.ik_box.ensurePolished()
@@ -377,17 +381,18 @@ class WeaponConversionInterface(ScrollArea):
         self.run_button.setEnabled(not self._busy and self._valid_output)
 
     def set_advanced(self,checked):
-        for box in (self.keep_temp_check,self.fps_check,self.inspect_fps_check):
+        for box in (self.keep_temp_check,self.fps_check,self.inspect_fps_check,self.melee_attack_fps_check):
             box.setVisible(bool(checked))
             box.setEnabled(bool(checked) and not self._busy)
 
     def set_busy(self, busy):
         self._busy = busy
-        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.reload_loop_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check,self.fps_check,self.inspect_fps_check):
+        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.reload_loop_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check,self.fps_check,self.inspect_fps_check,self.melee_attack_fps_check):
             widget.setEnabled(not busy)
         self.keep_temp_check.setEnabled(not busy and bool(self._advanced()))
         self.fps_check.setEnabled(not busy and bool(self._advanced()))
         self.inspect_fps_check.setEnabled(not busy and bool(self._advanced()))
+        self.melee_attack_fps_check.setEnabled(not busy and bool(self._advanced()))
         self.cancel_button.setEnabled(busy)
         self._refresh_correction_button()
         self.update_preview()

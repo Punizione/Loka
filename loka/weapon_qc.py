@@ -552,13 +552,25 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
         if row.source_reference_index is not None:
             command=replace(command,text=_single_source_reference(command.text,row.source_reference_index))
         if row.idle_fallback:
-            ref=_leading_refs(command.text)[0]
+            leading=_leading_refs(command.text)
+            if not leading:raise ValueError('来源 sequence 没有动画引用: '+row.source.name)
+            ref=leading[0]
             named=doc.animations.get(ref.value.lower())
             physical=_tokens(named.text)[2].value if named else ref.value
             # Borrow the SMD itself, not the named animation's modifiers or the
             # idle sequence's layers, blends, events and IK directives.
             body=_quote(physical)+'\n\tfps '+fps_text(row.source.fps)
             if slot.loop:body+='\n\tloop'
+            command=replace(command,text='$sequence '+_quote(command.name)+' {\n '+body+'\n}')
+        if row.reference_only:
+            # A substituted motion contributes one animation reference only. The
+            # melee pickup loop's own loop flag and events must not reach reload.
+            leading=_leading_refs(command.text)
+            if not leading:raise ValueError('来源 sequence 没有动画引用: '+row.source.name)
+            ref=leading[0]
+            named=doc.animations.get(ref.value.lower())
+            physical=_tokens(named.text)[2].value if named else ref.value
+            body=_quote(physical)+'\n\tfps '+fps_text(row.source.fps)
             command=replace(command,text='$sequence '+_quote(command.name)+' {\n '+body+'\n}')
         opts=_read_options(command.text)
         source_refs=_leading_refs(command.text)

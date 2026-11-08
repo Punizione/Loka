@@ -60,15 +60,18 @@ SHOTGUN_IDS = frozenset(('pumpshotgun','shotgun_chrome','autoshotgun','shotgun_s
 def allowed_targets(source_id: str) -> tuple[Weapon, ...]:
     source=get_weapon(source_id)
     source_family=target_family_id(source_id)
+    # Melee may convert into a firearm, but never into a shotgun: the shotgun
+    # reload loop/end slots have no melee equivalent.
+    melee_to_firearm=source.category=='melee'
     return tuple(w for w in TARGET_WEAPONS if target_family_id(w.id)!=source_family
-                 and w.category==source.category
+                 and (w.category==source.category or (melee_to_firearm and w.category=='firearm'))
                  and (source_family in SHOTGUN_IDS or target_family_id(w.id) not in SHOTGUN_IDS))
 
 
 def validate_target(source_id: str, target_id: str) -> None:
     get_weapon(target_id)
     if not any(w.id==target_id for w in allowed_targets(source_id)):
-        raise ValueError('目标不能与来源相同；枪械和近战分别互转；非霰弹枪不能转为霰弹枪')
+        raise ValueError('目标不能与来源相同；枪械和近战分别互转；近战只能转为非霰弹枪枪械；非霰弹枪不能转为霰弹枪')
 
 
 def get_weapon(id: str) -> Weapon:

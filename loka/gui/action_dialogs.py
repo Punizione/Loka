@@ -52,16 +52,32 @@ class UnsavedActionDialog(ActionFormDialog):
 
 class SequenceSwapComparisonDialog(ActionFormDialog):
     """Read-only final draft permutation; Activity belongs to the target slot."""
-    def __init__(self,session,model_index,parent):
-        super().__init__(tr('序列调换列表对比'),parent,confirm_text=tr('关闭'),width=1060)
+    def __init__(self,session,model_index,parent,*,replace_mode=None):
+        stamps=(session.active_replace_ops() if hasattr(session,'active_replace_ops')
+                else getattr(session,'replace_ops',()))
+        keys={key for key in getattr(session,'assignments',{}) if key[0]==model_index}
+        replaced={(op[0],op[1]) for op in stamps}&keys
+        # A draft may hold both kinds at once; then neither wording alone is true.
+        mixed=bool(replaced) and len(replaced)<len(keys)
+        if replace_mode is None:replace_mode=bool(replaced)
+        replace_mode=replace_mode and not mixed
+        super().__init__(tr('序列调换或替换列表对比') if mixed else
+                         tr('序列替换列表对比') if replace_mode else tr('序列调换列表对比'),
+                         parent,confirm_text=tr('关闭'),width=1060)
         description=BodyLabel(tr('左侧为当前成品，右侧为当前草稿的最终动作来源及 FPS。'
+            '槽位名称、Activity 和顺位保持不变；调换会互换两个槽位的动作，替换会舍弃目标槽位的原动作；保存后以新成品为基准。')
+            if mixed else tr('左侧为当前成品，右侧为当前草稿的最终动作来源及 FPS。'
+            '槽位名称、Activity 和顺位保持不变；来源槽位保留原动作，目标槽位原动作被舍弃；保存后以新成品为基准。')
+            if replace_mode else tr('左侧为当前成品，右侧为当前草稿的最终动作来源及 FPS。'
             '槽位名称、Activity 和顺位保持不变；保存后以新成品为基准。'),self.widget)
         description.setWordWrap(True);self.viewLayout.addWidget(description)
         model=session.models[model_index]
         actions=sorted((a for a in model.swap_actions or model.actions if a.activity),key=lambda a:a.index)
         self.table=TableWidget(self.widget)
         self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels([tr('顺位'),tr('槽位 Activity'),tr('原动作'),tr('调换后动作'),tr('状态')])
+        self.table.setHorizontalHeaderLabels([tr('顺位'),tr('槽位 Activity'),tr('原动作'),
+                                              tr('调换或替换后动作') if mixed else
+                                              tr('替换后动作') if replace_mode else tr('调换后动作'),tr('状态')])
         self.table.setRowCount(len(actions));self.table.verticalHeader().hide()
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -71,7 +87,8 @@ class SequenceSwapComparisonDialog(ActionFormDialog):
             source=session.baseline_action(model_index,session.source_index(model_index,original.index),all_slots=True)
             rate=session.effective_fps(model_index,original.index)
             changed=source.index!=original.index
-            state=tr('已调换') if changed else tr('FPS 改动') if round_fps(rate)!=round_fps(original.fps) else tr('未改动')
+            if changed:state=tr('已替换') if (model_index,original.index) in replaced else tr('已调换')
+            else:state=tr('FPS 改动') if round_fps(rate)!=round_fps(original.fps) else tr('未改动')
             if (model_index,original.index) in getattr(session,'removed_sequences',()):state=tr('已剔除');changed=True
             texts=(str(original.index),original.activity,
                    original.name+' · '+fps_text(original.fps)+' FPS',

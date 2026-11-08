@@ -345,20 +345,29 @@ def _authored_empty_reload(activity,profile_id):
     return profile_id not in MELEE_IDS|SHOTGUN_IDS and activity==expected
 
 
+# Pickup/helping-hand loop playback layers stay listed in action correction even
+# when the target profile has no such slot (e.g. knife has no item_* slot at all),
+# so converted extra actions remain visible and editable.
+_ALWAYS_LISTED_ACTIVITIES=frozenset(('ACT_VM_ITEMPICKUP_LOOP_LAYER','ACT_VM_HELPINGHAND_LOOP_LAYER'))
+
+
 def _playback_role(activity, profile_id, slot):
     if activity not in _rules()['activities']:
         return None
+    listed = activity in _ALWAYS_LISTED_ACTIVITIES
     base = _base_activity(activity)
     melee = profile_id in MELEE_IDS
     if base.startswith(('ACT_VM_HIT', 'ACT_VM_SHOOT', 'ACT_VM_SWINGHARD')) and not melee:
         # Hunting rifles use the explicit SHOOT_SNIPER_LAYER Activity.
         if activity != 'ACT_VM_SHOOT_SNIPER_LAYER':
-            return None
+            return 'activity_only' if listed else None
     if 'SWINGHARD' in base or activity in {'ACT_FOURTH_VM_IDLE_TO_NEXT', 'MIXED_ACT_FOURTH_VM_IDLE_TO_NEXT', 'MIXED_ACT_FOURTH_VM_LOWERED_TO_NEXT'}:
-        return None
+        return 'activity_only' if listed else None
     if slot is not None:
         role = _rules()['profiles'][profile_id][slot.index]['role']
-        return role if role in {'playback', 'playback_timer', 'conditional_playback'} else None
+        if role in {'playback', 'playback_timer', 'conditional_playback'}:
+            return role
+        return 'activity_only' if listed else None
     conditional = activity.startswith(('MIXED_', 'ACT_PRIMARY_', 'ACT_SECONDARY_', 'ACT_TERTIARY_', 'ACT_FOURTH_')) or activity in {'ACT_VM_FIDGET', 'ACT_VM_MIXED_ON', 'ACT_VM_MIXED_OFF'}
     if conditional:
         return 'conditional_playback'
@@ -370,6 +379,8 @@ def _playback_role(activity, profile_id, slot):
         return 'playback'
     if _authored_empty_reload(activity,profile_id):
         return 'conditional_playback'
+    if listed:
+        return 'activity_only'
     return None
 
 

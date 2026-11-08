@@ -77,6 +77,7 @@ class CorrectionSession:
         self.models = ()
         self.updates = {}
         self.assignments = {}
+        self.replace_ops = []
         self.removed_sequences = set()
         self.timing_overrides = {}
         self._preview_models = {}
@@ -272,15 +273,7 @@ class CorrectionSession:
             # A missing timer is not a ban on moving the action. Keep that
             # destination's incoming FPS; never invent a limit from an unused
             # partner layer or an unrelated official animation.
-            if durations and preview is None:
-                from .action_preview import PreviewModel
-                if model_index not in self._preview_models:
-                    self._preview_models[model_index]=PreviewModel.load(self.models[model_index].model_path)
-                    from .action_reload_preview import configure_session_reload_preview
-                    configure_session_reload_preview(self,model_index,self._preview_models[model_index])
-                    from .action_qc_preview import configure_session_qc_preview
-                    configure_session_qc_preview(self,model_index,self._preview_models[model_index])
-                preview=self._preview_models[model_index]
+            if durations and preview is None:preview=self._ensure_preview(model_index)
             for destination,donor in ((a,b),(b,a)):
                 if destination.index not in durations:continue
                 source=self.source_index(model_index,donor.index)
@@ -297,11 +290,61 @@ class CorrectionSession:
             if destination==source:self.assignments.pop(key,None)
             else:self.assignments[key]=source
             self.updates.pop(key,None)
+            self.replace_ops=[op for op in self.replace_ops if op[:2]!=key]
         for destination,rate in rates.items():self._set_fps(model_index,destination,rate,all_slots=True)
         for destination,timing in selected_timings.items():
             key=(model_index,destination)
             if timing==dict(self.models[model_index].timing_indexes).get(destination):self.timing_overrides.pop(key,None)
             else:self.timing_overrides[key]=timing
+
+    def _ensure_preview(self,model_index):
+        """Load once the preview model that measures official-duration matching."""
+        if model_index not in self._preview_models:
+            from .action_preview import PreviewModel
+            self._preview_models[model_index]=PreviewModel.load(self.models[model_index].model_path)
+            from .action_reload_preview import configure_session_reload_preview
+            configure_session_reload_preview(self,model_index,self._preview_models[model_index])
+            from .action_qc_preview import configure_session_qc_preview
+            configure_session_qc_preview(self,model_index,self._preview_models[model_index])
+        return self._preview_models[model_index]
+
+    def replace_sequence(self,model_index,destination,donor,*,preview=None,timing_slots=None):
+        from .action_swaps import validate_replace_map, validate_swap_pair
+        if (model_index,destination) in self.removed_sequences or (model_index,donor) in self.removed_sequences:
+            raise ValueError('已剔除的槽位不能参与替换，请先恢复该槽位。')
+        if destination==donor:raise ValueError('请选择不同的目标与来源动作。')
+        validate_replace_map({destination:donor})
+        target=self.action(model_index,destination,all_slots=True)
+        source=self.action(model_index,donor,all_slots=True)
+        validate_swap_pair(target,source,self.models[model_index].profile_id)
+        # The donor slot keeps its payload and its rate; only the destination moves.
+        rate=self.effective_fps(model_index,donor)
+        requested=(timing_slots or {}).get(destination)
+        duration=target.official_duration
+        if requested is not None:
+            timed=with_timing_reference(target,self.models[model_index].profile_id,requested)
+            duration=timed.official_duration
+        if duration is not None and math.isfinite(duration) and duration>0:
+            if preview is None:preview=self._ensure_preview(model_index)
+            donor_source=self.source_index(model_index,donor)
+            donor_fps=self.baseline_action(model_index,donor_source,all_slots=True).fps
+            timeline=preview.timeline(donor_source,rate_scale=rate/donor_fps)
+            if timeline.duration<=0:raise ValueError('静止动作没有可匹配官方时长的播放区间。')
+            rate=scaled_fps(rate,timeline.duration,duration)
+        if not 0<round_fps(rate)<=100000:raise ValueError('替换后 FPS 超出可编辑范围。')
+        key=(model_index,destination)
+        # A donor already reached through an earlier mapping may resolve to this
+        # very slot; dropping the key keeps every stored pair a real replacement.
+        incoming=self.source_index(model_index,donor)
+        if incoming==destination:self.assignments.pop(key,None)
+        else:self.assignments[key]=incoming
+        self.updates.pop(key,None)
+        self.replace_ops=[op for op in self.replace_ops if op[:2]!=(model_index,destination)]
+        if key in self.assignments:self.replace_ops.append((model_index,destination,donor))
+        self._set_fps(model_index,destination,rate,all_slots=True)
+        if requested is not None:
+            if requested==dict(self.models[model_index].timing_indexes).get(destination):self.timing_overrides.pop(key,None)
+            else:self.timing_overrides[key]=requested
 
     def set_fps(self, model_index, sequence_index, fps):
         return self._set_fps(model_index,sequence_index,fps)
@@ -328,6 +371,10 @@ class CorrectionSession:
         return edits+tuple(FpsChange(i,self.models[i],self.models[i].sequence_slots[index],0,0,True)
                            for i,index in sorted(self.removed_sequences))
 
+    def active_replace_ops(self):
+        """Replacement stamps whose assignment is still part of the draft."""
+        return tuple(op for op in self.replace_ops if (op[0], op[1]) in self.assignments)
+
     def set_removals(self,model_index,indices):
         from .action_removal import stage_removals
         stage_removals(self,model_index,indices)
@@ -335,6 +382,7 @@ class CorrectionSession:
     def discard(self):
         self.updates.clear()
         self.assignments.clear()
+        self.replace_ops.clear()
         self.removed_sequences.clear()
         self.timing_overrides.clear()
 
