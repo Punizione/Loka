@@ -1604,7 +1604,7 @@ class _AnimationReaderBase:
                 if data.theSectionFrameMinFrameCount >= an_animation_desc.frameCount:
                     data.theSectionFrameMinFrameCount = an_animation_desc.frameCount - 1
 
-                # FROM simplify.cpp:
+                #
                 #   panim->numsections = (int)(panim->numframes / panim->sectionframes) + 2;
                 # NOTE: it is unclear why "+ 2" is used in studiomdl.
                 section_count = (
@@ -1718,8 +1718,8 @@ class _AnimationReaderBase:
 
             an_animation_desc.theName = reader.read_null_terminated_string()
 
-            # NOTE: found in Garry's Mod garrysmod_dir.vpk
-            # "\models\m_anm.mdl": "a_../combine_soldier_xsi/Hold_AR2_base.smd"
+            #
+            #
             if an_animation_desc.theName.startswith("a_../") or an_animation_desc.theName.startswith(
                 "a_..\\"
             ):

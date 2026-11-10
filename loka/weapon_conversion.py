@@ -109,6 +109,8 @@ class ConversionOptions:
     reload_loop_count: int = 1
     # Melee to melee only: keep authored attack reference rates, ignore fps_match.
     melee_attack_fps_preserve: bool = False
+    # Melee to firearm only: reload playback keeps the item-loop reference FPS.
+    melee_reload_fps_preserve: bool = False
 
 
 @dataclass
@@ -430,7 +432,8 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
             plan=plan_sequences(effective.values(),source_profile,target_profile,keep_ads=options.keep_ads,
                                 fps_match=options.fps_match,exclude_inspect_fps=options.exclude_inspect_fps,
                                 reload_loop_count=options.reload_loop_count,
-                                melee_attack_fps_preserve=options.melee_attack_fps_preserve)
+                                melee_attack_fps_preserve=options.melee_attack_fps_preserve,
+                                melee_reload_fps_preserve=options.melee_reload_fps_preserve)
             problems=validate_sequence_layout(plan.sequences,target_profile)
             if problems:raise ValueError('sequence 计划校验失败: '+'; '.join(problems))
             plans[target_profile]=plan
@@ -467,6 +470,7 @@ def preprocess_weapon_package(options: ConversionOptions, *, on_stage=None, on_d
                                          'fps_match':options.fps_match,'exclude_inspect_fps':options.exclude_inspect_fps,
                                          'reload_loop_count':options.reload_loop_count,
                                          'melee_attack_fps_preserve':options.melee_attack_fps_preserve,
+                                         'melee_reload_fps_preserve':options.melee_reload_fps_preserve,
                                          'melee_to_firearm':melee_to_firearm,
                                          'targets':reports},ensure_ascii=False,indent=2),encoding='utf-8')
         result.sequence_plan_files.append(str(report_path))

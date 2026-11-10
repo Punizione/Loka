@@ -84,7 +84,7 @@ class VmtParseEvent:
     roots:int=0
 
 
-def lex_vmt(data,*,max_tokens=200000):
+def lex_vmt(data,*,max_tokens=200000,single_line_strings=False):
     if not isinstance(data,bytes):raise TypeError('VMT 输入必须为 bytes')
     codec=encoding(data);tokens=[];comments=[];i=3 if data.startswith(b'\xef\xbb\xbf') else 0
     ends={};decoder=codecs.getincrementaldecoder(codec)();start=i
@@ -112,9 +112,10 @@ def lex_vmt(data,*,max_tokens=200000):
             i+=1
             while i<len(data):
                 if data[i]==34:break
+                if single_line_strings and data[i] in b'\r\n':break
                 if data[i]==92 and i+1<len(data) and data[i+1]==34:i+=2
                 else:i=ends[i]
-            closed=i<len(data)
+            closed=i<len(data) and data[i]==34
             tokens.append(VmtToken(data[start+1:i].decode(codec),start,i+1 if closed else i,True,closed))
             if closed:i+=1
         elif data[i] in b'{}':

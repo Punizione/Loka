@@ -255,7 +255,7 @@ def _timer_slot(slot,profile):
     return partner.layer and (not partner.unused or profile.id=='hunting_rifle' and partner.index==13) and partner.semantic==slot.semantic
 
 
-def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True, fps_match=False, exclude_inspect_fps=False, reload_loop_count=1, melee_attack_fps_preserve=False) -> SequencePlan:
+def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True, fps_match=False, exclude_inspect_fps=False, reload_loop_count=1, melee_attack_fps_preserve=False, melee_reload_fps_preserve=False) -> SequencePlan:
     if type(reload_loop_count) is not int or reload_loop_count<0:
         raise ValueError('换弹 Loop 次数必须为非负整数')
     sources=tuple(sources)
@@ -263,9 +263,11 @@ def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id:
     from .weapon_reload import compose_reload_plan
     plan=compose_reload_plan(plan,sources,source_id,target_id,reload_loop_count)
     source_profile=get_profile(source_id);target_profile=get_profile(target_id)
-    from .weapon_catalog import MELEE_IDS
+    from .weapon_catalog import MELEE_IDS,SHOTGUN_IDS
     # Feature scope: only a melee to melee conversion keeps authored attack rates.
     melee_preserve=bool(melee_attack_fps_preserve and source_id in MELEE_IDS and target_id in MELEE_IDS)
+    reload_preserve=bool(melee_reload_fps_preserve and source_id in MELEE_IDS
+                         and target_id not in MELEE_IDS and target_id not in SHOTGUN_IDS)
     indexes={s.name.lower():i for i,s in enumerate(sources)}
     rows=[];warnings=list(plan.warnings);preserved=list(plan.fps_preserved)
     for row in plan.sequences:
@@ -273,6 +275,12 @@ def plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id:
         source=row.source
         semantic=(slot.semantic if slot else _ACTIONS.get(
             _normalized_timing_activity(row.activity or row.inferred_source_activity or '').removeprefix('ACT_VM_').removesuffix('_LAYER'),''))
+        if (reload_preserve and source is not None and row.name not in plan.reload_fallbacks
+                and _reload_fps_playback(row.activity)):
+            fps=round_fps(source.fps)
+            rows.append(replace(row,fps=fps,numframes=None,fps_scale=None,fps_scale_ratio=None,
+                                preserve_source_fps=True))
+            preserved.append((row.name,source.name,fps));continue
         if row.preserve_source_fps:
             rows.append(replace(row,fps=round_fps(row.fps)));continue
         if melee_preserve and source is not None and _attack_motion(slot,row):
@@ -312,6 +320,15 @@ def _normalized_timing_activity(activity):
     return activity.replace('_SNIPER','').replace('ACT_VM_SHOOT','ACT_VM_PRIMARYATTACK')
 
 
+def _reload_fps_playback(activity):
+    normalized=_normalized_timing_activity(activity)
+    if normalized=='ACT_VM_RELOAD_LAYER':return True
+    # ADS reloads are playback even when their Activity omits the _LAYER
+    # suffix, including reloads donated by melee ADS inspect animations.
+    return (_extra_activity(activity) and
+            (normalized=='ACT_VM_RELOAD' or normalized.startswith('ACT_VM_RELOAD_')))
+
+
 def _official_timing_slot(source,profile,index):
     labels={source.name.lower(),(source.original_name or source.name).lower()}
     activity=_normalized_timing_activity(source.activity)
@@ -342,6 +359,47 @@ def _official_timer_fraction(slot,profile):
     if slot.unused or slot.loop or slot.flexible or not slot.end_frame or not slot.fps:return None
     duration=Fraction(str(slot.end_frame))/Fraction(str(slot.fps))
     return duration if math.isfinite(float(duration)) and duration>0 else None
+
+
+def _retain_sequence_dependencies(rows, sources, warnings, *, excluded=()):
+    """Retain symbols reached from full surviving sequences in either planner.
+
+    A borrowed idle/reference-only row has no authored layers. If the same
+    source also survives as a full row, that row still owns its dependencies.
+    """
+    rows=list(rows);sources=tuple(sources);warnings=list(warnings)
+    blocked=set(excluded)
+    available={source.name.lower():i for i,source in reversed(tuple(enumerate(sources)))}
+    full=[row.source for row in rows if row.source is not None
+          and not row.reference_only and not row.idle_fallback]
+    represented={source.name.lower() for source in full}
+    reserved={row.name.lower() for row in rows}
+    pending=list(full);visited=set();retained=set()
+    while pending:
+        source=pending.pop();key=source.name.lower()
+        if key in visited:continue
+        visited.add(key)
+        for dependency in source.dependencies:
+            index=available.get(dependency.lower())
+            if index is None:raise ValueError(f'sequence {source.name} 引用了不存在的 sequence: {dependency}')
+            if index in blocked:continue
+            child=sources[index];pending.append(child)
+            if child.name.lower() in represented:continue
+            if not child.name or any(c in child.name for c in '\r\n\x00"'):
+                raise ValueError(f'无效的依赖 sequence 名称: {child.name!r}')
+            if child.frame_count<1 or not math.isfinite(child.fps) or child.fps<=0:
+                raise ValueError(f'sequence 帧数/FPS 无效: {child.name}')
+            name=child.name
+            if name.lower() in reserved:
+                stem=name+'_variant';n=1
+                while f'{stem}_{n}'.lower() in reserved:n+=1
+                name=f'{stem}_{n}'
+            reserved.add(name.lower());represented.add(child.name.lower());retained.add(index)
+            rows.append(PlannedSequence(name,child.activity,child,child.fps,None,False,None,
+                                        source_layer=False))
+    removed_warnings={f'排除无 Activity 的非官方 sequence（来源序号 {i}）: {sources[i].name}'
+                      for i in retained}
+    return rows,[notice for notice in warnings if notice not in removed_warnings]
 
 
 def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id: str, *, keep_ads=True) -> SequencePlan:
@@ -401,9 +459,11 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
                 return next((i for i in candidates if i in official_sources),candidates[0])
         return None
     melee_map=None;melee_helpers=None
+    ordinary_sources={i for i,source in enumerate(sources) if i not in excluded
+                      and i not in ads_excluded and not _extra_activity(source.activity)}
     if source_id in MELEE_IDS:
         from . import weapon_melee_to_firearm as melee_helpers
-        melee_map=melee_helpers.build_map(sources,source_profile)
+        melee_map=melee_helpers.build_map(sources,source_profile,eligible=ordinary_sources)
         for index,role in melee_map.overrides.items():classified[index]=role
         warnings.extend(melee_map.warnings)
     dual_reuse=target_id=='dual_pistol' and source_id!='dual_pistol'
@@ -419,7 +479,7 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
         # A melee source has no reload motion: the item pickup loop supplies the
         # animation reference only, so its loop flag and events never carry over.
         if melee_map is not None and not slot.unused and slot.semantic.startswith('reload'):
-            donor=melee_helpers.reload_source_index(classified,slot.layer)
+            donor=melee_helpers.reload_source_index(classified,slot.layer,eligible=ordinary_sources)
             if donor is not None:
                 chosen=donor
                 source,reference_index=melee_helpers.borrow_animation(
@@ -581,42 +641,8 @@ def _plan_sequences(sources: Iterable[SourceSequence], source_id: str, target_id
         # Melee ADS roots carry HIT*/SHOOT/SECONDARY suffixes a firearm never uses;
         # their motion is remapped onto the firearm ADS activities.
         result=list(melee_helpers.remap_ads_rows(result,target,reserved,warnings))
-    # Only roots that actually survived planning own dependencies. In particular,
-    # removing an ADS root must not keep its private pose helpers alive.
-    available={s.name.lower():i for i,s in reversed(tuple(enumerate(sources)))}
-    represented={row.source.name.lower() for row in result if row.source is not None}
-    pending=[row.source for row in result if row.source is not None]
-    visited=set();retained_dependencies=set()
-    while pending:
-        source=pending.pop()
-        key=source.name.lower()
-        if key in visited:continue
-        visited.add(key)
-        for dependency in source.dependencies:
-            index=available.get(dependency.lower())
-            if index is None:raise ValueError(f'sequence {source.name} 引用了不存在的 sequence: {dependency}')
-            if index in ads_excluded or index in fire_excluded:continue
-            child=sources[index];pending.append(child)
-            if child.name.lower() in represented:continue
-            if not child.name or any(c in child.name for c in '\r\n\x00"'):
-                raise ValueError(f'无效的依赖 sequence 名称: {child.name!r}')
-            if child.frame_count<1 or not math.isfinite(child.fps) or child.fps<=0:
-                raise ValueError(f'sequence 帧数/FPS 无效: {child.name}')
-            name=child.name
-            if name.lower() in reserved:
-                stem=name+'_variant';n=1
-                while f'{stem}_{n}'.lower() in reserved:n+=1
-                name=f'{stem}_{n}'
-            reserved.add(name.lower());represented.add(child.name.lower())
-            retained_dependencies.add(index)
-            # A referenced helper is a symbol, never a candidate for an official
-            # action or an excuse to infer Activity from its source position.
-            result.append(PlannedSequence(name,child.activity,child,child.fps,None,False,None,
-                                          source_layer=False))
-    if retained_dependencies:
-        warnings=[notice for notice in warnings if notice not in {
-            f'排除无 Activity 的非官方 sequence（来源序号 {i}）: {sources[i].name}'
-            for i in retained_dependencies}]
+    result,warnings=_retain_sequence_dependencies(result,sources,warnings,
+                                                  excluded=ads_excluded|fire_excluded)
     preserved=tuple((row.name,row.source.name,round_fps(row.fps)) for row in result
                     if row.source is not None and row.preserve_source_fps)
     return SequencePlan(tuple(result),tuple(warnings),tuple(missing),

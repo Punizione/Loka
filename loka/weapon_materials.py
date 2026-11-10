@@ -10,7 +10,7 @@ import os
 from .weapon_catalog import get_weapon
 from .vpk import safe_archive_path
 from .weapon_qc import _tokens,parse_qc,_patch,_resource_tokens
-from .material_text import patch_material,resource_key,material_pairs,TEXTURES,MATERIALS
+from .material_text import patch_material,resource_key,material_pairs,encoding,TEXTURES,MATERIALS
 from .pcf_materials import patch_pcf_materials,pcf_attributes
 from .vmt_normalize import normalize_vmt as normalize_vmt_bytes,normalized_material_pairs,patch_normalized_material
 
@@ -328,8 +328,18 @@ def plan_material_conversion(pack_dir,qc_paths,source_id,target_id,*,isolate=Fal
                                     reference=resource_key(value,'.vmt')
                                     if reference in mapping:retained.add(reference)
             except ValueError:
-                retained.update(mapping)
-                plan.warnings.append('无法完整核对未修改资源的 HUD 依赖，保留旧 HUD 副本: '+key)
+                # A malformed model material cannot depend on a HUD name that
+                # never appears in its bytes. Keep only potential dependencies,
+                # rather than letting one unrelated VMT retain every old icon.
+                if key.endswith('.vmt'):
+                    text=raw.decode(encoding(raw)).replace('\\','/').lower()
+                    possible={source for source in mapping if source[10:-4] in text}
+                else:
+                    # A broken binary particle table has no reliable encoding.
+                    possible={source for source in mapping if PurePosixPath(source).stem.encode() in raw.lower()}
+                retained.update(possible)
+                if possible:
+                    plan.warnings.append('无法完整核对未修改资源的 HUD 依赖，保留可能引用的旧 HUD 副本: '+key)
         todo=list(retained);seen=set()
         while todo:
             source=todo.pop()

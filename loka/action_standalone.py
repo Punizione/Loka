@@ -218,6 +218,7 @@ class StandaloneCorrectionSession(CorrectionSession):
         session.pack_dir = _pack_root(model)
         session.updates = {}
         session.assignments = {}
+        session.replace_ops = []
         session.removed_sequences = set()
         session.timing_overrides = {}
         session._preview_models = {}

@@ -31,14 +31,7 @@ EVENT_OPTIONS_LENGTH = 64
 # ---------------------------------------------------------------------------
 
 class SourceMdlAutoLayerVB(SourceMdlAutoLayer):
-    """``SourceMdlAutoLayer`` with the parser's VB field names as aliases.
-
-    ``mdl_data.SourceMdlAutoLayer`` names its fields after ``studio.h``
-    (``iSequence``/``iPose``/``start``/``peak``/``tail``/``end``) whereas
-    ``ReadAutoLayers`` and the QC writer use ``sequenceIndex``/``poseIndex``/
-    ``influenceStart``/``influencePeak``/``influenceTail``/``influenceEnd``.
-    Both spellings refer to the same storage.
-    """
+    "``SourceMdlAutoLayer`` with the parser's VB field names as aliases.\n\n    (``iSequence``/``iPose``/``start``/``peak``/``tail``/``end``) whereas\n    ``ReadAutoLayers`` and the QC writer use ``sequenceIndex``/``poseIndex``/\n    ``influenceStart``/``influencePeak``/``influenceTail``/``influenceEnd``.\n    Both spellings refer to the same storage."
 
     @property
     def sequenceIndex(self) -> int:
@@ -354,7 +347,7 @@ class SourceMdlFile49SequenceMixin:
             a_seq_desc.theAutoLayers.append(an_auto_layer)
 
             # NOTE: NaN influences are changed to 0.  Needed for
-            # HL2DM\HL2\hl2_misc_dir.vpk\models\combine_soldier_anims.mdl "Man_Gun".
+            #
             if math.isnan(an_auto_layer.influenceStart):
                 an_auto_layer.influenceStart = 0.0
             if math.isnan(an_auto_layer.influencePeak):

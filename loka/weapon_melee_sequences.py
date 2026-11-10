@@ -4,7 +4,7 @@ import math,random
 from .weapon_sequences import (PlannedSequence,SequencePlan,_timing,_extra_activity,_ACTIONS,
                                _misassigned_idle_raw,_idle_raw_correction_warnings)
 from .weapon_sequences import _static_timing_warning
-from .weapon_sequences import _IDLE_HELPER_ACTIONS,_helper_idle_motion
+from .weapon_sequences import _IDLE_HELPER_ACTIONS,_helper_idle_motion,_retain_sequence_dependencies
 from .weapon_ads import is_ads_or_mixed_activity
 
 _NORMAL_ATTACKS=frozenset(('attack','attack_center','attack_left','attack_right'))
@@ -65,12 +65,18 @@ def classify_melee(source,profile,index):
 
 
 def plan_melee_sequences(sources,source_profile,target_profile,*,keep_ads=True,rng=None):
-    sources=tuple(sources);rng=rng or random.SystemRandom();roles=[_role(s,source_profile,i) for i,s in enumerate(sources)]
+    sources=tuple(sources);rng=rng or random.SystemRandom()
+    referenced={name.lower() for source in sources for name in source.dependencies}
+    official_names={slot.name.lower() for slot in source_profile.slots}
+    helpers={i for i,source in enumerate(sources) if not source.activity
+             and source.name.lower() in referenced and source.name.lower() not in official_names}
+    roles=[_Role('',False,True,False,False,i) if i in helpers else _role(s,source_profile,i)
+           for i,s in enumerate(sources)]
     excluded={i for i,s in enumerate(sources) if not keep_ads and is_ads_or_mixed_activity(s.activity)}
     names=set();warnings=_idle_raw_correction_warnings(sources,source_profile)
     for i,source in enumerate(sources):
         if i in excluded:continue
-        if not source.activity and i>=len(source_profile.slots):
+        if i in helpers or (not source.activity and i>=len(source_profile.slots)):
             warnings.append(f'排除无 Activity 的非官方 sequence（来源序号 {i}）: {source.name}');continue
         if not source.name or any(c in source.name for c in '\r\n\x00"') or source.name.lower() in names:
             raise ValueError('无效或重复的 sequence 名称: '+source.name)
@@ -179,4 +185,5 @@ def plan_melee_sequences(sources,source_profile,target_profile,*,keep_ads=True,r
         if _misassigned_idle_raw(source,source_profile) is not None:activity=''
         rows.append(PlannedSequence(name,activity,source,fps,numframes,False,None,role.inferred,role.layer,role.visible))
         if compatible is None and not source.loop:warnings.append(f'额外动作 {source.name} 没有目标官方时间基准，保留原 FPS。')
+    rows,warnings=_retain_sequence_dependencies(rows,sources,warnings,excluded=excluded)
     return SequencePlan(tuple(rows),tuple(warnings),tuple(missing),tuple(sources[i].name for i in sorted(excluded)),keep_ads)

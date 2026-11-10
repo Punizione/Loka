@@ -285,6 +285,8 @@ MESSAGES = {
     '检视FPS排除': 'Exclude inspect FPS',
     'helping_hand、item 系列动作保留原模 FPS，不进行时长换算或 FPS 匹配。': 'Keep original FPS for helping_hand and item animations, without duration conversion or FPS matching.',
     '近战攻击FPS保留': 'Keep melee attack FPS',
+    '换弹FPS保留': 'Keep reload FPS',
+    '换弹播放层及 ADS 换弹动作保留各自来源动画的 FPS': 'Keep source animation FPS for reload playback layers and ADS reloads.',
     '近战转近战时，攻击类动作保留原 mdl 的 FPS，不进行官方时长换算；优先级高于 FPS匹配。': 'When converting melee to melee, keep the original FPS of attack animations instead of converting to official timing; takes priority over Match FPS.',
     '为普通、15连及ADS/MIXED推击动画强制设置0.2秒淡入。': 'Force a 0.2-second fade-in for normal, 15-hit and ADS/MIXED shove animations.',
     '频率优先：优先保留常用音效。\n均衡匹配：保留常用音效并优化时长匹配。\n完整优先：优先减少截断。': 'Frequency first: Prioritize common sounds.\nBalanced: Keep common sounds and improve duration matching.\nCompleteness first: Minimize truncation.',

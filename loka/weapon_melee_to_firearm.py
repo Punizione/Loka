@@ -11,21 +11,22 @@ import re
 
 from .weapon_sequences import _classify,_extra_activity,_timing
 
-# Group order: HITCENTER > SHOOT_LAYER > HITLEFT > HITRIGHT > SWINGHARD.
+#
+# HITCENTER > SHOOT_LAYER > HITLEFT > HITRIGHT > SWINGHARD.
 _ATTACK_PRIORITY={'attack_center':1,'attack':2,'attack_left':3,'attack_right':4,'attack_hard':5}
 _ATTACK_SEMANTICS=tuple(_ATTACK_PRIORITY)
-# Only attack playback layers keep the source FPS; every other layer is a timed
-# sequence and still follows the official duration.
+# Attack playback layers always keep source FPS. Other layers follow official
+# duration by default; the optional reload preservation is applied by the caller.
 _PLAYBACK_ACTIVITIES=frozenset(('ACT_VM_PRIMARYATTACK_LAYER','ACT_VM_SHOOT_SNIPER_LAYER',
                                 'ACT_VM_SECONDARYATTACK_LAYER'))
 # A spared melee alternative may not keep its own Activity: the firearm family
-# names its attack, push and draw motions differently.
+#
 _EXTRA_SEMANTICS={'attack':'fire','attack_center':'fire','attack_left':'fire',
                   'attack_right':'fire','attack_hard':'fire','push':'melee','deploy':'deploy',
                   # A push carried by the group override already speaks firearm roles.
                   'melee':'melee'}
 # Roles the firearm profile cannot host a playback layer for: the official idle
-# slot already owns ACT_VM_IDLE and fidget has no firearm counterpart.
+#
 _EXTRA_BLANK=frozenset(('idle','fidget'))
 _EXTRA_HANDLED=frozenset(_EXTRA_SEMANTICS)|_EXTRA_BLANK
 _ADS_PREFIX=re.compile(r'^(MIXED_ACT_VM_|(?:MIXED_)?ACT_(?:PRIMARY|SECONDARY|TERTIARY|FOURTH)_VM_)'
@@ -80,10 +81,11 @@ def extra_activity(role, target_profile):
     return ''
 
 
-def reload_source_index(classified, layer):
+def reload_source_index(classified, layer, *, eligible=None):
     """Index of the item pickup loop filling a reload slot, layer first."""
     for wanted in ((layer, not layer) if layer else (layer,)):
         for index, (action, item_layer, unused) in enumerate(classified):
+            if eligible is not None and index not in eligible:continue
             if action == 'item_loop' and item_layer == wanted and not unused:
                 return index
     return None
@@ -107,11 +109,12 @@ def borrow_animation(source):
     return replace(source, loop=False), 0
 
 
-def build_map(sources, source_profile) -> MeleeFirearmMap:
+def build_map(sources, source_profile, *, eligible=None) -> MeleeFirearmMap:
     """Pick the melee attack group and push motion for a firearm target."""
     from .weapon_melee_sequences import _role
     roles = [_role(source, source_profile, index) for index, source in enumerate(sources)]
-    plain = {index for index, source in enumerate(sources) if not _extra_activity(source.activity)}
+    plain = {index for index, source in enumerate(sources) if not _extra_activity(source.activity)
+             and (eligible is None or index in eligible)}
     def usable(index):
         return (plain and index in plain and not roles[index].unused
                 and sources[index].frame_count >= 2)

@@ -1,9 +1,4 @@
-"""Bounded VTF decoding and read-only Source material lookup.
-
-The preview uses the largest mip of animation frame zero. It does not emulate
-Source's shader/proxy system; unsupported rendering behavior is reported.
-Disk format reference: ValveSoftware/source-sdk-2013/src/public/vtf/vtf.h.
-"""
+"Bounded VTF decoding and read-only Source material lookup.\n\nThe preview uses the largest mip of animation frame zero. It does not emulate\nSource's shader/proxy system; unsupported rendering behavior is reported."
 from __future__ import annotations
 
 from dataclasses import dataclass

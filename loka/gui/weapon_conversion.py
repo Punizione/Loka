@@ -8,7 +8,7 @@ from qfluentwidgets import (BodyLabel, CaptionLabel, CardWidget, CheckBox, Combo
                            PushButton, ProgressBar, ScrollArea, SubtitleLabel, TextEdit,
                            InfoBar, InfoBarPosition, SpinBox)
 
-from ..weapon_catalog import TARGET_WEAPONS, allowed_targets, SHOTGUN_IDS
+from ..weapon_catalog import TARGET_WEAPONS, allowed_targets, SHOTGUN_IDS,MELEE_IDS
 from ..i18n import tr, display_text
 from ..weapon_conversion import (PackageInspection, plan_output, UnsupportedViewModelError,
                                  UNSUPPORTED_VIEW_MODEL_MESSAGE)
@@ -130,6 +130,10 @@ class WeaponConversionInterface(ScrollArea):
         self.inspect_fps_check.setToolTip(tr('helping_hand、item 系列动作保留原模 FPS，不进行时长换算或 FPS 匹配。'))
         self.melee_attack_fps_check = CheckBox(tr('近战攻击FPS保留'),option_card)
         self.melee_attack_fps_check.setToolTip(tr('近战转近战时，攻击类动作保留原 mdl 的 FPS，不进行官方时长换算；优先级高于 FPS匹配。'))
+        self.melee_reload_fps_check=CheckBox(tr('换弹FPS保留'),option_card)
+        self.melee_reload_fps_check.setToolTip(tr('换弹播放层及 ADS 换弹动作保留各自来源动画的 FPS'))
+        self.melee_reload_fps_check.hide()
+        self.melee_reload_fps_check.toggled.connect(self.invalidate_correction)
         self.ads_check.setChecked(True)
         self.fadein_check=CheckBox(tr('推击淡入'),option_card)
         self.fadein_check.setChecked(False)
@@ -138,7 +142,7 @@ class WeaponConversionInterface(ScrollArea):
         for box,row,column in ((self.material_check,0,0),(self.normalize_vmt_check,0,1),(self.ads_check,0,2),
                                (self.l4n_check,1,0),(self.fadein_check,2,0),
                                (self.fps_check,2,1),(self.inspect_fps_check,2,2),(self.keep_temp_check,3,0),
-                               (self.melee_attack_fps_check,3,1)):
+                               (self.melee_attack_fps_check,3,1),(self.melee_reload_fps_check,3,2)):
             box.setMinimumWidth(box.fontMetrics().horizontalAdvance(box.text())+28)
             grid.addWidget(box,row,column)
         self.audio_logic_box=ComboBox(option_card)
@@ -214,6 +218,7 @@ class WeaponConversionInterface(ScrollArea):
                          (self.fps_check,config.conversion_fps_match),
                          (self.inspect_fps_check,config.conversion_exclude_inspect_fps),
                          (self.melee_attack_fps_check,config.conversion_melee_attack_fps_preserve),
+                         (self.melee_reload_fps_check,config.conversion_melee_reload_fps_preserve),
                          (self.fadein_check,config.conversion_melee_layer_fadein_fix)):
             box.setChecked(config.get(item))
             box.toggled.connect(lambda checked,setting=item:config.set(setting,checked))
@@ -225,7 +230,7 @@ class WeaponConversionInterface(ScrollArea):
 
     def _fit_option_labels(self):
         changed=False
-        for box in (self.material_check,self.normalize_vmt_check,self.ads_check,self.keep_temp_check,self.l4n_check,self.fadein_check,self.fps_check,self.inspect_fps_check,self.melee_attack_fps_check):
+        for box in (self.material_check,self.normalize_vmt_check,self.ads_check,self.keep_temp_check,self.l4n_check,self.fadein_check,self.fps_check,self.inspect_fps_check,self.melee_attack_fps_check,self.melee_reload_fps_check):
             box.ensurePolished();width=box.fontMetrics().horizontalAdvance(box.text())+28
             if box.minimumWidth()!=width:box.setMinimumWidth(width);changed=True
         self.ik_box.ensurePolished()
@@ -358,6 +363,9 @@ class WeaponConversionInterface(ScrollArea):
     def update_preview(self, *_):
         self._valid_output = False
         self.resolved_source_view_model=None
+        applicable=self.melee_reload_fps_applicable()
+        self.melee_reload_fps_check.setVisible(applicable)
+        self.melee_reload_fps_check.setEnabled(applicable and not self._busy)
         if self.package:
             try:
                 self.resolved_source_view_model=self.package.resolve_view_model(self.source_pistol_mode())
@@ -380,6 +388,11 @@ class WeaponConversionInterface(ScrollArea):
             self.output_label.setText(tr('最终输出：请选择来源 VPK 和目标武器'))
         self.run_button.setEnabled(not self._busy and self._valid_output)
 
+    def melee_reload_fps_applicable(self):
+        target=self.target_box.currentData()
+        return bool(self.package and self.package.weapon.category=='melee' and target
+                    and target not in MELEE_IDS and target not in SHOTGUN_IDS)
+
     def set_advanced(self,checked):
         for box in (self.keep_temp_check,self.fps_check,self.inspect_fps_check,self.melee_attack_fps_check):
             box.setVisible(bool(checked))
@@ -387,7 +400,7 @@ class WeaponConversionInterface(ScrollArea):
 
     def set_busy(self, busy):
         self._busy = busy
-        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.reload_loop_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check,self.fps_check,self.inspect_fps_check,self.melee_attack_fps_check):
+        for widget in (self.input_edit,self.browse_button,self.source_pistol_box,self.target_box,self.reload_loop_box,self.output_edit,self.keep_temp_check,self.ads_check,self.material_check,self.l4n_check,self.normalize_vmt_check,self.audio_logic_box,self.ik_box,self.fadein_check,self.fps_check,self.inspect_fps_check,self.melee_attack_fps_check,self.melee_reload_fps_check):
             widget.setEnabled(not busy)
         self.keep_temp_check.setEnabled(not busy and bool(self._advanced()))
         self.fps_check.setEnabled(not busy and bool(self._advanced()))
@@ -480,4 +493,5 @@ class WeaponConversionInterface(ScrollArea):
 
     def _correction_identity(self):
         return (self._scan_generation,self.input_path(),self.target_box.currentData(),
-                self.output_edit.text(),self.source_pistol_mode(),self.reload_loop_box.value())
+                self.output_edit.text(),self.source_pistol_mode(),self.reload_loop_box.value(),
+                bool(self.melee_reload_fps_applicable() and self.melee_reload_fps_check.isChecked()))

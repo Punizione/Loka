@@ -6,7 +6,7 @@ import re
 from .vpk import safe_archive_path
 
 # Texture-valued shader parameters, not scalar flags or proxy variables.
-# Valve SDK: materialsystem/stdshaders/vertexlitgeneric_dx9.cpp.
+#
 TEXTURES=frozenset(('$basetexture $basetexture2 $basetexture3 $basetexture4 $texture1 $texture2 $texture3 $bumpmap $bumpmap2 '
     '$normalmap $detail $detail2 $envmap $envmapmask $envmapmask2 $selfillummask $phongexponenttexture '
     '$lightwarptexture $phongwarptexture $blendmodulatetexture $dudvmap $flowmap $flow_noise_texture '

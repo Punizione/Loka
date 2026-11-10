@@ -77,7 +77,7 @@ def _legacy_input(folder, rule):
     return baseline, frames, phases, metadata
 
 
-def extract_rules(output_dir, recipe_id, *, smd_dir, reference_dir=None, legacy_dir=None):
+def extract_rules(output_dir, recipe_id, *, smd_dir, smd_bindings, reference_dir=None, legacy_dir=None):
     recipe = get_recipe(recipe_id)
     inputs = Path(reference_dir or legacy_dir).resolve(strict=True)
     output_dir = Path(output_dir).resolve()
@@ -107,7 +107,7 @@ def extract_rules(output_dir, recipe_id, *, smd_dir, reference_dir=None, legacy_
             size=max(rule.size for rule in recipe.rules if rule.part==part)
             if size!=basis.size:raise ValueError('UV basis must use the largest authored part resolution')
             print('Analyzing SMD UV islands: '+part,flush=True)
-            triangles,islands,source=read_smd_uv(smd_dir,part)
+            triangles,islands,source=read_smd_uv(smd_dir,part,smd_bindings)
             baseline,frames,phases,authoring=(_standard_input(inputs,basis,recipe)
                                             if reference_dir is not None else _legacy_input(inputs,basis))
             atlas,statistics,training=build_island_atlas(triangles,islands,size,phases,basis.frames)
@@ -197,8 +197,11 @@ if __name__ == '__main__':
     inputs.add_argument('--reference-dir',type=Path)
     inputs.add_argument('--legacy-dir',type=Path)
     parser.add_argument('--smd-dir',type=Path,required=True,help='Authoring-only directory containing the fixed recipe SMD meshes')
+    parser.add_argument('--smd-bindings',type=Path,required=True,
+                        help='External JSON object mapping recipe parts to [SMD filename, material]')
     parser.add_argument('--recipe',default='kc14-jiuci')
     parser.add_argument('--output-dir',type=Path)
     args = parser.parse_args()
     extract_rules(args.output_dir or TEMPLATE_DIRECTORY/args.recipe,args.recipe,smd_dir=args.smd_dir,
+                  smd_bindings=json.loads(args.smd_bindings.read_text(encoding='utf-8-sig')),
                   reference_dir=args.reference_dir,legacy_dir=args.legacy_dir)

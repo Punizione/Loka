@@ -7,20 +7,9 @@ from pathlib import Path
 
 import numpy as np
 
-SMD_BINDINGS = {
-    'lam':('lam2.smd','Dev_LAM_PEQ25_005_MECHREVODF_vk_Specail2'),
-    'weal':('weal2.smd','Dev_Weal_StrobeLight_006_MECHREVODF_vk_Specail2'),
-    'fros':('fros2.smd','FroS_AM17_045_MECHREVODF_vk_Specail2'),
-    'han':('han2.smd','Han_AM17_long_160_MECHREVODF_vk_Specail2'),
-    'muz':('muz2.smd','Muz_AK_PBS_04_012_MECHREVODF_vk_Specail2'),
-    'rec':('rec2.smd','Rec_SMG_AM17_066_MECHREVODF_vk_012'),
-    'rec_reuse':('rec2.smd','Rec_SMG_AM17_066_MECHREVODF_vk_01_Reuse2'),
-    'box':('zhuan2.smd','MI_props_box_AM17_MECHREVODF_vk_1P2'),
-}
-
-
-def read_smd_uv(smd_dir, part):
-    filename,material = SMD_BINDINGS[part]
+def read_smd_uv(smd_dir, part, bindings):
+    """Read the part's filename and material from an explicit authoring map."""
+    filename,material = bindings[part]
     path = Path(smd_dir)/filename
     triangles=[]
     with path.open(encoding='utf-8-sig') as stream:

@@ -725,7 +725,7 @@ class SourceMdlFile49ModelMixin:
 
         if len(a_model.theEyeballs) > 0:
             # Detect if $upaxis Y was used.
-            # FROM: [48] studiomdl.cpp Option_Eyeball():
+            #
             #   AngleMatrix( g_defaultrotation, vtmp );
             #   VectorIRotate( Vector( 0, 0, 1 ), vtmp, tmp );
             #   VectorIRotate( tmp, pmodel->source->boneToPose[eyeball->bone], eyeball->up );

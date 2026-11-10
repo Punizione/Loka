@@ -528,7 +528,7 @@ def rewrite_viewmodel_qc(primary_qc,include_qcs,plan,target_id,output_dir,*,ads_
     def normalize_activity(value):
         return value.upper().replace('_SNIPER','').replace('ACT_VM_SHOOT','ACT_VM_PRIMARYATTACK')
     for row in plan.sequences:
-        if row.source and not row.reload_helper:
+        if row.source and not (row.reload_helper or row.reference_only or row.idle_fallback):
             key=row.source.name.lower()
             original=normalize_activity(row.source.activity or row.inferred_source_activity or '')
             matched=(profile.slots[row.official_index].activity if row.official_index is not None else row.activity)

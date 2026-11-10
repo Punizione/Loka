@@ -79,40 +79,7 @@ def add_subtract_base_pose(
     base_frame_lines: dict[int, AnimationFrameLine],
     axis_offset_radians: Optional[tuple[float, float, float]] = None,
 ) -> None:
-    """Undo studiomdl's ``subtract`` on one frame of animation data.
-
-    studiomdl's ``subtractBaseAnimations`` (POST branch, i.e. the QC
-    ``subtract`` option) transforms every bone with a nonzero weight into a
-    delta relative to the base animation's chosen frame::
-
-        delta_rot = base_rot^-1 * new_rot      delta_pos = new_pos - base_pos
-
-    (``QuaternionSMAngles(-1, src, dest)`` = ``QuaternionSM`` = ``(s*p)*q``
-    with ``s = -1``, i.e. ``base^-1 * new``; ``simplify.cpp`` lines 1078-1110.)
-
-    This is the exact inverse, so recompiling the SMD written from the result
-    with ``subtract "<idle>" <frame>`` reproduces the original delta data::
-
-        new_rot = base_rot * delta_rot         new_pos = base_pos + delta_pos
-
-    The composition is done on quaternions built from the stored-slot euler
-    triples via :func:`_stored_euler_to_quaternion`, and the result goes back
-    through ``to_euler_angles`` -- the same conversion the raw48/raw64 paths
-    use, so blended frames share one convention with the rest of the file.
-
-    A delta that is exactly ``(0, 0, 0)`` copies the base rotation verbatim:
-    no round trip, so bones the compiler left untouched (the common case) come
-    out byte-identical to the equivalent non-delta sequence.
-
-    ``axis_offset_radians`` optionally tilts the delta by a user-supplied
-    ``(x, y, z)`` rotation (added component-wise to the stored delta euler
-    before composition) -- the per-sequence "axis adjustment" knob.
-
-    ``frame_lines`` is one frame's output of :func:`calc_animation` (or the
-    FRAMEANIM branch); ``base_frame_lines`` is the base animation's frame, in
-    the same pre-``adjust_position_and_rotation`` local-bone space.  Bones that
-    only exist in one mapping are skipped (a missing delta means "no change").
-    """
+    "Undo studiomdl's ``subtract`` on one frame of animation data.\n\n    studiomdl's ``subtractBaseAnimations`` (POST branch, i.e. the QC\n    ``subtract`` option) transforms every bone with a nonzero weight into a\n    delta relative to the base animation's chosen frame::\n\n        delta_rot = base_rot^-1 * new_rot      delta_pos = new_pos - base_pos\n\n    (``QuaternionSMAngles(-1, src, dest)`` = ``QuaternionSM`` = ``(s*p)*q``\n\n    This is the exact inverse, so recompiling the SMD written from the result\n    with ``subtract \"<idle>\" <frame>`` reproduces the original delta data::\n\n        new_rot = base_rot * delta_rot         new_pos = base_pos + delta_pos\n\n    The composition is done on quaternions built from the stored-slot euler\n    triples via :func:`_stored_euler_to_quaternion`, and the result goes back\n    through ``to_euler_angles`` -- the same conversion the raw48/raw64 paths\n    use, so blended frames share one convention with the rest of the file.\n\n    A delta that is exactly ``(0, 0, 0)`` copies the base rotation verbatim:\n    no round trip, so bones the compiler left untouched (the common case) come\n    out byte-identical to the equivalent non-delta sequence.\n\n    ``axis_offset_radians`` optionally tilts the delta by a user-supplied\n    ``(x, y, z)`` rotation (added component-wise to the stored delta euler\n    before composition) -- the per-sequence \"axis adjustment\" knob.\n\n    ``frame_lines`` is one frame's output of :func:`calc_animation` (or the\n    FRAMEANIM branch); ``base_frame_lines`` is the base animation's frame, in\n    the same pre-``adjust_position_and_rotation`` local-bone space.  Bones that\n    only exist in one mapping are skipped (a missing delta means \"no change\")."
     has_offset = axis_offset_radians is not None and any(axis_offset_radians)
     for bone_index, a_frame_line in frame_lines.items():
         a_base_line = base_frame_lines.get(bone_index)
@@ -241,16 +208,7 @@ def calc_bone_rotation(
     a_bone,
     an_animation: SourceMdlAnimation,
 ) -> tuple[SourceVector, SourceQuaternion]:
-    """Implement ``CalcBoneRotation`` (line 2849).
-
-    ``s`` is never anything but ``0`` in the live code path (``CalcAnimation``
-    initialises ``s = 0`` and never changes it), so the sub-frame interpolation
-    branches that the VB comments quote from ``bone_setup.cpp`` are dead here
-    too -- the VB body ignores ``s`` entirely.
-
-    ``rotationQuat`` is VB ``ByRef``; it is returned as the second tuple element
-    instead of being written through a mutable argument.
-    """
+    "Implement ``CalcBoneRotation`` (line 2849).\n\n    ``s`` is never anything but ``0`` in the live code path (``CalcAnimation``\n    initialises ``s = 0`` and never changes it), so the sub-frame interpolation\n    too -- the VB body ignores ``s`` entirely.\n\n    ``rotationQuat`` is VB ``ByRef``; it is returned as the second tuple element\n    instead of being written through a mutable argument."
     rot = SourceQuaternion()
     angle_vector = SourceVector()
     rotation_quat = SourceQuaternion()

@@ -1438,8 +1438,6 @@
       "bundle_sha256": "7134cc6b938c58f7dc6eb776799a488a730166a922827681098565a997d19cfe",
       "bundle_bytes": 18470,
       "smd": {
-        "file": "lam2.smd",
-        "material": "Dev_LAM_PEQ25_005_MECHREVODF_vk_Specail2",
         "sha256": "845cfca1cc2e200fb676ce048f13af1c4245047c56466f740604859ec8e871a6",
         "triangles": 4053,
         "uv_islands": 151
@@ -1462,7 +1460,6 @@
           "arrival_fit_p90_frames": 5.0893459163641115
         }
       },
-      "timing_reference": "dev_lam_peq25_005_mechrevodf_vk_print_softframe_colorfront.vtf",
       "timing_reference_sha256": "2ee4f6bf9bda8de3dcca0fb74c96cfbac1f25f730332164c6ba83b6d296bbe0e"
     },
     "0271e05e66b5fd060cd2441b0e06fcfe17518006ee8a911e8854b9bd9a230441.uvatlas": {
@@ -1470,8 +1467,6 @@
       "bundle_sha256": "0271e05e66b5fd060cd2441b0e06fcfe17518006ee8a911e8854b9bd9a230441",
       "bundle_bytes": 16167,
       "smd": {
-        "file": "weal2.smd",
-        "material": "Dev_Weal_StrobeLight_006_MECHREVODF_vk_Specail2",
         "sha256": "c364c02f11cd2ee5120a71c9fca8278740c4b0f1c228c7bb56e4dad23222ab6e",
         "triangles": 3945,
         "uv_islands": 216
@@ -1494,7 +1489,6 @@
           "arrival_fit_p90_frames": 0.4384745679440904
         }
       },
-      "timing_reference": "dev_weal_strobelight_006_mechrevodf_vk_print13_allparts.vtf",
       "timing_reference_sha256": "04284063f07999cfe3930758fb39e27886f8bb0e77520bd3c4ffa1e5752daeb6"
     },
     "7697e0d3ecd294df6340bb385be3694e976c6c660e0832959a7d89085d7c9df4.uvatlas": {
@@ -1502,8 +1496,6 @@
       "bundle_sha256": "7697e0d3ecd294df6340bb385be3694e976c6c660e0832959a7d89085d7c9df4",
       "bundle_bytes": 9733,
       "smd": {
-        "file": "fros2.smd",
-        "material": "FroS_AM17_045_MECHREVODF_vk_Specail2",
         "sha256": "30d728fb0a30348ad7e1247a6c6a0e913b3c7f505a8beb8b62450eff25de9456",
         "triangles": 1580,
         "uv_islands": 74
@@ -1526,7 +1518,6 @@
           "arrival_fit_p90_frames": 0.874648915045626
         }
       },
-      "timing_reference": "fros_am17_045_mechrevodf_vk_print_softframe_colorfront.vtf",
       "timing_reference_sha256": "cc480c426f3d6b8f92877797c3126319eafbb293342347f9be47d22919c368f5"
     },
     "f8006cd6d5bb05067680c888e2e1ea95ed6460af31bcd6fb12434f67c28b3b22.uvatlas": {
@@ -1534,8 +1525,6 @@
       "bundle_sha256": "f8006cd6d5bb05067680c888e2e1ea95ed6460af31bcd6fb12434f67c28b3b22",
       "bundle_bytes": 36139,
       "smd": {
-        "file": "han2.smd",
-        "material": "Han_AM17_long_160_MECHREVODF_vk_Specail2",
         "sha256": "b6e41245717c7f125bef53870b13346b7dd9df7b154a5e78056a1ca53a593b4b",
         "triangles": 6893,
         "uv_islands": 623
@@ -1558,7 +1547,6 @@
           "arrival_fit_p90_frames": 0.809383732567116
         }
       },
-      "timing_reference": "han_am17_long_160_mechrevodf_vk_print_softframe_colorfront.vtf",
       "timing_reference_sha256": "e38a620a0de0f03b7a756254ee15c930b2cfaa14baa3a6d8ed03b48812f06ee5"
     },
     "43702bef82fc60723c68f49a42e64c47a6404ab686a529af60e1ceb46e111ecf.uvatlas": {
@@ -1566,8 +1554,6 @@
       "bundle_sha256": "43702bef82fc60723c68f49a42e64c47a6404ab686a529af60e1ceb46e111ecf",
       "bundle_bytes": 9950,
       "smd": {
-        "file": "muz2.smd",
-        "material": "Muz_AK_PBS_04_012_MECHREVODF_vk_Specail2",
         "sha256": "a3cc934543f545e21c6d266cc8f480324270588f0a5d7ba695c423f0ef7f8330",
         "triangles": 1418,
         "uv_islands": 68
@@ -1590,7 +1576,6 @@
           "arrival_fit_p90_frames": 0.6436327163046969
         }
       },
-      "timing_reference": "muz_ak_pbs_04_012_mechrevodf_vk_print_softframe_colorfront.vtf",
       "timing_reference_sha256": "da21e9e8ca4c6a449fe7de167df5db419dd954fe28605c795cbb6c4ebca0b419"
     },
     "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4.uvatlas": {
@@ -1598,8 +1583,6 @@
       "bundle_sha256": "ac5920b7faebc9dc18fea8b0e186e3880b8d289124f417745a8ab8effdc98aa4",
       "bundle_bytes": 32473,
       "smd": {
-        "file": "rec2.smd",
-        "material": "Rec_SMG_AM17_066_MECHREVODF_vk_012",
         "sha256": "eda34e6f06cb55658a8673ec1cc52017684587f0316dffce621550fbe7a0308e",
         "triangles": 6569,
         "uv_islands": 326
@@ -1622,7 +1605,6 @@
           "arrival_fit_p90_frames": 3.010055779055075
         }
       },
-      "timing_reference": "rec_smg_am17_066_mechrevodf_vk_01_print36_silksync.vtf",
       "timing_reference_sha256": "e2a97c02a93b93bd9c5b763debd1b67270a2da5ab2e15bc6db180d717058fd21"
     },
     "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a.uvatlas": {
@@ -1630,8 +1612,6 @@
       "bundle_sha256": "92385b0e428ac0994397554edc55a8cc796dbf125fef8425661107390c22619a",
       "bundle_bytes": 19437,
       "smd": {
-        "file": "rec2.smd",
-        "material": "Rec_SMG_AM17_066_MECHREVODF_vk_01_Reuse2",
         "sha256": "eda34e6f06cb55658a8673ec1cc52017684587f0316dffce621550fbe7a0308e",
         "triangles": 4405,
         "uv_islands": 208
@@ -1654,7 +1634,6 @@
           "arrival_fit_p90_frames": 1.9883929778020095
         }
       },
-      "timing_reference": "rec_smg_am17_066_mechrevodf_vk_01_reuse_print36_silksync.vtf",
       "timing_reference_sha256": "332624df92df607bea477b0686ef10abb8a1980aa589b45d55d1d1f81b74c258"
     },
     "701a8d56418458911f2417f5c27fe985a95446fc9c2dbc38f150e77bcc67d66f.uvatlas": {
@@ -1662,8 +1641,6 @@
       "bundle_sha256": "701a8d56418458911f2417f5c27fe985a95446fc9c2dbc38f150e77bcc67d66f",
       "bundle_bytes": 8558,
       "smd": {
-        "file": "zhuan2.smd",
-        "material": "MI_props_box_AM17_MECHREVODF_vk_1P2",
         "sha256": "17c2d31f94857ff7e624da38c419f803f59a3cba47dddec18841ed9c0a8b44d0",
         "triangles": 6501,
         "uv_islands": 443
@@ -1686,7 +1663,6 @@
           "arrival_fit_p90_frames": 0.6289496754998525
         }
       },
-      "timing_reference": "mi_props_box_am17_mechrevodf_vk_1p_soliddepth.vtf",
       "timing_reference_sha256": "bc82f5974b24a2bc04991371e7f5134452e722f339634b76e8b3d38a2fbb0700"
     }
   },

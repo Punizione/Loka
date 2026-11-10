@@ -1474,7 +1474,7 @@ def transform_phy_vertex(
             )
     else:
         if collision_data_count == 1:
-            # FROM: collisionmodel.cpp ConvertToWorldSpace()
+            #
             if (mdl_file_data.flags & STUDIOHDR_FLAGS_STATIC_PROP) > 0:
                 a_vector.x = 1 / 0.0254 * vertex.z
                 a_vector.y = 1 / 0.0254 * -vertex.x
@@ -1519,7 +1519,7 @@ def transform_phy_vertex(
                     a_bone.poseToBoneColumn3,
                 )
         else:
-            # FROM: collisionmodel.cpp ConvertToBoneSpace()
+            #
             a_vector.x = 1 / 0.0254 * vertex.x
             a_vector.y = 1 / 0.0254 * vertex.z
             a_vector.z = 1 / 0.0254 * -vertex.y

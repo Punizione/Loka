@@ -198,6 +198,7 @@ class GuiConfig(QConfig):
     conversion_fps_match = ConfigItem("WeaponConversion", "FpsMatch", False, _BoolValidator(False))
     conversion_exclude_inspect_fps = ConfigItem("WeaponConversion", "ExcludeInspectFps", False, _BoolValidator(False))
     conversion_melee_attack_fps_preserve = ConfigItem("WeaponConversion", "MeleeAttackFpsPreserve", False, _BoolValidator(False))
+    conversion_melee_reload_fps_preserve = ConfigItem("WeaponConversion", "MeleeReloadFpsPreserve", False, _BoolValidator(False))
     conversion_audio_logic = ConfigItem("WeaponConversion", "AudioLogic", "frequency",
                                        OptionsValidator(["frequency", "balanced", "complete"]))
     conversion_ik_rule_handling = ConfigItem("WeaponConversion", "IkRuleHandling", "delete",
@@ -1882,6 +1883,7 @@ class MainWindow(FluentWindow):
                                     fps_match=bool(CFG.get(CFG.advanced) and page.fps_check.isChecked()),
                                     exclude_inspect_fps=bool(CFG.get(CFG.advanced) and page.inspect_fps_check.isChecked()),
                                     melee_attack_fps_preserve=bool(CFG.get(CFG.advanced) and page.melee_attack_fps_check.isChecked()),
+                                    melee_reload_fps_preserve=bool(page.melee_reload_fps_applicable() and page.melee_reload_fps_check.isChecked()),
                                     reload_loop_count=page.reload_loop_box.value())
         page.log_card.clear();page.begin_conversion(options)
 

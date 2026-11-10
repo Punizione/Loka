@@ -223,6 +223,45 @@ def _payload_symbol_repair(data):
     return candidates[0] if len(candidates)==1 else None
 
 
+def _texture_open_quote_repair(data,available_resources):
+    """Restore line-final texture quotes only with package resource witnesses.
+
+    A missing opening quote can swallow later keys even when its token looks
+    closed. Reparse after each insertion, and accept the complete chain only if
+    no other repair is needed. Existing quoted/multiline values are untouched.
+    """
+    after=data;records=[]
+    for _ in range(4096):
+        try:lexed=lex_vmt(after)
+        except ValueError:return None
+        def observe(event):
+            if (event.kind!='before_entry' or event.previous is None
+                    or any(part.lower()=='proxies' for part in event.context)):
+                return
+            key,value=event.previous;token=lexed.tokens[event.index]
+            if (key.value.lower() not in TEXTURES or value.quoted or value.kind!='atom'
+                    or not token.quoted or value.end!=token.start):
+                return
+            end=min([p for p in (after.find(b'\r',token.start),after.find(b'\n',token.start)) if p>=0]
+                    or [len(after)])
+            if after[token.start+1:end].strip(b' \t'):return
+            witness=resource_key(value.value,'.vtf')
+            if witness not in available_resources:return
+            correction=_Repair(value.start,'','"','open_quote','/'.join((*event.context,key.value)))
+            correction.record['witness_resource']=witness
+            raise correction
+        try:lexed.parse(on_event=observe)
+        except _Repair as correction:
+            after=_apply_records(after,correction.records);records.extend(correction.records)
+        except ValueError:return None
+        else:
+            if not records:return None
+            try:_validate(after,False,available_resources=available_resources)
+            except ValueError:return None
+            return after,records
+    return None
+
+
 def _validate(data,repair,*,quote_candidates=True,available_resources=frozenset()):
     lexed=lex_vmt(data);values=lexed.tokens;eof_comment=lexed.eof_comment
     def change(offset,old,new,kind,context,*,witness_resource=None):
@@ -336,7 +375,9 @@ def _validate(data,repair,*,quote_candidates=True,available_resources=frozenset(
                             candidate=data[:token.start]+b'//'+data[token.start:]
                             if _composed_symbols(candidate,safe_composition,available_resources) is not None:
                                 change(token.start,'','//','comment_marker_insert','/'.join((*context,key.value)))
-                if token.quoted and not token.closed and not last.quoted and last.end==token.start:
+                # A misplaced earlier quote can manufacture whitespace keys.
+                # Such a key is not evidence for repairing the final value.
+                if key.value.strip() and token.quoted and not token.closed and not last.quoted and last.end==token.start:
                     line=data[token.start+1:].splitlines()[0] if data[token.start+1:] else b''
                     if not line.strip() and closing_suffix(token.start+1+len(line)):
                         change(last.start,'','"','open_quote',key.value)
@@ -405,7 +446,7 @@ def _validate(data,repair,*,quote_candidates=True,available_resources=frozenset(
 
 
 
-def normalize_vmt(data:bytes,*,available_resources=())->tuple[bytes,list[dict]]:
+def _normalize_symbols(data:bytes,*,available_resources=())->tuple[bytes,list[dict]]:
     """Return validated bytes and replayable ASCII repair records, or fail."""
     if not isinstance(data,bytes):raise TypeError('VMT 输入必须为 bytes')
     available_resources=frozenset(str(path).replace('\\','/').lower() for path in available_resources)
@@ -430,6 +471,8 @@ def normalize_vmt(data:bytes,*,available_resources=())->tuple[bytes,list[dict]]:
     payload=_payload_symbol_repair(after)
     if payload is not None:
         return _apply_records(after,payload),payload
+    texture_quotes=_texture_open_quote_repair(after,available_resources)
+    if texture_quotes is not None:return texture_quotes
     for _ in range(4096):
         try:
             _validate(after,True,available_resources=available_resources)
@@ -439,6 +482,138 @@ def normalize_vmt(data:bytes,*,available_resources=())->tuple[bytes,list[dict]]:
             _validate(after,False,available_resources=available_resources)
             return after,repairs
     raise ValueError('VMT 修复次数超过安全范围')
+
+
+def _quote_line_scan(data):
+    """Count effective delimiters per physical line with shared lexer rules.
+
+    Quoted tokens contribute their opening and, if present, closing delimiter.
+    Comments and escaped quotes inside string payloads contribute nothing.
+    This keeps encoding, comment state and escape handling identical to parsing.
+    """
+    lexed=lex_vmt(data,single_line_strings=True)
+    lines=[];start=3 if data.startswith(b'\xef\xbb\xbf') else 0
+    for ending in re.finditer(rb'\r\n|\r|\n',data):
+        lines.append({'line':len(lines)+1,'start':start,'end':ending.start(),'quote_count':0})
+        start=ending.end()
+    lines.append({'line':len(lines)+1,'start':start,'end':len(data),'quote_count':0})
+    index=0
+    for token in lexed.tokens:
+        if not token.quoted:continue
+        while token.start>lines[index]['end']:index+=1
+        line=lines[index];line['quote_count']+=2 if token.closed else 1
+        if not token.closed:line['unmatched_offset']=token.start
+    return lexed,lines
+
+
+def _single_line_document(data):
+    """Normalization assumes each quoted key/value stays on one physical line."""
+    lexed,lines=_quote_line_scan(data)
+    for line in lines:
+        if line['quote_count']%2:
+            raise _failure(data,f"VMT 有效双引号数量为奇数（{line['quote_count']} 个），键名和值不能跨行",
+                           line['unmatched_offset'])
+    return lexed
+
+
+def _line_quote_recovery(data,available_resources):
+    """Search token boundaries, accepting only one complete repair result.
+
+    Each broken physical line gets an inserted delimiter. Grammar and the
+    existing symbol repairs prove the whole result; no shader/key/path allowlist
+    or resource witness is required. Search exhaustion never selects a guess.
+    """
+    pending=[(data,[],frozenset())];seen={data};results={};states=0;error_offset=None
+    while pending:
+        after,records,changed_lines=pending.pop()
+        lexed,lines=_quote_line_scan(after)
+        broken=next((line for line in lines if line['quote_count']%2),None)
+        if broken is None:
+            try:
+                final,tail=_normalize_symbols(after,available_resources=available_resources)
+                document=_single_line_document(final).parse()
+                # Quote drift can manufacture keys with surrounding spaces.
+                # Reject those on repaired lines, preserving authored keys on
+                # unrelated lines and the legal-input fast path.
+                todo=list(document.nodes)
+                while todo:
+                    node=todo.pop()
+                    line=1+len(re.findall(rb'\r\n|\r|\n',final[:node.key.start]))
+                    if line in changed_lines and node.key.value!=node.key.value.strip():
+                        raise ValueError('VMT 引号修复产生带首尾空白的键')
+                    if node.is_block:todo.extend(node.children)
+            except ValueError:continue
+            results.setdefault(final,records+tail)
+            if len(results)>1:raise _failure(data,'VMT 缺失引号存在多个有效修复结果',error_offset or 0)
+            continue
+        if error_offset is None:error_offset=broken['unmatched_offset']
+        start=broken['start'];end=broken['end']
+        text=after[start:end].decode(lexed.codec);positions=set();offset=start
+        delimiters='{}[]"'
+        for index,char in enumerate(text):
+            following=offset+len(char.encode(lexed.codec))
+            if not char.isspace():
+                if index==0 or text[index-1].isspace() or text[index-1] in delimiters:positions.add(offset)
+                if index+1==len(text) or text[index+1].isspace() or text[index+1] in delimiters:positions.add(following)
+            offset=following
+        for position in sorted(positions):
+            states+=1
+            if states>4096:raise _failure(data,'VMT 引号恢复候选超过安全范围',error_offset)
+            candidate=after[:position]+b'"'+after[position:]
+            if candidate in seen:continue
+            seen.add(candidate)
+            try:
+                updated,updated_lines=_quote_line_scan(candidate)
+                # An inserted quote must delimit actual content, not invent an
+                # empty/whitespace value or become an escaped payload quote.
+                touched=next((t for t in updated.tokens if t.quoted and t.closed
+                    and position in (t.start,t.end-1)),None)
+                if touched is None or not touched.value.strip() or touched.value!=touched.value.strip():continue
+                if updated_lines[broken['line']-1]['quote_count']%2:continue
+                # Existing comments keep their exact spans/content. New quote
+                # placements may not turn an authored comment into a value.
+                comments={(t.start,t.end,t.kind,t.value) for t in updated.comments}
+                if any((t.start+(t.start>=position),t.end+(t.end>position),t.kind,t.value) not in comments
+                       for t in lexed.comments):continue
+                prefix_end=end+1
+                # A quote may reveal an authored block comment spanning later
+                # lines. Never reject it because our artificial prefix cuts
+                # that otherwise complete comment in half.
+                for comment in updated.comments:
+                    if comment.kind=='block_comment' and comment.start<prefix_end<comment.end:
+                        prefix_end=comment.end
+                prefix=candidate[:prefix_end]
+                try:lex_vmt(prefix,single_line_strings=True).parse()
+                except VmtSyntaxError as error:
+                    incomplete=(error.offset==len(prefix) and error.code in ('missing_close','missing_value','no_roots'))
+                    if not incomplete:
+                        # Existing deterministic block/symbol recovery can be
+                        # needed before this line (e.g. a missing root brace).
+                        normalized,_=_normalize_symbols(prefix,available_resources=available_resources)
+                        _single_line_document(normalized)
+            except ValueError:continue
+            kind='open_quote' if touched.start==position else 'close_quote'
+            record=_Repair(position,'','"',kind,'single_line_key_value').record
+            pending.append((candidate,records+[record],changed_lines|{broken['line']}))
+    if not results:raise _failure(data,'VMT 缺失引号无法恢复为完整的单行键值',error_offset or 0)
+    final,records=next(iter(results.items()))
+    return final,records
+
+
+def normalize_vmt(data:bytes,*,available_resources=())->tuple[bytes,list[dict]]:
+    """Normalize symbol damage under the single-line key/value contract."""
+    if not isinstance(data,bytes):raise TypeError('VMT 输入必须为 bytes')
+    available_resources=frozenset(str(path).replace('\\','/').lower() for path in available_resources)
+    _,lines=_quote_line_scan(data)
+    odd_lines=[line for line in lines if line['quote_count']%2]
+    try:
+        after,records=_normalize_symbols(data,available_resources=available_resources)
+        _single_line_document(after)
+        return after,records
+    except ValueError as original:
+        # Do not replace established diagnostics for unrelated syntax errors.
+        if not odd_lines:raise original
+    return _line_quote_recovery(data,available_resources)
 
 
 def normalized_material_pairs(data):

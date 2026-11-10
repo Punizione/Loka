@@ -114,7 +114,7 @@ class BodygroupOverview:
 
 
 def clean_model_name(raw_name: str) -> str:
-    """Normalise an MDL model name ("path/mixed_a.smd") to "mixed_a"."""
+    "Implementation notes."
     return get_file_name_without_extension(get_file_name(raw_name or "")).strip()
 
 

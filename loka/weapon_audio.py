@@ -126,7 +126,7 @@ def _melee_private_wave(reference,source_profile,targets):
     sound inventory belongs to the source. Mixed and shared roots stay protected.
     """
     from .weapon_catalog import MELEE_IDS
-    if source_profile not in MELEE_IDS or not targets or source_profile in targets or not set(targets)<=MELEE_IDS:return lambda path:False
+    if source_profile not in MELEE_IDS or not targets or source_profile in targets:return lambda path:False
     owners={}
     for record in reference.events.values():
         for path in record.paths:owners.setdefault(path.lower(),set()).add(record.owner)
@@ -175,12 +175,14 @@ def _variant_pairs(record,target,files,*,rng=None,cache=None,fill_tail=False):
     same_melee=(record.owner in MELEE_IDS and target.owner in MELEE_IDS and record.action==target.action)
     # fill_tail lets a melee source feed a firearm's fire variants of any count.
     if ((record.action=='miss' or record.action.startswith('impact'))
-        and (fill_tail or same_melee) and len(destinations)>len(sources)):
+        and (fill_tail or (same_melee and len(destinations)>len(sources)))):
         supplied=[source for source in sources if source in files]
         if supplied:
             rng=rng if rng is not None else random.SystemRandom()
-            pairs.extend((rng.choice(supplied),destination) for destination in destinations[len(sources):]
-                         if destination not in files)
+            assigned={destination for _,destination in pairs}
+            missing=destinations if fill_tail else destinations[len(sources):]
+            pairs.extend((rng.choice(supplied),destination) for destination in missing
+                         if destination not in assigned and destination not in files)
     result=tuple(pairs)
     if cache is not None:cache[key]=result
     return result

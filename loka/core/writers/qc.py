@@ -4082,13 +4082,7 @@ class QcFile49:
         return _get(lods[0], "theVtxMeshes", None) is None
 
     def _create_physics_smd_file_name(self, given_physics_smd_file_name: str) -> str:
-        """Implement ``SourceFileNamesModule.CreatePhysicsSmdFileName``.
-
-        NOTE: the VB caller passes ``Me.thePhyFileData.thePhysicsMeshSmdFileName``,
-        which starts out as ``""``; the reader never fills it in.  This port's PHY
-        reader *does* pre-fill it with ``<model>_physics.smd``, so the uniqueness
-        check would append ``_2``.  Recognising the reader's own value avoids that.
-        """
+        "Implement ``SourceFileNamesModule.CreatePhysicsSmdFileName``.\n\n        NOTE: the VB caller passes ``Me.thePhyFileData.thePhysicsMeshSmdFileName``,\n        which starts out as ``\"\"``; the reader never fills it in.  This port's PHY\n        check would append ``_2``.  Recognising the reader's own value avoids that."
         if given_physics_smd_file_name:
             return given_physics_smd_file_name
         generated = self.theModelName + "_physics"
